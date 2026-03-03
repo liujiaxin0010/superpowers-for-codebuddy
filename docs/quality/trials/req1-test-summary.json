@@ -1,0 +1,8 @@
+{
+  "total": 48,
+  "passed": 48,
+  "passRate": 100,
+  "coverage": {
+    "branches": 86.2
+  }
+}

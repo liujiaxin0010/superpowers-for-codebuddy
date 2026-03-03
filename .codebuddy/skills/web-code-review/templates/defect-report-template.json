@@ -1,0 +1,42 @@
+{
+  "reviewSummary": {
+    "targetFile": "",
+    "reviewDate": "",
+    "totalDefects": 0,
+    "bySeverity": {
+      "Major": 0,
+      "General": 0,
+      "Suggest": 0
+    },
+    "byCategory": {
+      "代码逻辑类": 0,
+      "视觉呈现类缺陷": 0,
+      "交互体验类缺陷": 0,
+      "性能表现类缺陷": 0,
+      "内容准确性类缺陷": 0
+    },
+    "techStack": "",
+    "linesOfCode": 0
+  },
+  "defects": [
+    {
+      "id": 1,
+      "reviewer": "AI",
+      "description": "问题描述。修改建议：具体修改建议。",
+      "location": "文件名:行号",
+      "module": "完整文件路径",
+      "severity": "Major",
+      "source": "编码",
+      "type": "函数、模块接口_编码",
+      "subtype": "形参和实参类型匹配、参数说明及校验",
+      "category": "代码逻辑类",
+      "suggestedFix": "修复代码示例"
+    }
+  ],
+  "reviewNotes": {
+    "positives": [
+      "代码中做得好的方面（可选）"
+    ],
+    "overallAssessment": "整体评估总结"
+  }
+}

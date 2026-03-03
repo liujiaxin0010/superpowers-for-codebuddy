@@ -1,0 +1,15 @@
+﻿{
+    "status":  "pass",
+    "checkedAt":  "2026-03-02T19:42:25+08:00",
+    "passRate":  100,
+    "passRateThreshold":  100,
+    "coverage":  86.2,
+    "coverageThreshold":  80,
+    "docSyncStatus":  "pass",
+    "missing":  [
+
+                ],
+    "failed":  [
+
+               ]
+}
