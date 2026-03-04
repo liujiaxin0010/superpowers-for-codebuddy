@@ -161,22 +161,22 @@ graph LR
 
 ```mermaid
 flowchart TD
-    A0[需求输入] --> A1[/spec-lite]
+    A0[需求输入] --> A1["/spec-lite"]
     A1 --> A2{finalTier}
 
-    A2 -->|L/M| A3[/write-plan]
-    A2 -->|H| A4[/brainstorm]
+    A2 -->|L/M| A3["/write-plan"]
+    A2 -->|H| A4["/brainstorm"]
     A4 --> A3
 
-    A3 --> A5[/execute-plan]
-    A5 --> A6[/test-gen 或 /unified-test]
-    A6 --> A7[/code-review M/H 必需]
-    A7 --> A8[/code-self-check]
+    A3 --> A5["/execute-plan"]
+    A5 --> A6["/test-gen 或 /unified-test"]
+    A6 --> A7["/code-review（M/H 必需）"]
+    A7 --> A8["/code-self-check"]
     A8 --> A9[check-quality]
-    A9 --> A10[/status]
+    A9 --> A10["/status"]
 
-    A1 -.可选并行.-> B1[/research]
-    A5 -.执行后.-> B2[/testcase]
+    A1 -.可选并行.-> B1["/research"]
+    A5 -.执行后.-> B2["/testcase"]
 
     B1 --> B3[回填 spec/AI2AI/research.md]
     B2 --> B4[回填 spec/AI2AI/testcase*.md]
