@@ -12,7 +12,7 @@ description: 命令执行前置项的硬性流程门禁。
 ## 输入
 
 ```yaml
-command: "write-plan|execute-plan|test-gen|unified-test|code-review|extend|brainstorm|status"
+command: "write-plan|execute-plan|test-gen|unified-test|code-review|extend|brainstorm|status|research|testcase|code-self-check"
 tier: "L|M|H"
 spec: "docs/specs/..."
 plan: "docs/plans/..."
@@ -62,6 +62,30 @@ GateResult:
 对于 H 级任务，`write-plan`、`execute-plan`、`test-gen`、`unified-test`、`code-review` 必须验证规格中的头脑风暴证据（`brainstormPath`）。
 若缺失：直接阻断并引导到 `/brainstorm`。
 
+### Research 约束
+
+`research` 命令应优先读取 `spec/Me2AI/需求描述.md` 与 `spec/Me2AI/技术约束.md`。若两者均缺失，阻断并引导先补充需求输入。
+
+### Testcase 约束
+
+`testcase` 命令必须具备：
+
+1. `spec=<path>` 与 `plan=<path>`
+2. `spec/AI2AI/Design.md`
+3. `spec/AI2AI/Architecture_Info.md`
+4. `spec/AI2AI/Protocol_and_Data.md`
+
+任一缺失应阻断并给出下一条补齐命令。
+
+### Code Self Check 约束
+
+`code-self-check` 命令必须能确定版本控制类型：
+
+1. `vcs=git` 或仓库存在 `.git`
+2. `vcs=svn` 或仓库存在 `.svn`
+
+若无法确定版本控制类型，应阻断并提示补充 `vcs` 参数或初始化仓库。
+
 ## 模板
 
 - `templates/blocked-report.md`
@@ -76,3 +100,4 @@ GateResult:
 1. 测试通过率阈值（默认 100%）
 2. 覆盖率阈值（默认 80%）
 3. 文档同步状态（doc-sync 报告 + findings/progress 文件）
+4. 可选校验 `spec/AI2AI` 关键文档（`RequireAi2AiDocs=true`）

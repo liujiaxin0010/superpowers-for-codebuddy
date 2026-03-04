@@ -1,15 +1,12 @@
-﻿{
-    "status":  "pass",
-    "checkedAt":  "2026-03-02T21:28:18+08:00",
-    "passRate":  100,
-    "passRateThreshold":  100,
-    "coverage":  85.6,
-    "coverageThreshold":  80,
-    "docSyncStatus":  "pass",
-    "missing":  [
-
-                ],
-    "failed":  [
-
-               ]
+{
+  "status": "pass",
+  "checkedAt": "2026-03-04T03:41:53Z",
+  "passRate": 100,
+  "passRateThreshold": 100,
+  "coverage": 85.6,
+  "coverageThreshold": 80,
+  "requireAi2AiDocs": false,
+  "docSyncStatus": "pass",
+  "missing": [],
+  "failed": []
 }

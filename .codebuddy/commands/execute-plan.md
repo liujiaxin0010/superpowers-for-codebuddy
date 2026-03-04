@@ -18,6 +18,14 @@
 5. 执行质量门禁脚本：
    - PowerShell: `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`
    - Shell: `bash .codebuddy/skills/process-gatekeeper/scripts/check-quality.sh`
-6. 若质量门禁 `BLOCKED`：停止收尾并返回修复项；通过后才允许宣告完成
+6. 执行过程中同步兼容产物：
+   - `spec/AI2AI/IMPLEMENTATION_PROGRESS.md`
+   - `spec/AI2AI/IMPLEMENTATION_SUMMARY.md`
+   - `spec/AI2AI/Architecture_Info.md`
+   - `spec/AI2AI/Protocol_and_Data.md`
+7. 若提供 `spec=<path>`，回填追踪链接：
+   - `implementationProgressPath`
+   - `implementationSummaryPath`
+8. 若质量门禁 `BLOCKED`：停止收尾并返回修复项；通过后才允许宣告完成
 
 $ARGUMENTS

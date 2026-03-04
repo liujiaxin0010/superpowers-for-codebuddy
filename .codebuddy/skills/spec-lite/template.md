@@ -113,6 +113,13 @@ GateResult:
 
 ## 12. 追踪链接
 
+- researchPath: <研究阶段回填>
 - brainstormPath: <H 级任务必填>
+- designPath: <方案设计文档回填>
+- testStrategyPath: <测试策略文档回填>
 - planPath: <规划后回填>
+- testcasePath: <测试用例文档回填>
+- testcaseAnalysisPath: <测试分析文档回填>
+- implementationProgressPath: <执行阶段回填>
+- implementationSummaryPath: <执行阶段回填>
 - reviewReportPath: <审查后回填>

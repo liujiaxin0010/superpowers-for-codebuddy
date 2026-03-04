@@ -14,6 +14,9 @@ required_cmds=(
   "extend.md"
   "status.md"
   "brainstorm.md"
+  "research.md"
+  "testcase.md"
+  "code-self-check.md"
 )
 
 missing=()
@@ -30,12 +33,19 @@ done
 
 required_paths=(
   ".codebuddy/commands/spec-lite.md"
+  ".codebuddy/commands/research.md"
+  ".codebuddy/commands/testcase.md"
+  ".codebuddy/commands/code-self-check.md"
   ".codebuddy/skills/spec-lite/SKILL.md"
+  ".codebuddy/skills/research/SKILL.md"
+  ".codebuddy/skills/testcase/SKILL.md"
+  ".codebuddy/skills/code-self-check/SKILL.md"
   ".codebuddy/skills/spec-lite/template.md"
   ".codebuddy/skills/process-gatekeeper/SKILL.md"
   ".codebuddy/skills/process-gatekeeper/gate-matrix.md"
   ".codebuddy/skills/process-gatekeeper/templates/blocked-report.md"
   ".codebuddy/skills/process-gatekeeper/templates/pass-report.md"
+  ".codebuddy/skills/process-gatekeeper/scripts/check-gates.sh"
   ".codebuddy/skills/process-gatekeeper/scripts/check-gates.ps1"
   ".codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1"
   ".codebuddy/skills/process-gatekeeper/scripts/check-quality.sh"

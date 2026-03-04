@@ -9,6 +9,8 @@
 3. `/extend`、`/write-plan` 的“先判档再选流程”
 4. 质量门禁脚本（通过率、覆盖率、文档同步）
 5. 试运行样例与可追溯产物沉淀
+6. `docs` 主产物 + `spec/Me2AI + spec/AI2AI` 兼容层
+7. 指南阶段别名命令：`/research`、`/testcase`、`/code-self-check`
 
 本文档面向研发、流程治理维护者、平台工程同学。
 
@@ -208,6 +210,10 @@
 
 1. `docs/quality/last-quality-gate.json`
 
+新增可选模式：
+
+1. `RequireAi2AiDocs=true` 时，额外校验 `spec/AI2AI` 关键文档存在性
+
 ### 8.3 判定逻辑
 
 1. 测试通过率：
@@ -218,6 +224,10 @@
    `status in [pass, ok, synced]` 或 `inSync=true`
 4. 文档基础文件存在性：
    `docs/findings.md`、`docs/progress.md`
+5. 可选 AI2AI 文档存在性：
+   `research.md`、`Design.md`、`test.md`、`plan.md`、`summary.md`、
+   `Architecture_Info.md`、`Protocol_and_Data.md`、`testcase.md`、
+   `testcase_analysis.md`、`IMPLEMENTATION_PROGRESS.md`、`IMPLEMENTATION_SUMMARY.md`
 
 若任一失败或缺失：
 
@@ -244,7 +254,18 @@
 
 1. 检查关键命令是否引用 gatekeeper
 2. 检查 `spec-lite/gatekeeper/templates/scripts` 必需文件是否存在
-3. 当前已纳入 `check-quality.ps1/.sh` 的存在性校验
+3. 检查指南兼容命令与技能（`research/testcase/code-self-check`）是否接线
+4. 当前已纳入 `check-quality.ps1/.sh` 的存在性校验
+
+## 16. 指南兼容层实现（2026-03-04）
+
+本次新增“中等接入”实现，不改变主链路语义：
+
+1. 主事实源：`docs/*` 不变
+2. 兼容层：新增 `spec/Me2AI + spec/AI2AI`
+3. 别名命令：`/research`、`/testcase`、`/code-self-check`
+4. `spec-lite` 追踪链接新增 7 个兼容字段
+5. 质量门禁新增可选参数 `RequireAi2AiDocs`，默认关闭，保持历史阈值兼容
 
 定位：
 
@@ -328,6 +349,9 @@
 3. `.codebuddy/commands/write-plan.md`
 4. `.codebuddy/commands/execute-plan.md`
 5. `.codebuddy/commands/status.md`
+6. `.codebuddy/commands/research.md`
+7. `.codebuddy/commands/testcase.md`
+8. `.codebuddy/commands/code-self-check.md`
 
 技能层：
 
@@ -336,7 +360,10 @@
 3. `.codebuddy/skills/process-gatekeeper/SKILL.md`
 4. `.codebuddy/skills/process-gatekeeper/gate-matrix.md`
 5. `.codebuddy/skills/executing-plans/SKILL.md`
-6. `.codebuddy/rules/logging-conventions.md`
+6. `.codebuddy/skills/research/SKILL.md`
+7. `.codebuddy/skills/testcase/SKILL.md`
+8. `.codebuddy/skills/code-self-check/SKILL.md`
+9. `.codebuddy/rules/logging-conventions.md`
 
 脚本层：
 
@@ -352,8 +379,10 @@
 3. `docs/quality/trials/*`
 4. `docs/findings.md`
 5. `docs/progress.md`
+6. `spec/Me2AI/*`
+7. `spec/AI2AI/*`
 
 ---
 
-版本：`v1.0`  
-更新时间：`2026-03-02`
+版本：`v1.1`  
+更新时间：`2026-03-04`
