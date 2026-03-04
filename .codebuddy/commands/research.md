@@ -19,5 +19,6 @@
 5. 对目标工程做只读分析（架构、规范、风格、候选改动点）
 6. 输出并更新 `spec/AI2AI/research.md`
 7. 若提供 `spec=<path>`，回填该 spec 的追踪链接 `researchPath`
+8. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

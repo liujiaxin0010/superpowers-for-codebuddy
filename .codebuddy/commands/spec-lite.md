@@ -39,5 +39,6 @@
 11. 返回 `GateResult` 与下一条推荐命令：
    - `L/M`：`/write-plan spec=<specPath> tier=<finalTier>`
    - `H`：`/brainstorm <需求描述>`（强制完整七阶段）
+12. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

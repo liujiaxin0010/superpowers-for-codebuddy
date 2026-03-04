@@ -1,12 +1,11 @@
-# testcase-analysis
+# 测试用例分析
 
 ## 统计
 
-- totalCases: 0
-- functionalCoverage: 0%
-- riskCoverage: 0%
+- 用例总数: 0
+- 功能覆盖率: 0%
+- 风险覆盖率: 0%
 
 ## 覆盖缺口
 
 <!-- 未覆盖场景与风险说明 -->
-

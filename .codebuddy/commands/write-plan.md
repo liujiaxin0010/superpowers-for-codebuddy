@@ -29,5 +29,6 @@
    - `planPath`
    - `implementationProgressPath`（预留）
    - `implementationSummaryPath`（预留）
+10. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

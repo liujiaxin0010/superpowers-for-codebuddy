@@ -27,5 +27,6 @@
    - `implementationProgressPath`
    - `implementationSummaryPath`
 8. 若质量门禁 `BLOCKED`：停止收尾并返回修复项；通过后才允许宣告完成
+9. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

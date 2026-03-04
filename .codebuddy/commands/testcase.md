@@ -19,5 +19,6 @@
 5. 生成测试用例文档：`spec/AI2AI/testcase.md`
 6. 生成覆盖分析文档：`spec/AI2AI/testcase_analysis.md`
 7. 回填 spec 追踪链接：`testcasePath`、`testcaseAnalysisPath`
+8. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

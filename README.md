@@ -284,6 +284,12 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 | 代码自检 | `/code-self-check` | `docs/quality/code-self-check-report.md` | - |
 | 质量门禁 | `check-quality.ps1/.sh` | `docs/quality/last-quality-gate.json` | 可选校验 AI2AI 文档存在性 |
 
+### 文档语言约束（新增）
+
+1. 新增/更新的 Markdown 文档内容默认使用中文。
+2. 代码、命令、路径、字段名、协议关键字可保留英文。
+3. 若需输出英文段落，需在文档中明确原因与适用范围。
+
 ### 需求分流使用说明（`/brainstorm` 与 `/spec-lite`）
 
 目标：让你在拿到需求后，快速判断“直接进规格”还是“先做头脑风暴”，并且保证下游不被门禁卡住。

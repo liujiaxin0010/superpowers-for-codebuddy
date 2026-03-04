@@ -23,5 +23,6 @@
 5. 优先使用 `diffPath`（若提供且存在），否则实时生成 diff
 6. 生成审查报告 `docs/quality/code-self-check-report.md`
 7. 若 `applyFix=true`，按确认项修复并给出验证证据
+8. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

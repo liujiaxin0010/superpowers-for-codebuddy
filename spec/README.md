@@ -1,4 +1,4 @@
-# Spec Compatibility Layer
+# 规格兼容层说明
 
 本目录用于兼容《AI特性流程开发指南》的 `spec/Me2AI + spec/AI2AI` 产物约定。
 
@@ -23,4 +23,3 @@
 | `docs/specs/*-spec-lite.md` | `spec/AI2AI/Design.md`, `spec/AI2AI/plan.md`, `spec/AI2AI/summary.md` |
 | `docs/plans/*.md` | `spec/AI2AI/plan.md`, `spec/AI2AI/IMPLEMENTATION_PROGRESS.md` |
 | `docs/quality/*.json` | `spec/AI2AI/testcase.md`, `spec/AI2AI/testcase_analysis.md` |
-
