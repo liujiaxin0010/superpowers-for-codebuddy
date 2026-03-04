@@ -28,7 +28,15 @@
 7. 计算 `recommendedTier`
 8. 若存在 `tierOverride` 但缺少 `overrideReason`，返回 `BLOCKED` 并停止
 9. 将 `GateContext` 写入规格文档
-10. 返回 `GateResult` 与下一条推荐命令：
+10. 初始化并写入“追踪链接”字段：
+   - `researchPath`
+   - `designPath`
+   - `testStrategyPath`
+   - `testcasePath`
+   - `testcaseAnalysisPath`
+   - `implementationProgressPath`
+   - `implementationSummaryPath`
+11. 返回 `GateResult` 与下一条推荐命令：
    - `L/M`：`/write-plan spec=<specPath> tier=<finalTier>`
    - `H`：`/brainstorm <需求描述>`（强制完整七阶段）
 

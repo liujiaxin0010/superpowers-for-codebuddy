@@ -9,6 +9,7 @@ PROGRESS_PATH="docs/progress.md"
 FINDINGS_PATH="docs/findings.md"
 PASS_RATE_THRESHOLD="100"
 COVERAGE_THRESHOLD="80"
+REQUIRE_AI2AI_DOCS="false"
 OUTPUT_PATH="docs/quality/last-quality-gate.json"
 
 while [[ $# -gt 0 ]]; do
@@ -25,6 +26,8 @@ while [[ $# -gt 0 ]]; do
       PASS_RATE_THRESHOLD="$2"; shift 2 ;;
     --coverage-threshold)
       COVERAGE_THRESHOLD="$2"; shift 2 ;;
+    --require-ai2ai-docs)
+      REQUIRE_AI2AI_DOCS="$2"; shift 2 ;;
     --output)
       OUTPUT_PATH="$2"; shift 2 ;;
     *)
@@ -32,6 +35,12 @@ while [[ $# -gt 0 ]]; do
       exit 2 ;;
   esac
 done
+
+REQUIRE_AI2AI_DOCS="$(printf '%s' "$REQUIRE_AI2AI_DOCS" | tr '[:upper:]' '[:lower:]')"
+if [[ "$REQUIRE_AI2AI_DOCS" != "true" && "$REQUIRE_AI2AI_DOCS" != "false" ]]; then
+  echo "参数 --require-ai2ai-docs 仅支持 true/false"
+  exit 2
+fi
 
 resolve_path() {
   local p="$1"
@@ -126,6 +135,28 @@ if [[ ! -f "$findings_abs" ]]; then
   missing+=("missing findings file: $FINDINGS_PATH")
 fi
 
+if [[ "$REQUIRE_AI2AI_DOCS" = "true" ]]; then
+  ai2ai_required=(
+    "spec/AI2AI/research.md"
+    "spec/AI2AI/Design.md"
+    "spec/AI2AI/test.md"
+    "spec/AI2AI/plan.md"
+    "spec/AI2AI/summary.md"
+    "spec/AI2AI/Architecture_Info.md"
+    "spec/AI2AI/Protocol_and_Data.md"
+    "spec/AI2AI/testcase.md"
+    "spec/AI2AI/testcase_analysis.md"
+    "spec/AI2AI/IMPLEMENTATION_PROGRESS.md"
+    "spec/AI2AI/IMPLEMENTATION_SUMMARY.md"
+  )
+  for rel in "${ai2ai_required[@]}"; do
+    abs="$(resolve_path "$rel")"
+    if [[ ! -f "$abs" ]]; then
+      missing+=("missing ai2ai file: $rel")
+    fi
+  done
+fi
+
 status="pass"
 if (( ${#missing[@]} > 0 || ${#failed[@]} > 0 )); then
   status="blocked"
@@ -155,6 +186,7 @@ cat > "$output_abs" <<JSON
   "passRateThreshold": $PASS_RATE_THRESHOLD,
   "coverage": ${coverage:-null},
   "coverageThreshold": $COVERAGE_THRESHOLD,
+  "requireAi2AiDocs": $REQUIRE_AI2AI_DOCS,
   "docSyncStatus": "$doc_sync_state",
   "missing": [${missing_json}],
   "failed": [${failed_json}]

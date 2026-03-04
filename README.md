@@ -16,6 +16,7 @@
 | 🐛 **问题单修改** | `/fix-bug` 全流程缺陷修复：问题单读取（网址/截图）→ 上下文分层读取 → 全面修改点识别 → 精准修复 → 验证 |
 | 📚 **辅助方法论文档** | 测试反模式、根因追溯、纵深防御、异步调试、说服原理——深度方法论知识库 |
 | 🧠 **文件即记忆** | 受 Manus AI 启发，用持久化文件代替上下文窗口做工作记忆，防止长任务目标偏移和错误重复 |
+| 🔁 **指南兼容流程层** | 保持 `docs/*` 主链路，同时兼容 `spec/Me2AI + spec/AI2AI` 与 `/research`、`/testcase`、`/code-self-check` 阶段命令 |
 
 ---
 
@@ -34,8 +35,8 @@
 ```
 your-project/
 ├── CODEBUDDY.md                                    # 主引导文件（铁律 + 工作流定义）
-└── .codebuddy/
-    ├── skills/                                     # 技能库（24 个，按场景调用）
+├── .codebuddy/
+    ├── skills/                                     # 技能库（27 个，按场景调用）
     │   ├── brainstorming/                          # 需求澄清与方案发散
     │   │   ├── SKILL.md                            # 头脑风暴主流程
     │   │   └── requirement-doc-template.md         # 需求预分析模板
@@ -57,6 +58,7 @@ your-project/
     │   ├── finishing-branch/SKILL.md               # 开发分支收尾流程
     │   ├── postgres-best-practices/SKILL.md        # SQL 最佳实践
     │   ├── receiving-code-review/SKILL.md          # 审查反馈处理
+    │   ├── research/SKILL.md                       # 工程研究（只读分析）
     │   ├── requesting-code-review/SKILL.md         # 发起审查流程
     │   ├── subagent-driven-development/SKILL.md    # 子代理驱动开发
     │   ├── systematic-debugging/                   # 系统化调试
@@ -64,6 +66,7 @@ your-project/
     │   │   ├── root-cause-tracing.md               # 根因追溯
     │   │   ├── defense-in-depth.md                 # 纵深防御验证
     │   │   └── condition-based-waiting.md          # 条件等待模式
+    │   ├── testcase/SKILL.md                       # 测试用例生成
     │   ├── unified-test/                           # 前后端统一单元测试
     │   │   ├── SKILL.md                            # 统一入口与路由
     │   │   ├── README.md                           # 架构与使用说明
@@ -81,6 +84,7 @@ your-project/
     │   ├── writing-skills/                         # 元技能：创建新技能
     │   │   ├── SKILL.md                            # 技能编写主流程
     │   │   └── persuasion-principles.md            # 表达与说服参考
+    │   ├── code-self-check/SKILL.md                # Git/SVN 代码自检
     │   └── xlsx/                                   # XLSX 生成能力
     │       ├── SKILL.md                            # 表格生成规范
     │       └── scripts/...                         # Office 文档处理脚本
@@ -100,23 +104,95 @@ your-project/
     │   ├── systematic-debugger.md                  # 系统化调试代理
     │   ├── task-implementer.md                     # 任务实现代理
     │   └── unified-test-agent.md                   # 前后端测试代理
-    └── commands/                                   # 斜杠命令（13 个）
+    └── commands/                                   # 斜杠命令（16 个）
         ├── brainstorm.md      → /brainstorm        # 头脑风暴
         ├── spec-lite.md       → /spec-lite         # 轻量规格与分级
         ├── code-review.md     → /code-review       # 代码审查
+        ├── code-self-check.md → /code-self-check   # 代码自检（Git/SVN）
         ├── doc-init.md        → /doc-init          # 文档初始化
         ├── doc-sync.md        → /doc-sync          # 文档同步
         ├── execute-plan.md    → /execute-plan      # 执行计划
         ├── extend.md          → /extend            # 扩展项目
         ├── fix-bug.md         → /fix-bug           # 修复问题单
+        ├── research.md        → /research          # 工程研究
         ├── simplify.md        → /simplify          # 代码简化
         ├── status.md          → /status            # 进度状态
+        ├── testcase.md        → /testcase          # 测试用例生成
         ├── test-gen.md        → /test-gen          # 测试入口（自动路由）
         ├── unified-test.md    → /unified-test      # 统一测试流程
         └── write-plan.md      → /write-plan        # 编写计划
+├── docs/                                           # 主产物目录（默认事实源）
+└── spec/                                           # 指南兼容层（Me2AI / AI2AI）
+    ├── Me2AI/
+    └── AI2AI/
 ```
 
 **架构升级**：从 `rules/` 扁平结构升级为 `skills/` 层次化结构。每个技能一个目录，Agent 可自行发现和调用。
+
+## 项目架构图与流程图（Mermaid 可渲染）
+
+### 1) 当前项目架构图
+
+```mermaid
+graph LR
+    U[用户需求] --> C[Commands 命令层]
+    C --> G[Process Gatekeeper 硬门禁]
+    G --> S[Skills 技能层]
+    S --> A[Agents 子代理层]
+    S --> R[Rules 全局规则层]
+    S --> T[Scripts 脚本层]
+
+    T --> Q[质量门禁 check-quality]
+    T --> K[门禁自检 check-gates]
+
+    S --> D[Docs 主产物层]
+    S --> X[Spec 兼容层]
+
+    D --> D1[docs/specs<br/>Spec-Lite + GateContext]
+    D --> D2[docs/plans<br/>计划与执行]
+    D --> D3[docs/quality<br/>质量与审查结果]
+    D --> D4[docs/findings + docs/progress]
+
+    X --> X1[spec/Me2AI<br/>需求描述/技术约束]
+    X --> X2[spec/AI2AI<br/>research/design/plan/testcase]
+```
+
+### 2) 当前流程图（主链路 + 指南兼容链路）
+
+```mermaid
+flowchart TD
+    A0[需求输入] --> A1[/spec-lite]
+    A1 --> A2{finalTier}
+
+    A2 -->|L/M| A3[/write-plan]
+    A2 -->|H| A4[/brainstorm]
+    A4 --> A3
+
+    A3 --> A5[/execute-plan]
+    A5 --> A6[/test-gen 或 /unified-test]
+    A6 --> A7[/code-review M/H 必需]
+    A7 --> A8[/code-self-check]
+    A8 --> A9[check-quality]
+    A9 --> A10[/status]
+
+    A1 -.可选并行.-> B1[/research]
+    A5 -.执行后.-> B2[/testcase]
+
+    B1 --> B3[回填 spec/AI2AI/research.md]
+    B2 --> B4[回填 spec/AI2AI/testcase*.md]
+
+    A9 --> C1{RequireAi2AiDocs}
+    C1 -->|false 默认| C2[仅校验 docs 质量基线]
+    C1 -->|true| C3[额外校验 spec/AI2AI 关键文档]
+```
+
+### 3) 流程治理原理
+
+1. 门禁优先：所有关键命令先过 `process-gatekeeper`，不满足前置条件直接 `BLOCKED`。
+2. 分级分流：`spec-lite` 先计算 `recommendedTier/finalTier`，再决定走 `L/M` 直达计划或 `H` 先头脑风暴。
+3. 证据闭环：执行阶段必须沉淀 `spec/plan/progress/findings/quality`，并由脚本进行可重复校验。
+4. 双层产物：`docs/*` 是主事实源，`spec/*` 是指南兼容层，通过“追踪链接”保持对应关系。
+5. 可回归验证：`check-gates` 保证门禁接线完整，`check-quality` 保证测试、覆盖率与文档同步可量化验收。
 
 ---
 
@@ -159,11 +235,14 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 | `/write-plan` | 创建实施计划 | 设计获得批准后 |
 | `/execute-plan` | 按批次执行计划 | 计划准备好后 |
 | `/extend` | 对已有项目进行功能扩展 | **在已有代码上安全新增功能** |
+| `/research` | 工程研究（只读） | **分析架构、规范、风格并沉淀到 `spec/AI2AI/research.md`** |
 | `/doc-init` | 初始化三层代码自文档体系 | **接手新项目 / 为已有项目建立文档** |
 | `/doc-sync` | 检查并同步代码与文档一致性 | **代码变更后文档可能过时** |
 | `/test-gen` | 单元测试统一入口 | **自动路由：`.vue/.go` → unified-test；其他语言 → custom-testing** |
+| `/testcase` | 生成测试用例与覆盖分析 | **基于 `Design + Architecture_Info + Protocol_and_Data` 输出测试文档** |
 | `/unified-test` | 前后端统一单元测试 | **支持 `.vue/.go` 的生成、执行、修复、覆盖率迭代** |
 | `/code-review` | 融合通用规范 + Web 专项审查 | **11 种语言五维度审查 + 前端 5 类专项扫描（Vue/JS/TS），输出 MD 报告、XLSX 缺陷表和 Web JSON 报告** |
+| `/code-self-check` | 代码自检（Git/SVN） | **自动识别仓库类型并基于 diff 生成 `docs/quality/code-self-check-report.md`** |
 | `/fix-bug` | 根据问题单修复缺陷 | **支持网址/截图/描述输入，全流程：读取问题单→上下文分层读取→修改点识别→精准修复→验证** |
 | `/simplify` | 简化代码（保持行为不变） | **针对指定路径收敛复杂度、减少冗余，逐步验证** |
 | `/status` | 查看当前任务进度 | **快速查看阶段进度、持久化文件状态、已记录错误** |
@@ -178,17 +257,32 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 |---|---|---|
 | `/brainstorm` | `/brainstorm <需求描述>` | `/brainstorm 设计一个订单告警联动功能` |
 | `/spec-lite` | `/spec-lite <需求描述> [tierOverride=L|M|H] [overrideReason=...] [explore=true|false]` | `/spec-lite 增加订单导出能力 tierOverride=M overrideReason=涉及两个模块` |
-| `/write-plan` | `/write-plan [方案摘要]` | `/write-plan 基于确认的告警联动方案出实施计划` |
-| `/execute-plan` | `/execute-plan [计划文件或范围]` | `/execute-plan docs/plans/alert-linkage-plan.md` |
+| `/write-plan` | `/write-plan spec=<path> tier=<L|M|H>` | `/write-plan spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
+| `/execute-plan` | `/execute-plan <planPath> [spec=<path>] [tier=<L|M|H>]` | `/execute-plan docs/plans/2026-03-02-order-export-plan.md spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
 | `/extend` | `/extend <功能目标与边界>` | `/extend 给订单模块增加 Excel 导出，不改现有查询逻辑` |
+| `/research` | `/research <需求或模块> [spec=<path>] [tier=<L|M|H>]` | `/research 订单导出模块 spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
 | `/doc-init` | `/doc-init [路径]` | `/doc-init src/` |
 | `/doc-sync` | `/doc-sync [路径]` | `/doc-sync src/order/` |
 | `/test-gen` | `/test-gen <源码路径> [options.goProfile=<auto/go_kit/generic_go>]` | `/test-gen internal/user/service.go options.goProfile=generic_go` |
+| `/testcase` | `/testcase target=<pathOrModule> spec=<path> plan=<path> [tier=<L|M|H>]` | `/testcase target=src/modules/order spec=docs/specs/2026-03-02-order-export-spec-lite.md plan=docs/plans/2026-03-02-order-export-plan.md tier=M` |
 | `/unified-test` | `/unified-test targetFile=<路径> mode=<full/generate/execute/coverage> [testFile=<路径>] [options.goProfile=<auto/go_kit/generic_go>]` | `/unified-test targetFile=src/components/UserList.vue mode=full` |
 | `/code-review` | `/code-review [路径或模块]` | `/code-review src/modules/user` |
+| `/code-self-check` | `/code-self-check [vcs=auto|git|svn] [diffPath=<path>] [applyFix=true|false]` | `/code-self-check vcs=auto applyFix=false` |
 | `/fix-bug` | `/fix-bug <问题单URL/截图说明/问题描述> [关联文件]` | `/fix-bug 用户详情页点击保存无响应，关联文件 src/user/UserDetail.vue` |
 | `/simplify` | `/simplify [路径或模块]` | `/simplify src/modules/order` |
 | `/status` | `/status` | `/status` |
+
+### 指南流程兼容映射（`docs` 主、`spec` 辅）
+
+| 指南阶段 | 本仓库命令 | 主产物（docs） | 兼容产物（spec/AI2AI） |
+|---|---|---|---|
+| 工程研究 | `/research` | `docs/specs/*` 追踪链接回填 | `research.md` |
+| 方案分析 | `/brainstorm` + `/spec-lite` | `docs/specs/*-spec-lite.md` | `Design.md`, `test.md` |
+| 编写计划 | `/write-plan` | `docs/plans/*.md` | `plan.md`, `summary.md` |
+| 执行编码 | `/execute-plan` | `docs/progress.md`, `docs/findings.md` | `IMPLEMENTATION_PROGRESS.md`, `IMPLEMENTATION_SUMMARY.md`, `Architecture_Info.md`, `Protocol_and_Data.md` |
+| 测试用例 | `/testcase` | `docs/specs/*` 追踪链接回填 | `testcase.md`, `testcase_analysis.md` |
+| 代码自检 | `/code-self-check` | `docs/quality/code-self-check-report.md` | - |
+| 质量门禁 | `check-quality.ps1/.sh` | `docs/quality/last-quality-gate.json` | 可选校验 AI2AI 文档存在性 |
 
 ### 需求分流使用说明（`/brainstorm` 与 `/spec-lite`）
 
@@ -1527,6 +1621,92 @@ paths: "src/api/**/*.ts"
 这里写你的规则内容...
 ```
 
+### Q: 后续如何扩展新的 Agent / Skill / Rule？
+
+建议按以下顺序落地：`Skill -> Command -> Agent -> Rule -> 门禁接入 -> 回归验证`。
+
+#### 1) 新增 Skill（能力定义）
+
+目录约定：
+
+```text
+.codebuddy/skills/<your-skill>/
+├── SKILL.md
+├── templates/           # 可选：模板
+├── scripts/             # 可选：脚本
+└── references/          # 可选：参考资料
+```
+
+`SKILL.md` 最小建议包含：
+- 触发场景（什么时候必须用）
+- 输入参数（必填/可选）
+- 输出产物（文件路径/结构）
+- 执行步骤（顺序化）
+- 阻断条件（什么情况下 `BLOCKED`）
+
+#### 2) 新增 Command（入口编排）
+
+在 `.codebuddy/commands/<your-command>.md` 增加命令入口，建议结构：
+
+1. 先读哪些 Skill
+2. 参数解析
+3. 门禁检查（如适用）
+4. 主体执行
+5. 输出与下一步 `nextCommand`
+
+如果命令属于主链路（计划/执行/测试/审查），建议接入 `process-gatekeeper`。
+
+#### 3) 新增 Agent（专职执行者）
+
+在 `.codebuddy/agents/<your-agent>.md` 定义：
+- Agent 职责边界（做什么，不做什么）
+- 输入上下文与输出格式
+- 调用时机（由哪个命令/技能触发）
+- 质量要求（测试、审查、文档、日志约束）
+
+#### 4) 新增 Rule（全局或路径规则）
+
+在 `.codebuddy/rules/<your-rule>.md` 添加规则：
+
+```markdown
+---
+alwaysApply: false
+paths: "src/**"
+---
+
+# 规则标题
+
+规则内容...
+```
+
+选择策略：
+- 全局强制：`alwaysApply: true`
+- 定向生效：`paths` 限定目录/文件
+
+#### 5) 接入流程治理（推荐）
+
+若新能力影响主流程，需同步修改：
+
+1. `spec-lite`（是否增加澄清字段）
+2. `gate-matrix`（是否新增门禁要求）
+3. `write-plan/execute-plan/status`（是否展示新状态）
+4. `README` 与 `CODEBUDDY.md`（命令与流程说明）
+
+#### 6) 回归验证清单（上线前）
+
+```powershell
+# 检查门禁接入完整性
+powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-gates.ps1
+
+# 检查质量门禁
+powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1
+```
+
+建议补充：
+- 至少 1 个 L/M 场景 + 1 个 H 场景试运行记录
+- 更新 `docs/findings.md` 与 `docs/progress.md`
+- 如有日志改动，遵循 `.codebuddy/rules/logging-conventions.md`
+
 ---
 
 ## 许可证
@@ -1540,7 +1720,7 @@ paths: "src/api/**/*.ts"
 
 1. 新的默认入口命令：`/spec-lite`
 2. 新增硬门禁技能：`.codebuddy/skills/process-gatekeeper/SKILL.md`
-3. 强制接入门禁的命令：`/write-plan`、`/execute-plan`、`/test-gen`、`/unified-test`、`/code-review`、`/extend`、`/status`、`/brainstorm`
+3. 强制接入门禁的命令：`/write-plan`、`/execute-plan`、`/test-gen`、`/unified-test`、`/code-review`、`/extend`、`/status`、`/brainstorm`、`/research`、`/testcase`、`/code-self-check`
 4. 新增产物：
    - `docs/specs/YYYY-MM-DD-<name>-spec-lite.md`
    - `GateContext`
@@ -1551,6 +1731,8 @@ paths: "src/api/**/*.ts"
    - `.codebuddy/skills/process-gatekeeper/scripts/check-quality.sh`
 7. 新增 3 个需求试运行记录：`docs/quality/trials/`
 8. 新增全局日志规则：`.codebuddy/rules/logging-conventions.md`
+9. 质量门禁脚本支持可选参数 `RequireAi2AiDocs`（默认 `false`）
+10. 新增指南映射文档：`docs/ai-feature-flow-mapping.md`
 
 新命令格式：
 
@@ -1559,3 +1741,7 @@ paths: "src/api/**/*.ts"
 质量门禁示例：
 
 `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`
+
+启用 AI2AI 文档校验：
+
+`powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1 -RequireAi2AiDocs:$true`

@@ -22,5 +22,12 @@
 5. 若 `GateResult.status=blocked`：输出阻断报告并停止
 6. 若通过：生成 `docs/plans/YYYY-MM-DD-<功能名称>.md`
 7. 在计划中写入元信息：`specPath`、`finalTier`、`gateStatus`
+8. 同步兼容产物：
+   - `spec/AI2AI/plan.md`
+   - `spec/AI2AI/summary.md`
+9. 回填 spec 追踪链接：
+   - `planPath`
+   - `implementationProgressPath`（预留）
+   - `implementationSummaryPath`（预留）
 
 $ARGUMENTS

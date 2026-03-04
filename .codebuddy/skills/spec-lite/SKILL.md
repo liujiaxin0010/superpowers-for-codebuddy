@@ -78,6 +78,18 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 4. nextCommand
 5. message
 
+## 追踪链接扩展字段
+
+在 spec 文档“追踪链接”中补充以下兼容字段：
+
+1. `researchPath`
+2. `designPath`
+3. `testStrategyPath`
+4. `testcasePath`
+5. `testcaseAnalysisPath`
+6. `implementationProgressPath`
+7. `implementationSummaryPath`
+
 ## 评分规则
 
 - 变更文件数：`<=2:+0, 3-6:+1, >=7:+2`

@@ -46,7 +46,10 @@
 - "修复这个 bug" → 先 systematic-debugging，再领域特定技能
 - "处理问题单" → 使用 bug-fix 方法论，/fix-bug 命令全流程修复
 - "给项目加个功能" → 先 extending-project 工作流
+- "先研究工程再设计" → 使用 research（只读分析，沉淀 research.md）
 - "前后端单元测试（.vue/.go）" → 使用 unified-test（可直接 `/unified-test`，或通过 `/test-gen` 自动路由）
+- "生成系统测试用例" → 使用 testcase（基于 Design/Architecture/Protocol 输出）
+- "提交前自检修改代码" → 使用 code-self-check（自动识别 Git/SVN）
 - 2 个以上独立任务 → 评估 dispatching-parallel-agents
 - 涉及 SQL → 参考 postgres-best-practices
 - 长时间编码后 → 使用 code-simplifier 简化清理
@@ -64,7 +67,7 @@
 
 ```
 .codebuddy/
-├── skills/                                     ← 技能库（24 个，按场景调用）
+├── skills/                                     ← 技能库（27 个，按场景调用）
 │   ├── brainstorming/                          ← 需求澄清与方案发散
 │   │   ├── SKILL.md                            ← 头脑风暴主流程
 │   │   └── requirement-doc-template.md         ← 需求预分析模板
@@ -85,14 +88,24 @@
 │   │   └── scripts/...                         ← 会话恢复与完成检查脚本
 │   ├── finishing-branch/SKILL.md               ← 开发分支收尾流程
 │   ├── postgres-best-practices/SKILL.md        ← SQL 最佳实践
+│   ├── process-gatekeeper/                     ← 流程治理硬门禁
+│   │   ├── SKILL.md                            ← 门禁主流程
+│   │   ├── gate-matrix.md                      ← 分级门禁矩阵
+│   │   ├── templates/...                       ← PASS/BLOCKED 报告模板
+│   │   └── scripts/...                         ← 门禁检查与质量检查脚本
 │   ├── receiving-code-review/SKILL.md          ← 审查反馈处理
+│   ├── research/SKILL.md                       ← 工程研究（只读分析）
 │   ├── requesting-code-review/SKILL.md         ← 发起审查流程
+│   ├── spec-lite/                              ← 轻量规格与分级策略
+│   │   ├── SKILL.md                            ← 规格生成与分级流程
+│   │   └── template.md                         ← spec-lite 模板
 │   ├── subagent-driven-development/SKILL.md    ← 子代理驱动开发
 │   ├── systematic-debugging/                   ← 系统化调试
 │   │   ├── SKILL.md                            ← 调试主流程
 │   │   ├── root-cause-tracing.md               ← 根因追溯
 │   │   ├── defense-in-depth.md                 ← 纵深防御验证
 │   │   └── condition-based-waiting.md          ← 条件等待模式
+│   ├── testcase/SKILL.md                       ← 测试用例生成
 │   ├── unified-test/                           ← 前后端统一单元测试
 │   │   ├── SKILL.md                            ← 统一入口与路由
 │   │   ├── README.md                           ← 架构与使用说明
@@ -110,6 +123,7 @@
 │   ├── writing-skills/                         ← 元技能：创建新技能
 │   │   ├── SKILL.md                            ← 技能编写主流程
 │   │   └── persuasion-principles.md            ← 表达与说服参考
+│   ├── code-self-check/SKILL.md                ← Git/SVN 代码自检
 │   └── xlsx/                                   ← XLSX 生成能力
 │       ├── SKILL.md                            ← 表格生成规范
 │       └── scripts/...                         ← Office 文档处理脚本
@@ -129,17 +143,20 @@
 │   ├── systematic-debugger.md                  ← 系统化调试代理
 │   ├── task-implementer.md                     ← 任务实现代理
 │   └── unified-test-agent.md                   ← 前后端测试代理
-└── commands/                                   ← 斜杠命令入口（13 个）
+└── commands/                                   ← 斜杠命令入口（16 个）
     ├── brainstorm.md      → /brainstorm        ← 头脑风暴
     ├── spec-lite.md       → /spec-lite         ← 轻量规格与分级
     ├── code-review.md     → /code-review       ← 代码审查
+    ├── code-self-check.md → /code-self-check   ← 代码自检（Git/SVN）
     ├── doc-init.md        → /doc-init          ← 文档初始化
     ├── doc-sync.md        → /doc-sync          ← 文档同步
     ├── execute-plan.md    → /execute-plan      ← 执行计划
     ├── extend.md          → /extend            ← 扩展项目
     ├── fix-bug.md         → /fix-bug           ← 修复问题单
+    ├── research.md        → /research          ← 工程研究
     ├── simplify.md        → /simplify          ← 代码简化
     ├── status.md          → /status            ← 进度状态
+    ├── testcase.md        → /testcase          ← 测试用例生成
     ├── test-gen.md        → /test-gen          ← 测试入口（自动路由）
     ├── unified-test.md    → /unified-test      ← 统一测试流程
     └── write-plan.md      → /write-plan        ← 编写计划
@@ -217,14 +234,31 @@ Git 项目可使用 **worktree 隔离开发**（详见 `using-git-worktrees` 技
 | `/write-plan` | 创建实施计划 |
 | `/execute-plan` | 按批次执行计划 |
 | `/extend` | 对已有项目进行功能扩展 |
+| `/research` | 工程研究（只读），输出 `spec/AI2AI/research.md` |
 | `/doc-init` | 为项目初始化三层代码自文档体系 |
 | `/doc-sync` | 重新分析代码，修正并同步文档体系 |
 | `/test-gen` | 单元测试统一入口：`.vue/.go` 自动路由 unified-test，其它语言按 custom-testing 生成 |
+| `/testcase` | 基于 AI2AI 设计文档生成测试用例与覆盖分析 |
 | `/unified-test` | 前后端统一单元测试流程（支持 `.vue/.go` 的生成、执行、修复、覆盖率迭代） |
+| `/code-self-check` | Git/SVN 双模式代码自检，输出 `docs/quality/code-self-check-report.md` |
 | `/simplify` | 简化代码（保持功能不变） |
 | `/code-review` | 融合通用编码规范审查 + Web 前端专项审查（前端文件自动启用），输出 MD 报告、XLSX 缺陷表和 Web JSON 报告 |
 | `/fix-bug` | 根据问题单（网址/截图/描述）定位并修复代码缺陷 |
 | `/status` | 查看当前任务进度、持久化文件状态 |
+
+## 指南兼容流程（docs 主、spec 辅）
+
+1. 主事实源保持 `docs/*`
+2. 指南兼容层使用 `spec/Me2AI + spec/AI2AI`
+3. 通过 `docs/specs/*-spec-lite.md` 的“追踪链接”关联两套产物
+
+阶段映射：
+
+1. 研究阶段：`/research` → `spec/AI2AI/research.md`
+2. 方案阶段：`/brainstorm + /spec-lite` → `spec/AI2AI/Design.md`、`spec/AI2AI/test.md`
+3. 计划阶段：`/write-plan` → `spec/AI2AI/plan.md`、`spec/AI2AI/summary.md`
+4. 执行阶段：`/execute-plan` → `spec/AI2AI/IMPLEMENTATION_PROGRESS.md`、`spec/AI2AI/IMPLEMENTATION_SUMMARY.md`
+5. 用例阶段：`/testcase` → `spec/AI2AI/testcase.md`、`spec/AI2AI/testcase_analysis.md`
 
 ## 自定义测试方法论
 
@@ -243,6 +277,64 @@ Boss 可以在 `.codebuddy/skills/custom-testing/SKILL.md` 中定义项目专属
 你可以使用 `writing-skills` 元技能创建新技能。新技能遵循**技能 TDD**：先观察无技能时的失败行为 → 编写技能解决失败 → 用对抗性压力测试封堵漏洞。
 
 
+## 后续扩展 Agent / Skill / Rule（落地指南）
+
+建议按以下顺序落地：`Skill -> Command -> Agent -> Rule -> 门禁接入 -> 回归验证`。
+
+### 1) 新增 Skill（能力定义）
+
+- 目录：`.codebuddy/skills/<your-skill>/`
+- 最小结构：`SKILL.md`，可选 `templates/`、`scripts/`、`references/`
+- `SKILL.md` 建议最少包含：触发场景、输入参数、输出产物、执行步骤、阻断条件（`BLOCKED`）
+
+### 2) 新增 Command（入口编排）
+
+- 文件：`.codebuddy/commands/<your-command>.md`
+- 建议结构：读取技能 -> 参数解析 -> 门禁检查 -> 主体执行 -> 输出与 `nextCommand`
+- 若命令属于主链路（计划/执行/测试/审查），必须接入 `process-gatekeeper`
+
+### 3) 新增 Agent（专职执行者）
+
+- 文件：`.codebuddy/agents/<your-agent>.md`
+- 需定义：职责边界、输入上下文、输出格式、触发时机、质量约束（测试/审查/文档/日志）
+
+### 4) 新增 Rule（全局或路径规则）
+
+- 文件：`.codebuddy/rules/<your-rule>.md`
+- 规则 frontmatter 示例：
+
+```markdown
+---
+alwaysApply: false
+paths: "src/**"
+---
+```
+
+- 选择策略：全局强制用 `alwaysApply: true`；定向生效使用 `paths`
+
+### 5) 接入流程治理（推荐）
+
+若新增能力会影响主流程，请同步检查：
+
+1. `spec-lite`：是否需要新增澄清字段或 GateContext 字段
+2. `gate-matrix`：是否需要新增必填门禁项
+3. `write-plan/execute-plan/status`：是否展示新增状态与阻断原因
+4. 文档同步：更新 `README.md` 与 `CODEBUDDY.md`
+
+### 6) 回归验证（上线前）
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-gates.ps1
+powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1
+```
+
+建议同时补充：
+
+1. 至少 1 个 L/M 场景 + 1 个 H 场景试运行记录
+2. 更新 `docs/findings.md` 与 `docs/progress.md`
+3. 有日志改动时，遵循 `.codebuddy/rules/logging-conventions.md`
+
+
 ## 流程治理硬门禁更新（2026-03-02）
 
 当前默认编排流程：
@@ -252,9 +344,11 @@ Boss 可以在 `.codebuddy/skills/custom-testing/SKILL.md` 中定义项目专属
 3. L/M 路线：`/write-plan -> /execute-plan -> /test-gen|/unified-test`
 4. H 路线：`/brainstorm（完整 7 阶段） -> /write-plan -> /execute-plan -> /test-gen|/unified-test`
 5. M/H 级任务必须执行 `/code-review`
-6. 发布前执行质量门禁脚本：`check-quality.ps1/.sh`（通过率、覆盖率、文档同步）
-7. 试运行记录沉淀在：`docs/quality/trials/`
-8. 编码阶段启用全局日志规则：`.codebuddy/rules/logging-conventions.md`
+6. 指南兼容阶段支持：`/research`、`/testcase`、`/code-self-check`
+7. 发布前执行质量门禁脚本：`check-quality.ps1/.sh`（通过率、覆盖率、文档同步）
+8. 质量门禁支持可选参数：`RequireAi2AiDocs=true|false`（默认 `false`）
+9. 试运行记录沉淀在：`docs/quality/trials/`
+10. 编码阶段启用全局日志规则：`.codebuddy/rules/logging-conventions.md`
 
 硬门禁契约：
 

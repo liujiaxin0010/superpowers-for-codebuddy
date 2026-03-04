@@ -5,6 +5,7 @@ param(
   [string]$FindingsPath = 'docs/findings.md',
   [double]$PassRateThreshold = 100,
   [double]$CoverageThreshold = 80,
+  [bool]$RequireAi2AiDocs = $false,
   [string]$OutputPath = 'docs/quality/last-quality-gate.json'
 )
 
@@ -116,6 +117,29 @@ if (-not (Test-Path $findingsAbsPath)) {
   $missing += "missing findings file: $FindingsPath"
 }
 
+if ($RequireAi2AiDocs) {
+  $ai2aiRequired = @(
+    'spec/AI2AI/research.md',
+    'spec/AI2AI/Design.md',
+    'spec/AI2AI/test.md',
+    'spec/AI2AI/plan.md',
+    'spec/AI2AI/summary.md',
+    'spec/AI2AI/Architecture_Info.md',
+    'spec/AI2AI/Protocol_and_Data.md',
+    'spec/AI2AI/testcase.md',
+    'spec/AI2AI/testcase_analysis.md',
+    'spec/AI2AI/IMPLEMENTATION_PROGRESS.md',
+    'spec/AI2AI/IMPLEMENTATION_SUMMARY.md'
+  )
+
+  foreach ($rel in $ai2aiRequired) {
+    $abs = Resolve-TargetPath $rel
+    if (-not (Test-Path $abs)) {
+      $missing += "missing ai2ai file: $rel"
+    }
+  }
+}
+
 $status = if (($missing.Count -gt 0) -or ($failed.Count -gt 0)) { 'blocked' } else { 'pass' }
 $checkedAt = (Get-Date).ToString('yyyy-MM-ddTHH:mm:ssK')
 
@@ -126,6 +150,7 @@ $output = [ordered]@{
   passRateThreshold = $PassRateThreshold
   coverage = if ($null -eq $coverage) { $null } else { [Math]::Round([double]$coverage, 2) }
   coverageThreshold = $CoverageThreshold
+  requireAi2AiDocs = $RequireAi2AiDocs
   docSyncStatus = $docSyncState
   missing = $missing
   failed = $failed

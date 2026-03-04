@@ -17,5 +17,11 @@
 3. 若 `finalTier=L/M`，可按需执行完整流程
 4. 在可维护性设计中明确日志方案（沿用结构或新项目框架选型、English only、禁控制台）
 5. 输出需求预分析文档，并与后续计划执行链路关联
+6. 同步兼容文档：
+   - `spec/AI2AI/Design.md`
+   - `spec/AI2AI/test.md`
+7. 若提供 `spec=<path>`，回填追踪链接：
+   - `designPath: spec/AI2AI/Design.md`
+   - `testStrategyPath: spec/AI2AI/test.md`
 
 $ARGUMENTS
