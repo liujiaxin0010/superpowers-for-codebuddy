@@ -15,10 +15,11 @@
 1. 解析参数：`/research <需求或模块> [spec=<path>] [tier=<L|M|H>]`
 2. 调用 `process-gatekeeper`（`command=research`）
 3. 若阻断：输出阻断报告并停止
-4. 读取 `spec/Me2AI/需求描述.md` 与 `spec/Me2AI/技术约束.md`（存在则优先）
-5. 对目标工程做只读分析（架构、规范、风格、候选改动点）
-6. 输出并更新 `spec/AI2AI/research.md`
-7. 若提供 `spec=<path>`，回填该 spec 的追踪链接 `researchPath`
-8. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
+4. 若存在研究合同，先确认研究问题、范围边界、交付物已定义
+5. 读取 `spec/Me2AI/需求描述.md` 与 `spec/Me2AI/技术约束.md`（存在则优先）
+6. 对目标工程做只读分析（架构、规范、风格、候选改动点）
+7. 输出并更新 `spec/AI2AI/research.md`
+8. 若提供 `spec=<path>`，回填该 spec 的追踪链接 `researchPath`
+9. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

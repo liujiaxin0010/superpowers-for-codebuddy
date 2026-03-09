@@ -1,4 +1,4 @@
-请阅读 `.codebuddy/skills/code-documentation/SKILL.md` 并严格遵循其中的代码自文档体系。
+请阅读 `.codebuddy/rules/code-documentation.md` 并严格遵循其中的代码自文档体系。
 
 **务必遵守三条铁律：**
 1. 每次回复先称呼 "Boss"

@@ -1,6 +1,6 @@
-# 超能力开发工作流
+# devflow-ai 开发工作流
 
-你拥有超能力。你配备了一套完整的、**强制执行**的软件开发方法论体系——不是建议，不是参考，而是**必须遵循的工作流纪律**。这套系统通过可组合的技能（Skills）、专业子代理（Agents）和自动化命令（Commands），覆盖了从需求讨论到代码合并的完整开发生命周期。
+`devflow-ai` 是一个源自 Superpowers 方法论、面向 CodeBuddy / 终端代理 / 代码助手的 AI 开发流程引擎。它不是建议集，而是**强制执行**的软件开发工作流纪律：通过可组合的技能（Skills）、专业子代理（Agents）和自动化命令（Commands），覆盖从需求澄清到代码合并的完整生命周期。
 
 ---
 
@@ -67,7 +67,7 @@
 
 ```
 .codebuddy/
-├── skills/                                     ← 技能库（27 个，按场景调用）
+├── skills/                                     ← 技能库（31 个，按场景调用）
 │   ├── brainstorming/                          ← 需求澄清与方案发散
 │   │   ├── SKILL.md                            ← 头脑风暴主流程
 │   │   └── requirement-doc-template.md         ← 需求预分析模板
@@ -80,6 +80,9 @@
 │   ├── code-simplifier/SKILL.md                ← 代码复杂度收敛
 │   ├── custom-testing/SKILL.md                 ← 自定义测试规则
 │   ├── dispatching-parallel-agents/SKILL.md    ← 并行子代理调度
+│   ├── devflow-router/                         ← 单入口总控路由
+│   │   ├── SKILL.md                            ← 路由主流程
+│   │   └── references/...                      ← 路由矩阵与导入清单
 │   ├── executing-plans/SKILL.md                ← 批次计划执行
 │   ├── extending-project/SKILL.md              ← 现有项目扩展
 │   ├── file-based-memory/                      ← 持久化任务记忆
@@ -87,6 +90,12 @@
 │   │   ├── templates/...                       ← findings/progress 模板
 │   │   └── scripts/...                         ← 会话恢复与完成检查脚本
 │   ├── finishing-branch/SKILL.md               ← 开发分支收尾流程
+│   ├── issue-draft-pr/                         ← 工单到 Draft PR 工作流
+│   │   ├── SKILL.md                            ← 工单交付主流程
+│   │   └── references/...                      ← Draft PR 证据清单
+│   ├── parallel-delivery/                      ← 多 lane 并行交付
+│   │   ├── SKILL.md                            ← 并行交付主流程
+│   │   └── references/...                      ← lane 检查清单
 │   ├── postgres-best-practices/SKILL.md        ← SQL 最佳实践
 │   ├── process-gatekeeper/                     ← 流程治理硬门禁
 │   │   ├── SKILL.md                            ← 门禁主流程
@@ -106,6 +115,9 @@
 │   │   ├── defense-in-depth.md                 ← 纵深防御验证
 │   │   └── condition-based-waiting.md          ← 条件等待模式
 │   ├── testcase/SKILL.md                       ← 测试用例生成
+│   ├── task-contracts/                         ← 统一任务合同层
+│   │   ├── SKILL.md                            ← 合同生成与压缩
+│   │   └── references/...                      ← 任务类型与压缩清单
 │   ├── unified-test/                           ← 前后端统一单元测试
 │   │   ├── SKILL.md                            ← 统一入口与路由
 │   │   ├── README.md                           ← 架构与使用说明
@@ -134,8 +146,9 @@
 │   ├── project-reading.md                      ← 项目阅读规则
 │   ├── test-driven-development.md              ← TDD 规则
 │   └── verification-before-completion.md       ← 完成前验证规则
-├── agents/                                     ← 专业子代理（8 个）
+├── agents/                                     ← 专业子代理（9 个）
 │   ├── bug-fixer.md                            ← 问题单修复代理
+│   ├── devflow-ai.md                           ← devflow-ai 总控代理
 │   ├── code-reviewer.md                        ← 代码质量审查代理
 │   ├── code-simplifier.md                      ← 代码简化代理
 │   ├── project-analyzer.md                     ← 项目结构分析代理
@@ -143,16 +156,19 @@
 │   ├── systematic-debugger.md                  ← 系统化调试代理
 │   ├── task-implementer.md                     ← 任务实现代理
 │   └── unified-test-agent.md                   ← 前后端测试代理
-└── commands/                                   ← 斜杠命令入口（16 个）
+└── commands/                                   ← 斜杠命令入口（19 个）
     ├── brainstorm.md      → /brainstorm        ← 头脑风暴
     ├── spec-lite.md       → /spec-lite         ← 轻量规格与分级
     ├── code-review.md     → /code-review       ← 代码审查
     ├── code-self-check.md → /code-self-check   ← 代码自检（Git/SVN）
     ├── doc-init.md        → /doc-init          ← 文档初始化
     ├── doc-sync.md        → /doc-sync          ← 文档同步
+    ├── devflow-ai.md      → /devflow-ai        ← 单入口总控命令
     ├── execute-plan.md    → /execute-plan      ← 执行计划
     ├── extend.md          → /extend            ← 扩展项目
     ├── fix-bug.md         → /fix-bug           ← 修复问题单
+    ├── issue-draft-pr.md  → /issue-draft-pr    ← 工单到 Draft PR
+    ├── parallel-delivery.md → /parallel-delivery ← 并行交付编排
     ├── research.md        → /research          ← 工程研究
     ├── simplify.md        → /simplify          ← 代码简化
     ├── status.md          → /status            ← 进度状态
@@ -168,7 +184,7 @@
 
 - **测试驱动开发 (TDD)** — 永远先写测试。代码先于测试被写出，则**删除代码重来**
 - **证据优于声明** — `Evidence before claims, always.` 没有运行验证就声称完成，等同于不诚实
-- **先理解再行动** — 修改代码前必须先理解项目结构（project-reading 技能）
+- **先理解再行动** — 修改代码前必须先理解项目结构（`project-reading` 规则）
 - **系统化优于随意** — 流程优于猜测
 - **降低复杂性** — 简洁是首要目标（code-simplifier 技能）
 - **YAGNI（你不会需要它）** — 不要过度设计
@@ -207,24 +223,72 @@ ls -la .svn 2>/dev/null && echo "SVN 项目" || echo "非 SVN"
 
 Git 项目可使用 **worktree 隔离开发**（详见 `using-git-worktrees` 技能）。
 
-## 标准工作流（新建项目 / 新功能从零开始）
+## 任务分类与默认入口
 
-1. **项目理解** — 使用 project-reading 技能建立对项目的全局理解
-2. **头脑风暴** — 在写代码之前激活。通过提问细化模糊想法，七阶段信息收集，生成需求预分析文档
-3. **创建分支** — 设计批准后激活。创建功能分支
-4. **编写计划** — 将工作拆分为小任务（每个2-5分钟）
-5. **执行计划** — 子代理驱动开发或批次执行，独立任务 ≥2 个时评估并行分发
-6. **测试驱动开发** — 始终生效。强制执行红-绿-重构循环
-7. **两阶段审查** — spec-reviewer → code-reviewer
-8. **代码简化** — 长时间编码后用 code-simplifier 清理
-9. **完成分支** — 验证测试，合并回主干
+收到任务后，先完成任务分类，再决定入口命令与合同模板：
 
-## 扩展工作流（在已有项目上增加功能）
+| 任务类型 | 默认入口 | 合同模板 | 默认工作流 |
+|---|---|---|---|
+| `new-feature` | `/spec-lite` | `.codebuddy/templates/task-contracts/new-feature.md` | `spec-first` |
+| `bugfix` | `/fix-bug` | `.codebuddy/templates/task-contracts/bugfix.md` | `bugfix` |
+| `refactor` | `/write-plan` | `.codebuddy/templates/task-contracts/refactor.md` | `minimal-refactor` |
+| `test` | `/test-gen` / `/unified-test` | `.codebuddy/templates/task-contracts/test.md` | `test-first` |
+| `research` | `/research` | `.codebuddy/templates/task-contracts/research.md` | `research-only` |
+| `review-pr` | `/code-review` | `.codebuddy/templates/task-contracts/review-pr.md` | `review-pr` |
+| `issue-draft-pr` | `/issue-draft-pr` | `.codebuddy/templates/task-contracts/issue-draft-pr.md` | `issue-draft-pr` |
+| `parallel-delivery` | `/parallel-delivery` | `.codebuddy/templates/task-contracts/parallel-delivery.md` | `parallel-delivery` |
 
-1. **项目理解** — 使用 project-reading + project-analyzer 深度分析
-2. **影响评估** — 评估新功能对现有代码的影响
-3. **扩展设计** — 高内聚、低耦合
-4. **编写计划** → **执行计划** → **回归测试**
+若用户没有明确说明，默认按 `new-feature` 处理。
+
+## 默认工作流
+
+### Workflow 1：新功能 `spec-first`
+
+1. `/spec-lite`：定义目标、非目标、边界、验收、TaskContract
+2. `/write-plan`：把规格压缩成执行计划与执行合同摘要
+3. `/execute-plan`：按批次实现并持续保留证据
+4. `/test-gen` 或 `/unified-test`：验证主路径、边界条件、覆盖缺口
+5. `/code-review`：核对越界、证据、风险、owner
+6. `check-quality.ps1/.sh`：完成质量门禁收尾
+
+### Workflow 2：已知缺陷 `bugfix`
+
+1. `/fix-bug`：读取问题单或问题描述
+2. 生成 bugfix contract：复现条件、允许修改范围、验证方式
+3. 根因定位：不先改代码，先找最直接原因
+4. 最小修复：只改关闭缺陷所需范围
+5. 最小复现关闭 + 相关回归：输出证据而不是只给结论
+
+### Workflow 3：长任务 `parallel-delivery`
+
+1. `/parallel-delivery`：读取计划并检查能否拆成并行组
+2. `dispatching-parallel-agents`：对子任务并行分发
+3. `using-git-worktrees`：Git 项目做目录隔离
+4. owner 合流：统一 review、统一整体验证、统一质量门禁
+
+## Prompt Contract 与流程模板
+
+- 合同模板目录：`.codebuddy/templates/task-contracts/`
+- Prompt Contract 指南：`docs/workflows/prompt-contracts.md`
+- 任务工作流目录：`docs/workflows/workflow-catalog.md`
+- 维护类任务流程：`docs/workflows/bugfix-refactor-test-workflows.md`
+- 实操手册：`docs/playbooks/workflow-playbook.md`
+- 单入口导入说明：`docs/integration/devflow-ai-entry.md`
+
+## 单入口模式
+
+如果你不想记住所有命令，直接使用：
+
+```text
+/devflow-ai <你的需求>
+```
+
+它会先做任务分类，再自动路由到正确工作流。
+
+补充规则：如果需求本身仍然模糊，`/devflow-ai` 会先判断是 `must-brainstorm` 还是 `should-brainstorm`：
+
+- `must-brainstorm`：直接进入 `/brainstorm`
+- `should-brainstorm`：默认推荐 `/brainstorm`，边界足够时可退到 `/spec-lite`
 
 ## 可用命令
 
@@ -232,6 +296,7 @@ Git 项目可使用 **worktree 隔离开发**（详见 `using-git-worktrees` 技
 |---|---|
 | `/brainstorm` | 启动头脑风暴流程 |
 | `/spec-lite` | 轻量规格 + L/M/H 分级（新需求默认入口） |
+| `/devflow-ai` | devflow-ai 单入口总控命令：自动识别任务类型并路由到正确工作流 |
 | `/write-plan` | 创建实施计划 |
 | `/execute-plan` | 按批次执行计划 |
 | `/extend` | 对已有项目进行功能扩展 |
@@ -245,6 +310,8 @@ Git 项目可使用 **worktree 隔离开发**（详见 `using-git-worktrees` 技
 | `/simplify` | 简化代码（保持功能不变） |
 | `/code-review` | 融合通用编码规范审查 + Web 前端专项审查（前端文件自动启用），输出 MD 报告、XLSX 缺陷表和 Web JSON 报告 |
 | `/fix-bug` | 根据问题单（网址/截图/描述）定位并修复代码缺陷 |
+| `/issue-draft-pr` | 从 issue/Jira 输入生成 draft PR 交付链路，默认不直接合并 |
+| `/parallel-delivery` | 将长任务拆成多 lane 并行交付，并明确合流 owner 与验证 |
 | `/status` | 查看当前任务进度、持久化文件状态 |
 
 ## 指南兼容流程（docs 主、spec 辅）

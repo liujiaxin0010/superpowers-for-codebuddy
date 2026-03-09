@@ -23,6 +23,7 @@ description: 在硬门禁前置条件下编写实施计划。
 
 ```yaml
 specPath: docs/specs/...
+taskType: new-feature|bugfix|refactor|test|research|review-pr|issue-draft-pr|parallel-delivery
 finalTier: L|M|H
 gateStatus: pass
 ```
@@ -39,6 +40,7 @@ gateStatus: pass
    - 旧项目：复用原有日志结构
    - 新项目：落实已选日志框架与字段规范
    - 验证无中文日志、无控制台输出残留（除非用户要求）
+8. 计划必须包含合同摘要：目标、允许修改、禁止修改、验证命令、交付证据、人工确认点、owner
 
 ## 分级附加要求
 

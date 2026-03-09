@@ -16,6 +16,11 @@
    - 是否沿用项目日志结构与字段
    - 是否存在中文日志内容
    - 是否残留控制台输出（console/print/System.out/fmt.Print）
-6. 输出 `code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
+6. 输出时额外声明：
+   - 证据是否完整
+   - 是否存在越界修改
+   - 未声明风险
+   - merge / handoff owner
+7. 输出 `code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
 
 $ARGUMENTS

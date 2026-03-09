@@ -18,12 +18,14 @@ description: 在硬门禁检查下按批次执行已批准计划。
 ## 批次执行规则
 
 1. 加载 spec + plan 上下文
-2. 按依赖顺序执行任务
-3. 严格遵循 TDD：RED -> GREEN -> REFACTOR
-4. 每项任务完成后提供证据
-5. 持续更新 `docs/progress.md` 与 `docs/findings.md`
-6. 完成前运行质量门禁脚本（check-quality），未通过不得收尾
-7. 涉及日志改动时必须：
+2. 加载 TaskContract / 合同摘要
+3. 按依赖顺序执行任务
+4. 严格遵循 TDD：RED -> GREEN -> REFACTOR
+5. 每项任务完成后提供证据
+6. 持续更新 `docs/progress.md` 与 `docs/findings.md`
+7. 完成前运行质量门禁脚本（check-quality），未通过不得收尾
+8. 输出收尾时必须声明：剩余风险、owner、handoff 建议
+9. 涉及日志改动时必须：
    - 复用项目日志结构（或落实新项目已选框架）
    - 保持日志英文
    - 不使用控制台输出（除非用户明确要求）

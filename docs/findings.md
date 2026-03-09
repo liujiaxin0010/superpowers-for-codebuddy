@@ -12,3 +12,14 @@
 - [命令扩展] 新增 `/research`、`/testcase`、`/code-self-check` 别名命令与对应技能。
 - [门禁扩展] `gate-matrix` 与 `check-gates` 纳入新增命令接线校验。
 - [质量门禁] `check-quality.ps1/.sh` 新增可选参数 `RequireAi2AiDocs`（默认 `false`）。
+
+## 2026-03-09
+
+- [流程合同化] 新增 `.codebuddy/templates/task-contracts/`，引入 `new-feature / bugfix / refactor / test / research / review-pr / issue-draft-pr / parallel-delivery` 八类任务合同模板。
+- [门禁升级] `spec-lite`、`write-plan`、`execute-plan`、`fix-bug`、`test-gen`、`unified-test`、`code-review`、`status` 接入 TaskContract 视角。
+- [文档整合] 新增 `docs/workflows/*` 与 `docs/playbooks/workflow-playbook.md`，吸收 `website` 仓库中的 Prompt Contract 与 workflow 模式。
+- [项目更名] 将项目对外名称统一为 `devflow-ai`，保留对上游 `Superpowers` 的来源说明。
+- [命令落地] 新增 `/issue-draft-pr` 与 `/parallel-delivery` 斜杠命令，并接入主文档、门禁矩阵与命令清单。
+- [技能体系] 新增 `task-contracts`、`issue-draft-pr`、`parallel-delivery` 三个 SKILL 目录，让新工作流在技能层可复用、可组合、可维护。
+- [单入口封装] 新增 `devflow-router` 技能、`devflow-ai` 总控代理与 `/devflow-ai` 单命令入口，支持其他项目按“一入口”导入使用。
+- [路由增强] `/devflow-ai` 将模糊需求细分为 `must-brainstorm / should-brainstorm` 两档，避免在边界未收敛时直接进入规格或实现。

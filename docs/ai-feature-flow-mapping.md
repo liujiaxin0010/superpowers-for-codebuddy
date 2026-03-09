@@ -1,8 +1,21 @@
-# AI 特性流程映射（指南兼容层）
+# devflow-ai 特性流程映射（指南兼容层）
 
 ## 目标
 
 将《AI特性流程开发指南》的阶段流程映射到当前仓库命令体系，保持 `docs/*` 主流程不变。
+
+## 任务类型映射
+
+| 任务类型 | 默认入口 / 组合入口 | 合同模板 | 关键证据 |
+|---|---|---|---|
+| `new-feature` | `/spec-lite -> /write-plan -> /execute-plan` | `.codebuddy/templates/task-contracts/new-feature.md` | 验收命令 + review 结论 |
+| `bugfix` | `/fix-bug` | `.codebuddy/templates/task-contracts/bugfix.md` | 根因 + 最小复现关闭 + 回归 |
+| `refactor` | `/write-plan -> /execute-plan -> /simplify` | `.codebuddy/templates/task-contracts/refactor.md` | 行为不变证据 |
+| `test` | `/test-gen` / `/unified-test` | `.codebuddy/templates/task-contracts/test.md` | 测试输出 + 覆盖缺口 |
+| `research` | `/research` | `.codebuddy/templates/task-contracts/research.md` | 结论 + 备选方案 |
+| `review-pr` | `/code-review` + `/code-self-check` | `.codebuddy/templates/task-contracts/review-pr.md` | 证据完整性 + 风险声明 |
+| `issue-draft-pr` | 组合链路 | `.codebuddy/templates/task-contracts/issue-draft-pr.md` | 工单映射 + draft PR 说明 |
+| `parallel-delivery` | `/write-plan + dispatching-parallel-agents + using-git-worktrees` | `.codebuddy/templates/task-contracts/parallel-delivery.md` | 每 lane 证据 + 合流验证 |
 
 ## 目录策略
 

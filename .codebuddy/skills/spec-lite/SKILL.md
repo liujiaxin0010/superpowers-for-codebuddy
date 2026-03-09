@@ -17,6 +17,32 @@ description: 轻量规格生成，自动给出 L/M/H 分级建议并输出门禁
 
 `/spec-lite <需求描述> [tierOverride=L|M|H] [overrideReason=...] [explore=true|false]`
 
+## 任务分类（新增）
+
+在生成 spec 之前，先将任务归类为以下之一：
+
+1. `new-feature`
+2. `bugfix`
+3. `refactor`
+4. `test`
+5. `research`
+6. `review-pr`
+7. `issue-draft-pr`
+8. `parallel-delivery`
+
+若用户未明确说明，默认按 `new-feature` 处理。
+
+同时给出推荐 workflow：
+
+- `new-feature` -> `spec-first`
+- `bugfix` -> `bugfix`
+- `refactor` -> `minimal-refactor`
+- `test` -> `test-first`
+- `research` -> `research-only`
+- `review-pr` -> `review-pr`
+- `issue-draft-pr` -> `issue-draft-pr`
+- `parallel-delivery` -> `parallel-delivery`
+
 ## 通用需求澄清与方向确认（硬门禁）
 
 在生成 spec 前，必须先确认以下信息：
@@ -61,14 +87,32 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 ## GateContext 字段
 
 1. taskId
-2. recommendedTier
-3. finalTier
-4. overrideReason
-5. specPath
-6. planPath
-7. requiredChecks
-8. completedChecks
-9. gateStatus (`pass|blocked`)
+2. taskType
+3. workflow
+4. recommendedTier
+5. finalTier
+6. overrideReason
+7. specPath
+8. planPath
+9. requiredChecks
+10. completedChecks
+11. gateStatus (`pass|blocked`)
+
+## TaskContract 字段
+
+1. templatePath
+2. taskType
+3. objective
+4. background
+5. editablePaths
+6. forbiddenPaths
+7. relatedFiles
+8. verificationCommands
+9. deliverables
+10. evidence
+11. humanCheckpoints
+12. owner
+13. outOfScopeHandling
 
 ## GateResult 字段
 
@@ -116,13 +160,16 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 ## 执行流程
 
 1. 读取 `template.md`
-2. 执行通用需求澄清，补齐所有必填项
-3. 输出 2-3 个实现方向并获取用户确认
-4. 若存在缺失项或方向未确认，直接阻断并返回补充问题清单
-5. 填写目标、范围外、接口/数据影响、澄清结论、方向确认记录、风险、验收、回滚
-6. 计算评分并得到 `recommendedTier`
-7. 应用覆盖策略并得到 `finalTier`
-8. 写入规格文档与 `GateContext`
-9. 返回 `GateResult`：
+2. 先进行任务分类，确定 `taskType` 与 `workflow`
+3. 执行通用需求澄清，补齐所有必填项
+4. 输出 2-3 个实现方向并获取用户确认
+5. 若存在缺失项或方向未确认，直接阻断并返回补充问题清单
+6. 填写目标、范围外、接口/数据影响、澄清结论、方向确认记录、风险、验收、回滚
+7. 结合任务类型，从 `.codebuddy/templates/task-contracts/` 选择对应模板并生成 `TaskContract`
+8. 将合同压缩为 agent 可执行的最小字段：目标、边界、验证、证据、owner、超边界处理
+9. 计算评分并得到 `recommendedTier`
+10. 应用覆盖策略并得到 `finalTier`
+11. 写入规格文档与 `GateContext`、`TaskContract`
+12. 返回 `GateResult`：
    - `H` -> 下一步 `/brainstorm <需求描述>`
    - `L/M` -> 下一步 `/write-plan spec=<specPath> tier=<finalTier>`

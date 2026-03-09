@@ -1,8 +1,8 @@
-# Superpowers → CodeBuddy 转换项目
+# devflow-ai
 
-本项目将 [obra/superpowers](https://github.com/obra/superpowers) 的核心功能转换为腾讯 CodeBuddy（IDE 和 CLI）可直接使用的格式，所有文档内容均为中文。
+`devflow-ai` 是一个源自 [obra/superpowers](https://github.com/obra/superpowers) 方法论、面向 CodeBuddy 与终端代理的 AI 开发流程引擎。当前仓库在原有转换基础上，加入了 Prompt Contract、任务工作流目录、硬门禁与证据化收尾机制，所有文档内容均为中文。
 
-## 相比原版 Superpowers 的增强
+## 相比上游 Superpowers 的增强
 
 | 增强项 | 说明 |
 |---|---|
@@ -14,9 +14,18 @@
 | 🧪 **前后端统一单元测试** | `/test-gen` 自动路由：`.vue/.go` 走 unified-test（生成+执行+修复+覆盖率），其他语言走 custom-testing |
 | 📋 **编码规范审查** | 内置 11 种语言编码规范 + 10 种语言审查清单，并融合 Web 前端专项审查，`/code-review` 输出 MD + XLSX + Web JSON 报告 |
 | 🐛 **问题单修改** | `/fix-bug` 全流程缺陷修复：问题单读取（网址/截图）→ 上下文分层读取 → 全面修改点识别 → 精准修复 → 验证 |
+| 📄 **Prompt Contract 合同层** | 新增统一任务合同模板，固化目标、边界、验证、证据、owner 与超边界处理 |
+| 🧭 **任务工作流目录** | 将 `new feature / bugfix / refactor / test / research / review-pr / issue-draft-pr / parallel-delivery` 固化为默认流程 |
 | 📚 **辅助方法论文档** | 测试反模式、根因追溯、纵深防御、异步调试、说服原理——深度方法论知识库 |
 | 🧠 **文件即记忆** | 受 Manus AI 启发，用持久化文件代替上下文窗口做工作记忆，防止长任务目标偏移和错误重复 |
 | 🔁 **指南兼容流程层** | 保持 `docs/*` 主链路，同时兼容 `spec/Me2AI + spec/AI2AI` 与 `/research`、`/testcase`、`/code-self-check` 阶段命令 |
+
+## 新增流程文档
+
+- `docs/workflows/prompt-contracts.md`
+- `docs/workflows/workflow-catalog.md`
+- `docs/workflows/bugfix-refactor-test-workflows.md`
+- `docs/playbooks/workflow-playbook.md`
 
 ---
 
@@ -36,7 +45,7 @@
 your-project/
 ├── CODEBUDDY.md                                    # 主引导文件（铁律 + 工作流定义）
 ├── .codebuddy/
-    ├── skills/                                     # 技能库（27 个，按场景调用）
+    ├── skills/                                     # 技能库（31 个，按场景调用）
     │   ├── brainstorming/                          # 需求澄清与方案发散
     │   │   ├── SKILL.md                            # 头脑风暴主流程
     │   │   └── requirement-doc-template.md         # 需求预分析模板
@@ -49,6 +58,9 @@ your-project/
     │   ├── code-simplifier/SKILL.md                # 代码复杂度收敛
     │   ├── custom-testing/SKILL.md                 # 自定义测试规则
     │   ├── dispatching-parallel-agents/SKILL.md    # 并行子代理调度
+    │   ├── devflow-router/                         # 单入口总控路由
+    │   │   ├── SKILL.md                            # 路由主流程
+    │   │   └── references/...                      # 路由矩阵与导入清单
     │   ├── executing-plans/SKILL.md                # 批次计划执行
     │   ├── extending-project/SKILL.md              # 现有项目扩展
     │   ├── file-based-memory/                      # 持久化任务记忆
@@ -56,6 +68,12 @@ your-project/
     │   │   ├── templates/...                       # findings/progress 模板
     │   │   └── scripts/...                         # 会话恢复与完成检查脚本
     │   ├── finishing-branch/SKILL.md               # 开发分支收尾流程
+    │   ├── issue-draft-pr/                         # 工单到 Draft PR 工作流
+    │   │   ├── SKILL.md                            # 工单交付主流程
+    │   │   └── references/...                      # Draft PR 证据清单
+    │   ├── parallel-delivery/                      # 多 lane 并行交付
+    │   │   ├── SKILL.md                            # 并行交付主流程
+    │   │   └── references/...                      # lane 检查清单
     │   ├── postgres-best-practices/SKILL.md        # SQL 最佳实践
     │   ├── receiving-code-review/SKILL.md          # 审查反馈处理
     │   ├── research/SKILL.md                       # 工程研究（只读分析）
@@ -67,6 +85,9 @@ your-project/
     │   │   ├── defense-in-depth.md                 # 纵深防御验证
     │   │   └── condition-based-waiting.md          # 条件等待模式
     │   ├── testcase/SKILL.md                       # 测试用例生成
+    │   ├── task-contracts/                         # 统一任务合同层
+    │   │   ├── SKILL.md                            # 合同生成与压缩
+    │   │   └── references/...                      # 任务类型与压缩清单
     │   ├── unified-test/                           # 前后端统一单元测试
     │   │   ├── SKILL.md                            # 统一入口与路由
     │   │   ├── README.md                           # 架构与使用说明
@@ -95,8 +116,9 @@ your-project/
     │   ├── project-reading.md                      # 项目阅读规则
     │   ├── test-driven-development.md              # TDD 规则
     │   └── verification-before-completion.md       # 完成前验证规则
-    ├── agents/                                     # 专业子代理（8 个）
+    ├── agents/                                     # 专业子代理（9 个）
     │   ├── bug-fixer.md                            # 问题单修复代理
+    │   ├── devflow-ai.md                           # devflow-ai 总控代理
     │   ├── code-reviewer.md                        # 代码质量审查代理
     │   ├── code-simplifier.md                      # 代码简化代理
     │   ├── project-analyzer.md                     # 项目结构分析代理
@@ -104,9 +126,10 @@ your-project/
     │   ├── systematic-debugger.md                  # 系统化调试代理
     │   ├── task-implementer.md                     # 任务实现代理
     │   └── unified-test-agent.md                   # 前后端测试代理
-    └── commands/                                   # 斜杠命令（16 个）
+    └── commands/                                   # 斜杠命令（19 个）
         ├── brainstorm.md      → /brainstorm        # 头脑风暴
         ├── spec-lite.md       → /spec-lite         # 轻量规格与分级
+        ├── devflow-ai.md      → /devflow-ai        # 单入口总控命令
         ├── code-review.md     → /code-review       # 代码审查
         ├── code-self-check.md → /code-self-check   # 代码自检（Git/SVN）
         ├── doc-init.md        → /doc-init          # 文档初始化
@@ -114,6 +137,8 @@ your-project/
         ├── execute-plan.md    → /execute-plan      # 执行计划
         ├── extend.md          → /extend            # 扩展项目
         ├── fix-bug.md         → /fix-bug           # 修复问题单
+        ├── issue-draft-pr.md  → /issue-draft-pr    # 工单到 Draft PR
+        ├── parallel-delivery.md → /parallel-delivery # 并行交付编排
         ├── research.md        → /research          # 工程研究
         ├── simplify.md        → /simplify          # 代码简化
         ├── status.md          → /status            # 进度状态
@@ -232,6 +257,7 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 |---|---|---|
 | `/brainstorm` | 启动头脑风暴设计 | 新建项目或新功能从零开始 |
 | `/spec-lite` | 轻量规格 + L/M/H 分级 | 新需求默认入口 |
+| `/devflow-ai` | 单入口总控命令 | **只记一个入口，自动识别任务类型并路由到正确工作流** |
 | `/write-plan` | 创建实施计划 | 设计获得批准后 |
 | `/execute-plan` | 按批次执行计划 | 计划准备好后 |
 | `/extend` | 对已有项目进行功能扩展 | **在已有代码上安全新增功能** |
@@ -244,6 +270,8 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 | `/code-review` | 融合通用规范 + Web 专项审查 | **11 种语言五维度审查 + 前端 5 类专项扫描（Vue/JS/TS），输出 MD 报告、XLSX 缺陷表和 Web JSON 报告** |
 | `/code-self-check` | 代码自检（Git/SVN） | **自动识别仓库类型并基于 diff 生成 `docs/quality/code-self-check-report.md`** |
 | `/fix-bug` | 根据问题单修复缺陷 | **支持网址/截图/描述输入，全流程：读取问题单→上下文分层读取→修改点识别→精准修复→验证** |
+| `/issue-draft-pr` | 工单到 Draft PR | **将 issue/Jira 输入压缩成合同、规格、计划与 draft PR 说明，默认不直接合并** |
+| `/parallel-delivery` | 并行交付编排 | **将长任务拆成多个 lane，明确每 lane 边界、验证命令与最终合流 owner** |
 | `/simplify` | 简化代码（保持行为不变） | **针对指定路径收敛复杂度、减少冗余，逐步验证** |
 | `/status` | 查看当前任务进度 | **快速查看阶段进度、持久化文件状态、已记录错误** |
 
@@ -257,13 +285,16 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 |---|---|---|
 | `/brainstorm` | `/brainstorm <需求描述>` | `/brainstorm 设计一个订单告警联动功能` |
 | `/spec-lite` | `/spec-lite <需求描述> [tierOverride=L|M|H] [overrideReason=...] [explore=true|false]` | `/spec-lite 增加订单导出能力 tierOverride=M overrideReason=涉及两个模块` |
+| `/devflow-ai` | `/devflow-ai <需求或工单或问题描述>` | `/devflow-ai 帮我给订单模块增加导出能力并准备 review` |
 | `/write-plan` | `/write-plan spec=<path> tier=<L|M|H>` | `/write-plan spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
 | `/execute-plan` | `/execute-plan <planPath> [spec=<path>] [tier=<L|M|H>]` | `/execute-plan docs/plans/2026-03-02-order-export-plan.md spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
 | `/extend` | `/extend <功能目标与边界>` | `/extend 给订单模块增加 Excel 导出，不改现有查询逻辑` |
 | `/research` | `/research <需求或模块> [spec=<path>] [tier=<L|M|H>]` | `/research 订单导出模块 spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
+| `/issue-draft-pr` | `/issue-draft-pr <issueLink> [spec=<path>] [plan=<path>] [tier=<L|M|H>] [owner=<name>]` | `/issue-draft-pr https://jira.local/browse/OPS-102 spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M owner=alice` |
 | `/doc-init` | `/doc-init [路径]` | `/doc-init src/` |
 | `/doc-sync` | `/doc-sync [路径]` | `/doc-sync src/order/` |
 | `/test-gen` | `/test-gen <源码路径> [options.goProfile=<auto/go_kit/generic_go>]` | `/test-gen internal/user/service.go options.goProfile=generic_go` |
+| `/parallel-delivery` | `/parallel-delivery spec=<path> plan=<path> [tier=<L|M|H>] [owner=<name>]` | `/parallel-delivery spec=docs/specs/2026-03-02-order-export-spec-lite.md plan=docs/plans/2026-03-02-order-export-plan.md tier=M owner=alice` |
 | `/testcase` | `/testcase target=<pathOrModule> spec=<path> plan=<path> [tier=<L|M|H>]` | `/testcase target=src/modules/order spec=docs/specs/2026-03-02-order-export-spec-lite.md plan=docs/plans/2026-03-02-order-export-plan.md tier=M` |
 | `/unified-test` | `/unified-test targetFile=<路径> mode=<full/generate/execute/coverage> [testFile=<路径>] [options.goProfile=<auto/go_kit/generic_go>]` | `/unified-test targetFile=src/components/UserList.vue mode=full` |
 | `/code-review` | `/code-review [路径或模块]` | `/code-review src/modules/user` |
@@ -677,7 +708,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 
 ## 结构映射对照
 
-| Superpowers 原始 | CodeBuddy 转换 |
+| 上游 Superpowers | devflow-ai / CodeBuddy 实现 |
 |---|---|
 | `skills/using-superpowers/SKILL.md` | `CODEBUDDY.md` |
 | `skills/brainstorming/SKILL.md` | `.codebuddy/skills/brainstorming/SKILL.md` |
@@ -1717,7 +1748,7 @@ powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/sc
 
 ## 许可证
 
-原始 Superpowers 项目使用 MIT 许可证。
+上游 `obra/superpowers` 项目使用 MIT 许可证。
 
 
 ## 流程治理硬门禁更新（2026-03-02）
@@ -1751,3 +1782,4 @@ powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/sc
 启用 AI2AI 文档校验：
 
 `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1 -RequireAi2AiDocs:$true`
+补充：如果需求边界不清，`/devflow-ai` 会先判断是 `must-brainstorm` 还是 `should-brainstorm`，再决定是否优先走 `/brainstorm`。

@@ -85,6 +85,8 @@
 ```yaml
 GateContext:
   taskId: ""
+  taskType: "new-feature|bugfix|refactor|test|research|review-pr|issue-draft-pr|parallel-delivery"
+  workflow: "spec-first|bugfix|minimal-refactor|test-first|research-only|review-pr|issue-draft-pr|parallel-delivery"
   recommendedTier: "L|M|H"
   finalTier: "L|M|H"
   overrideReason: ""
@@ -111,7 +113,26 @@ GateResult:
   message: ""
 ```
 
-## 12. 追踪链接
+## 12. TaskContract
+
+```yaml
+TaskContract:
+  templatePath: ".codebuddy/templates/task-contracts/new-feature.md"
+  taskType: "new-feature"
+  objective: ""
+  background: ""
+  editablePaths: []
+  forbiddenPaths: []
+  relatedFiles: []
+  verificationCommands: []
+  deliverables: []
+  evidence: []
+  humanCheckpoints: []
+  owner: ""
+  outOfScopeHandling: "超边界时先停止并回退上游规格/人工确认"
+```
+
+## 13. 追踪链接
 
 - researchPath: <研究阶段回填>
 - brainstormPath: <H 级任务必填>

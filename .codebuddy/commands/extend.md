@@ -1,7 +1,7 @@
 请按以下顺序阅读并严格遵循：
 1. `.codebuddy/skills/process-gatekeeper/SKILL.md`（流程硬门禁）
 2. `.codebuddy/skills/extending-project/SKILL.md`（项目扩展工作流）
-3. `.codebuddy/skills/project-reading/SKILL.md`（项目阅读）
+3. `.codebuddy/rules/project-reading.md`（项目阅读）
 
 **务必遵守三条铁律：**
 1. 每次回复第一句话必须称呼 "Boss"

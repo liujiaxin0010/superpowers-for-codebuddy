@@ -1,6 +1,6 @@
 请阅读以下技能并严格遵循：
-1. `.codebuddy/skills/code-documentation/SKILL.md`（三层代码自文档体系）
-2. `.codebuddy/skills/project-reading/SKILL.md`（项目阅读与理解）
+1. `.codebuddy/rules/code-documentation.md`（三层代码自文档体系）
+2. `.codebuddy/rules/project-reading.md`（项目阅读与理解）
 
 **务必遵守三条铁律：**
 1. 每次回复先称呼 "Boss"
