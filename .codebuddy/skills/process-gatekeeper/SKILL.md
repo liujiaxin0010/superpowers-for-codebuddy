@@ -12,7 +12,7 @@ description: 命令执行前置项的硬性流程门禁。
 ## 输入
 
 ```yaml
-command: "write-plan|execute-plan|test-gen|unified-test|code-review|extend|brainstorm|status|research|testcase|code-self-check|fix-bug|issue-draft-pr|parallel-delivery|devflow-ai"
+command: "write-plan|execute-plan|test-gen|unified-test|code-review|extend|brainstorm|status|research|testcase|code-self-check|fix-bug|issue-draft-pr|parallel-delivery|Featureflow"
 tier: "L|M|H"
 spec: "docs/specs/..."
 plan: "docs/plans/..."
@@ -140,9 +140,9 @@ GateResult:
 
 若子任务共享核心文件或依赖关系未拆清，应阻断并回退到 `/write-plan`。
 
-### devflow-ai 入口约束（新增）
+### Featureflow 入口约束（新增）
 
-`devflow-ai` 是路由入口，不直接承担深层实现；进入主体前必须先完成：
+`Featureflow` 是路由入口，不直接承担深层实现；进入主体前必须先完成：
 
 1. 任务类型识别
 2. 推荐命令决策

@@ -1,4 +1,4 @@
-# devflow-ai 工作流实操手册
+# Featureflow 工作流实操手册
 
 这份 playbook 负责把 `website` 中抽象出来的 workflow 模式，映射到当前仓库可执行的命令体系。
 

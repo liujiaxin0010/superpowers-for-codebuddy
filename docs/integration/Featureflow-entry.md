@@ -1,9 +1,9 @@
-# devflow-ai 单入口封装
+# Featureflow 单入口封装
 
 如果你想把当前项目作为“一个总 agent + 一个入口命令”导入到其他项目，推荐使用：
 
-- 总控 agent：`.codebuddy/agents/devflow-ai.md`
-- 单入口命令：`.codebuddy/commands/devflow-ai.md`
+- 总控 agent：`.codebuddy/agents/Featureflow.md`
+- 单入口命令：`.codebuddy/commands/Featureflow.md`
 - 总控 skill：`.codebuddy/skills/devflow-router/SKILL.md`
 
 ## 使用方式
@@ -15,7 +15,7 @@
 然后只使用一个入口：
 
 ```text
-/devflow-ai <你的需求>
+/Featureflow <你的需求>
 ```
 
 ### 方式 2：最小导入
@@ -23,8 +23,8 @@
 至少复制以下目录和文件：
 
 1. `CODEBUDDY.md`
-2. `.codebuddy/commands/devflow-ai.md`
-3. `.codebuddy/agents/devflow-ai.md`
+2. `.codebuddy/commands/Featureflow.md`
+3. `.codebuddy/agents/Featureflow.md`
 4. `.codebuddy/skills/devflow-router/`
 5. `.codebuddy/skills/task-contracts/`
 6. `.codebuddy/skills/process-gatekeeper/`

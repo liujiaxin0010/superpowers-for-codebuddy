@@ -1,6 +1,6 @@
-# devflow-ai Task Contracts
+# Featureflow Task Contracts
 
-任务合同（Task Contract）是 `devflow-ai` 的统一任务边界层。
+任务合同（Task Contract）是 `Featureflow` 的统一任务边界层。
 
 它的作用不是把 prompt 写长，而是把任务写成可复用、可验证、可审查的执行合同，连接：
 

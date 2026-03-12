@@ -1,6 +1,6 @@
 # Prompt Contracts
 
-`devflow-ai` 把 prompt contract 视为任务的最小执行合同，而不是对话补充说明。
+`Featureflow` 把 prompt contract 视为任务的最小执行合同，而不是对话补充说明。
 
 它至少回答 5 个问题：
 

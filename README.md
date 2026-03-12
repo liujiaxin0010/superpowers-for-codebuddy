@@ -1,6 +1,6 @@
-# devflow-ai
+# Featureflow
 
-`devflow-ai` 是一个源自 [obra/superpowers](https://github.com/obra/superpowers) 方法论、面向 CodeBuddy 与终端代理的 AI 开发流程引擎。当前仓库在原有转换基础上，加入了 Prompt Contract、任务工作流目录、硬门禁与证据化收尾机制，所有文档内容均为中文。
+`Featureflow` 是一个源自 [obra/superpowers](https://github.com/obra/superpowers) 方法论、面向 CodeBuddy 与终端代理的 AI 开发流程引擎。当前仓库在原有转换基础上，加入了 Prompt Contract、任务工作流目录、硬门禁与证据化收尾机制，所有文档内容均为中文。
 
 ## 相比上游 Superpowers 的增强
 
@@ -109,7 +109,7 @@ your-project/
     │   └── xlsx/                                   # XLSX 生成能力
     │       ├── SKILL.md                            # 表格生成规范
     │       └── scripts/...                         # Office 文档处理脚本
-    ├── rules/                                      # 始终生效规则（6 个）
+    ├── rules/                                      # 规则目录（6 个：核心 3 个常驻，其余按需加载）
     │   ├── code-documentation.md                   # 三层代码自文档
     │   ├── file-based-memory.md                    # 文件记忆规则
     │   ├── logging-conventions.md                  # 日志规范（统一结构/英文日志/禁控制台）
@@ -118,7 +118,7 @@ your-project/
     │   └── verification-before-completion.md       # 完成前验证规则
     ├── agents/                                     # 专业子代理（9 个）
     │   ├── bug-fixer.md                            # 问题单修复代理
-    │   ├── devflow-ai.md                           # devflow-ai 总控代理
+    │   ├── Featureflow.md                           # Featureflow 总控代理
     │   ├── code-reviewer.md                        # 代码质量审查代理
     │   ├── code-simplifier.md                      # 代码简化代理
     │   ├── project-analyzer.md                     # 项目结构分析代理
@@ -129,7 +129,7 @@ your-project/
     └── commands/                                   # 斜杠命令（19 个）
         ├── brainstorm.md      → /brainstorm        # 头脑风暴
         ├── spec-lite.md       → /spec-lite         # 轻量规格与分级
-        ├── devflow-ai.md      → /devflow-ai        # 单入口总控命令
+        ├── Featureflow.md      → /Featureflow        # 单入口总控命令
         ├── code-review.md     → /code-review       # 代码审查
         ├── code-self-check.md → /code-self-check   # 代码自检（Git/SVN）
         ├── doc-init.md        → /doc-init          # 文档初始化
@@ -257,7 +257,7 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 |---|---|---|
 | `/brainstorm` | 启动头脑风暴设计 | 新建项目或新功能从零开始 |
 | `/spec-lite` | 轻量规格 + L/M/H 分级 | 新需求默认入口 |
-| `/devflow-ai` | 单入口总控命令 | **只记一个入口，自动识别任务类型并路由到正确工作流** |
+| `/Featureflow` | 单入口总控命令 | **只记一个入口，自动识别任务类型并路由到正确工作流** |
 | `/write-plan` | 创建实施计划 | 设计获得批准后 |
 | `/execute-plan` | 按批次执行计划 | 计划准备好后 |
 | `/extend` | 对已有项目进行功能扩展 | **在已有代码上安全新增功能** |
@@ -285,7 +285,7 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 |---|---|---|
 | `/brainstorm` | `/brainstorm <需求描述>` | `/brainstorm 设计一个订单告警联动功能` |
 | `/spec-lite` | `/spec-lite <需求描述> [tierOverride=L|M|H] [overrideReason=...] [explore=true|false]` | `/spec-lite 增加订单导出能力 tierOverride=M overrideReason=涉及两个模块` |
-| `/devflow-ai` | `/devflow-ai <需求或工单或问题描述>` | `/devflow-ai 帮我给订单模块增加导出能力并准备 review` |
+| `/Featureflow` | `/Featureflow <需求或工单或问题描述>` | `/Featureflow 帮我给订单模块增加导出能力并准备 review` |
 | `/write-plan` | `/write-plan spec=<path> tier=<L|M|H>` | `/write-plan spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
 | `/execute-plan` | `/execute-plan <planPath> [spec=<path>] [tier=<L|M|H>]` | `/execute-plan docs/plans/2026-03-02-order-export-plan.md spec=docs/specs/2026-03-02-order-export-spec-lite.md tier=M` |
 | `/extend` | `/extend <功能目标与边界>` | `/extend 给订单模块增加 Excel 导出，不改现有查询逻辑` |
@@ -595,6 +595,11 @@ Go 项目可手动强制 profile（用于识别不准时）：
 7. 📊 **生成 XLSX 缺陷汇总表**（`code-review-report.xlsx`，含下拉数据验证）
 8. 🧾 **若触发前端专项，额外输出 JSON 报告**（`web-code-review-report.json`）
 
+执行边界（强制）：
+- `/code-review` 阶段默认只读，先输出“问题清单 + 风险 + 修复建议”。
+- 未经 Boss 明确确认，不得在审查阶段直接修改代码。
+- 进入修复时，需转到执行命令（如 `/execute-plan`、`/fix-bug` 或 `/code-self-check applyFix=true`）。
+
 输出的 XLSX 表头：评审人员、描述、位置、模块、缺陷严重程度、缺陷来源、缺陷类型、缺陷子类型、缺陷界定。
 
 ### `/doc-init` 和 `/doc-sync` 命令详解 — 三层代码自文档体系
@@ -700,21 +705,21 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 
 | 类型 | YAML 配置 | 行为 | 本项目中的应用 |
 |---|---|---|---|
-| 始终生效 | `alwaysApply: true` | 每次会话自动注入 | TDD、完成前验证、**代码自文档** |
+| 始终生效 | `alwaysApply: true` | 每次会话自动注入 | 完成前验证、文件记忆、日志规范 |
 | 条件触发 | `alwaysApply: false` + `paths` | 操作匹配文件时触发 | 头脑风暴、代码审查 |
-| 手动引用 | `alwaysApply: false` 无 paths | 通过 `@规则名` 或命令触发 | 分支管理、完成分支 |
+| 手动引用 | `alwaysApply: false` 无 paths | 通过 `@规则名` 或命令触发 | 项目阅读、TDD、代码自文档 |
 
 ---
 
 ## 结构映射对照
 
-| 上游 Superpowers | devflow-ai / CodeBuddy 实现 |
+| 上游 Superpowers | Featureflow / CodeBuddy 实现 |
 |---|---|
 | `skills/using-superpowers/SKILL.md` | `CODEBUDDY.md` |
 | `skills/brainstorming/SKILL.md` | `.codebuddy/skills/brainstorming/SKILL.md` |
 | `skills/writing-plans/SKILL.md` | `.codebuddy/skills/writing-plans/SKILL.md` |
 | `skills/executing-plans/SKILL.md` | `.codebuddy/skills/executing-plans/SKILL.md` |
-| `skills/test-driven-development/SKILL.md` | `.codebuddy/rules/test-driven-development.md`（始终生效） |
+| `skills/test-driven-development/SKILL.md` | `.codebuddy/rules/test-driven-development.md`（按需加载） |
 | `skills/verification-before-completion/SKILL.md` | `.codebuddy/rules/verification-before-completion.md`（始终生效） |
 | `skills/systematic-debugging/SKILL.md` | `.codebuddy/skills/systematic-debugging/SKILL.md` + `.codebuddy/agents/systematic-debugger.md` |
 | `skills/requesting-code-review/SKILL.md` | `.codebuddy/skills/requesting-code-review/SKILL.md` |
@@ -725,8 +730,8 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 | *（新增）* | `.codebuddy/skills/extending-project/SKILL.md` |
 | *（新增）* | `.codebuddy/agents/project-analyzer.md` |
 | *（新增）* | `.codebuddy/commands/extend.md` |
-| *（新增）* | `.codebuddy/rules/code-documentation.md`（三层代码自文档，始终生效） |
-| *（新增）* | `.codebuddy/rules/project-reading.md`（项目阅读与理解，始终生效） |
+| *（新增）* | `.codebuddy/rules/code-documentation.md`（三层代码自文档，按需加载） |
+| *（新增）* | `.codebuddy/rules/project-reading.md`（项目阅读与理解，按需加载） |
 | *（新增）* | `.codebuddy/commands/doc-init.md`（/doc-init 命令） |
 | *（新增）* | `.codebuddy/commands/doc-sync.md`（/doc-sync 命令） |
 | *（新增）* | `.codebuddy/skills/brainstorming/requirement-doc-template.md`（需求预分析模板） |
@@ -1617,11 +1622,11 @@ AI: Boss，已添加。开始生成测试代码...
 
 ### Q: 规则太多，AI 会不会上下文过载？
 
-不会。只有 `alwaysApply: true` 的规则（TDD、完成前验证、代码自文档）会始终加载。其他规则按需触发或通过命令激活。
+不会。只有 `alwaysApply: true` 的规则（完成前验证、文件记忆、日志规范）会始终加载。项目阅读、TDD、代码自文档改为按需加载。
 
 ### Q: 可以只用部分规则吗？
 
-可以。删掉不需要的 `.md` 文件即可。核心推荐保留：`CODEBUDDY.md` + `test-driven-development.md` + `verification-before-completion.md` + `code-documentation.md` + `extending-project/SKILL.md`。
+可以。删掉不需要的 `.md` 文件即可。核心推荐保留：`CODEBUDDY.md` + `verification-before-completion.md` + `file-based-memory.md` + `logging-conventions.md` + `extending-project/SKILL.md`。
 
 ### Q: 三条铁律能关掉吗？
 
@@ -1782,4 +1787,4 @@ powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/sc
 启用 AI2AI 文档校验：
 
 `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1 -RequireAi2AiDocs:$true`
-补充：如果需求边界不清，`/devflow-ai` 会先判断是 `must-brainstorm` 还是 `should-brainstorm`，再决定是否优先走 `/brainstorm`。
+补充：如果需求边界不清，`/Featureflow` 会先判断是 `must-brainstorm` 还是 `should-brainstorm`，再决定是否优先走 `/brainstorm`。

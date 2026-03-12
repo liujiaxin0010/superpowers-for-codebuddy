@@ -1,9 +1,9 @@
 ---
 name: devflow-router
-description: devflow-ai 总控路由技能。用于把任意开发请求统一收口到一个入口，自动识别任务类型、判断前置条件，并路由到 spec-lite、fix-bug、research、test、review、issue-draft-pr 或 parallel-delivery 等工作流。
+description: Featureflow 总控路由技能。用于把任意开发请求统一收口到一个入口，自动识别任务类型、判断前置条件，并路由到 spec-lite、fix-bug、research、test、review、issue-draft-pr 或 parallel-delivery 等工作流。
 ---
 
-# devflow-ai 总控路由
+# Featureflow 总控路由
 
 把分散的工作流封装成一个统一入口。
 

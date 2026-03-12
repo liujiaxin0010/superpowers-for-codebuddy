@@ -14,10 +14,16 @@
 执行步骤：
 1. 解析参数：`spec=<path>`、`tier=<L|M|H>`
 2. 若缺少 `spec` 或 `tier`：直接输出 `BLOCKED`，并引导执行 `/spec-lite <需求描述>`
+   - 同步更新 `docs/progress.md`：记录阻断原因、缺失参数、下一条建议命令
+   - 若本次形成了新的流程判断（如入口选择/约束变化），同步更新 `docs/findings.md`
 3. 调用 `process-gatekeeper`（`command=extend`）
 4. 若门禁阻断：输出阻断报告并停止
+   - 同步更新 `docs/progress.md`：记录阻断项、修复动作、重试命令
+   - 同步更新 `docs/findings.md`：记录新的阻断模式或门禁观察结论
 5. 若通过：按等级分流
    - `L/M`：进入 `/write-plan spec=<specPath> tier=<finalTier>`
    - `H`：先执行 `/brainstorm <需求描述>`（完整七阶段）再进入计划编排
+   - 同步更新 `docs/progress.md`：记录 `finalTier`、分流结果与下一条命令
+   - 若本次形成了新的分流/架构判断，同步更新 `docs/findings.md`
 
 $ARGUMENTS

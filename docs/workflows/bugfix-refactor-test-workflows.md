@@ -1,6 +1,6 @@
 # Bugfix / Refactor / Test 工作流
 
-维护类任务不应该混做。`devflow-ai` 将 bugfix、refactor、test 三类任务分开定义。
+维护类任务不应该混做。`Featureflow` 将 bugfix、refactor、test 三类任务分开定义。
 
 ## Bugfix
 

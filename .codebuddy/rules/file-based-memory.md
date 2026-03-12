@@ -30,6 +30,8 @@ alwaysApply: true
 
 - `docs/findings.md`：每 2 次搜索/读取后更新
 - `docs/progress.md`：每个阶段与每次错误后更新
+- `/extend` 特殊要求：每次执行结束（`BLOCKED`/门禁阻断/分流通过）必须更新 `docs/progress.md`
+- `/extend` 特殊要求：若形成新的分流判断、风险结论或阻断经验，必须同步更新 `docs/findings.md`
 
 ## 违规处理
 

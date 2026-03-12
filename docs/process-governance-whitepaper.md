@@ -1,8 +1,8 @@
-# devflow-ai 流程治理技术实现白皮书
+# Featureflow 流程治理技术实现白皮书
 
 ## 1. 文档目的
 
-本文档说明 `devflow-ai` 当前流程治理能力的技术实现原理，聚焦以下新增能力：
+本文档说明 `Featureflow` 当前流程治理能力的技术实现原理，聚焦以下新增能力：
 
 1. `Spec-Lite` 轻规格入口与 L/M/H 分级
 2. `process-gatekeeper` 硬门禁机制
