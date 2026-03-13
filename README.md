@@ -253,6 +253,31 @@ cp -r .codebuddy/agents/* ~/.codebuddy/agents/
 cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 ```
 
+### GitNexus Agent Skills 适配（CodeBuddy）
+
+执行 `npx gitnexus analyze` 后，GitNexus 可能自动生成 `AGENT.md`、`CLAUDE.md` 与 `.claude/skills/*`。在本仓库中，这些文件仅作为 **GitNexus 侧边提示层** 使用，用来表达 GitNexus 推荐的查询场景；**活跃工作流与技能事实源始终是** `CODEBUDDY.md + .codebuddy/*`。
+
+这意味着：
+
+- 可以参考 `.claude/skills/*` 理解 GitNexus 的探索、调试、影响分析、重构意图
+- 不能把 `.claude/skills/*` 当成 CodeBuddy 的第二套技能目录来维护
+- 如果 `.claude/*` 与 `.codebuddy/*` 有冲突，以 `.codebuddy/*` 为准
+
+| GitNexus Skill | 典型用途 | CodeBuddy 承接入口 |
+|---|---|---|
+| `Exploring` | 新项目理解、模块全貌、调用链摸底 | `.codebuddy/rules/project-reading.md`、`/research`、`/doc-init`、`/extend` 前置分析 |
+| `Debugging` | Bug 追踪、异常入口回溯、跨文件定位 | `/fix-bug`、`.codebuddy/skills/bug-fix/SKILL.md`、`.codebuddy/skills/systematic-debugging/SKILL.md` |
+| `Impact Analysis` | 变更 blast radius、重构前风险评估 | `/extend`、`/write-plan`、`/code-review`、`/code-self-check` |
+| `Refactoring` | 跨文件重构、重命名、模块拆分 | `/simplify`、`/write-plan`、`/execute-plan`、`.codebuddy/skills/code-simplifier/SKILL.md` |
+
+推荐在 `.gitnexusignore` 中排除这些 GitNexus 提示产物，避免它们进入项目代码索引：
+
+```text
+.claude/skills/
+AGENT.md
+CLAUDE.md
+```
+
 ---
 
 ## 可用命令
@@ -1640,6 +1665,15 @@ AI: Boss，已添加。开始生成测试代码...
 - `docs/*` 是运行过程中的主产物目录，通常在实际使用命令时逐步生成或维护
 - `spec/*` 是兼容层，主要用于 `research / testcase / AI2AI` 等指南映射流程
 - 如果你想开箱即用质量门禁或保留本仓库示例，可按需预置 `docs/quality/*`、`docs/findings.md`、`docs/progress.md` 与 `spec/*`
+
+### Q: `npx gitnexus analyze` 自动生成了 `.claude/skills/`，会和 CodeBuddy 冲突吗？
+
+默认不会直接冲突，但需要明确职责边界：
+
+- `.claude/skills/*` 只表示 GitNexus 自动附带的探索/调试/影响分析/重构提示
+- CodeBuddy 的活跃技能与命令入口仍然是 `CODEBUDDY.md` 与 `.codebuddy/*`
+- 建议将 `.claude/skills/`、`AGENT.md`、`CLAUDE.md` 加入 `.gitnexusignore`，避免被当作项目代码结构的一部分参与索引
+- 如果要吸收其中的思路，应映射到现有 `.codebuddy` 规则/命令，而不是并行维护两套 skill 目录
 
 ### Q: 三条铁律能关掉吗？
 

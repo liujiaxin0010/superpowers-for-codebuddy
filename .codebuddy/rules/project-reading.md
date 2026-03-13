@@ -18,6 +18,8 @@ alwaysApply: false
 
 如果项目已配置 GitNexus MCP 且索引可用，**优先使用 GitNexus 获取代码理解**，然后仅对 GitNexus 无法覆盖的部分进行手动阅读。
 
+这条快速路径等价于 GitNexus 自动安装的 `Exploring` skill 在 CodeBuddy 里的承接实现。即使仓库中存在 `.claude/skills/*`，项目阅读阶段的**实际执行规范仍以本规则为准**；`.claude/skills/*` 只作为 GitNexus 查询思路参考，不作为 CodeBuddy 的活跃 skill 源。
+
 ### 快速路径流程
 
 1. 使用 GitNexus `query` 获取项目模块全貌（替代第一步全局扫描）

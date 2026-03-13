@@ -23,3 +23,8 @@
 - [技能体系] 新增 `task-contracts`、`issue-draft-pr`、`parallel-delivery` 三个 SKILL 目录，让新工作流在技能层可复用、可组合、可维护。
 - [单入口封装] 新增 `devflow-router` 技能、`Featureflow` 总控代理与 `/Featureflow` 单命令入口，支持其他项目按“一入口”导入使用。
 - [路由增强] `/Featureflow` 将模糊需求细分为 `must-brainstorm / should-brainstorm` 两档，避免在边界未收敛时直接进入规格或实现。
+
+## 2026-03-13
+
+- [GitNexus 适配] 将 GitNexus 自动安装的 `Exploring / Debugging / Impact Analysis / Refactoring` 四类 skill 映射到 CodeBuddy 既有命令与规则，不引入第二套技能事实源。
+- [索引边界] 明确 `.claude/skills/`、`AGENT.md`、`CLAUDE.md` 仅为 GitNexus 提示产物，建议通过 `.gitnexusignore` 排除，避免污染项目代码图谱。

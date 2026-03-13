@@ -31,3 +31,9 @@
 - [x] 新增 `task-contracts`、`issue-draft-pr`、`parallel-delivery` 技能目录并接入命令
 - [x] 新增 `devflow-router` 技能、`Featureflow` 总控代理与 `/Featureflow` 单入口命令
 - [x] 强化 `/Featureflow`：模糊需求细分为 `must-brainstorm / should-brainstorm`
+
+## 2026-03-13
+
+- [x] 为 GitNexus 自动安装的 4 个 Agent Skills 增加 CodeBuddy 适配说明
+- [x] 在 `gitnexus-code-intelligence`、`project-reading`、`CODEBUDDY.md`、`README.md` 中补充职责边界与命令映射
+- [x] 新增 `.gitnexusignore`，排除 `.claude/skills/`、`AGENT.md`、`CLAUDE.md`

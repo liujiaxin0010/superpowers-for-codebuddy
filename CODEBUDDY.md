@@ -23,6 +23,8 @@
 5. 检测 GitNexus MCP 可用性（可选但推荐）：
    - 尝试调用 GitNexus 工具，记录 `gitnexusAvailable` 状态
    - 可用时按需加载：`.codebuddy/rules/gitnexus-code-intelligence.md`
+   - `npx gitnexus analyze` 若自动生成 `AGENT.md`、`CLAUDE.md`、`.claude/skills/*`，将其视为 GitNexus 参考提示层，不作为活跃技能注册目录
+   - GitNexus 的探索/调试/影响分析/重构能力，统一映射回 `.codebuddy/*` 命令、规则与技能
    - 不可用时不报错，后续流程自动走手动路径
 
 ## 3) 默认入口与路由

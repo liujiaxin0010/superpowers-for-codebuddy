@@ -14,6 +14,27 @@ alwaysApply: false
 
 ---
 
+## GitNexus 自动安装 Skills 的 CodeBuddy 适配
+
+执行 `npx gitnexus analyze` 后，GitNexus 可能自动生成 `AGENT.md`、`CLAUDE.md` 与 `.claude/skills/*`。
+
+在 **CodeBuddy/Featureflow** 项目中，这些文件的定位是：
+
+- **GitNexus 侧边提示层**：描述 GitNexus 推荐的查询方式与使用场景
+- **不是** CodeBuddy 的活跃技能注册目录
+- **不替代** `CODEBUDDY.md`、`.codebuddy/commands/*`、`.codebuddy/skills/*`、`.codebuddy/rules/*`、`.codebuddy/agents/*`
+
+如果 `.claude/skills/*` 与 `.codebuddy/*` 出现冲突，**一律以 `.codebuddy/*` 为准**。可以读取 `.claude/skills/*` 理解 GitNexus 的推荐查询模式，但实际执行时必须映射回 CodeBuddy 的命令与规则体系。
+
+| GitNexus 自动安装 Skill | 原始用途 | CodeBuddy 中的承接方式 | 优先查询模式 |
+|---|---|---|---|
+| `Exploring` | 陌生代码库探索、模块理解、执行链路追踪 | `.codebuddy/rules/project-reading.md`、`/research`、`/doc-init`、`/extend` 前置理解阶段 | `E`、`B`、`A`、`F` |
+| `Debugging` | 沿调用链定位 bug | `/fix-bug`、`.codebuddy/skills/bug-fix/SKILL.md`、`.codebuddy/skills/systematic-debugging/SKILL.md` | `D`、`F`、`A` |
+| `Impact Analysis` | 变更前评估 blast radius | `/extend`、`/write-plan`、`/code-review`、`/code-self-check` 的影响面分析步骤 | `C`、`A` |
+| `Refactoring` | 跨文件安全重构 | `/simplify`、`/write-plan`、`/execute-plan`、`.codebuddy/skills/code-simplifier/SKILL.md` | `C`、`D`、`A` |
+
+---
+
 ## 索引排除目录（强制）
 
 GitNexus 索引**必须排除**以下依赖/生成目录，不为它们建立图谱节点：
@@ -30,6 +51,7 @@ GitNexus 索引**必须排除**以下依赖/生成目录，不为它们建立图
 | 版本控制 | `.git/`、`.svn/` |
 | 通用第三方 | `third_party/`、`external/`、`deps/` |
 | 代码生成 | `gen/`、`pb/`、`generated/` |
+| Agent 提示产物 | `.claude/skills/`、`AGENT.md`、`CLAUDE.md` |
 
 执行 `npx gitnexus analyze` 时，这些目录会被自动跳过。如果项目有额外需要排除的目录，在 `.gitnexusignore` 或 GitNexus 配置文件中添加。
 
