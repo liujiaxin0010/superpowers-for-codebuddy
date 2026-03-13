@@ -229,6 +229,10 @@ flowchart TD
 2. 重新打开 CodeBuddy IDE 或开始新的会话
 3. 规则会自动加载
 
+> 最小安装只需要复制 `.codebuddy/` 与 `CODEBUDDY.md`。`.codebuddy/` 内已包含技能运行所需的模板文件，无需再单独复制模板。
+>
+> `docs/` 与 `spec/` 不属于初始安装必拷内容：`docs/*` 是主流程运行过程中生成/维护的主事实源，`spec/*` 是兼容《AI特性流程开发指南》的兼容层。只有当你希望预置示例产物、直接使用质量门禁输入样例，或启用 `spec/AI2AI` 兼容流程时，才需要按需复制或初始化这些目录。
+
 ### CodeBuddy Code (CLI)
 
 ```bash
@@ -1627,6 +1631,15 @@ AI: Boss，已添加。开始生成测试代码...
 ### Q: 可以只用部分规则吗？
 
 可以。删掉不需要的 `.md` 文件即可。核心推荐保留：`CODEBUDDY.md` + `verification-before-completion.md` + `file-based-memory.md` + `logging-conventions.md` + `extending-project/SKILL.md`。
+
+### Q: 安装时需要把 `docs/`、`spec/` 一起复制到项目里吗？
+
+默认不需要。最小安装只复制 `.codebuddy/` 和 `CODEBUDDY.md` 即可。
+
+- `.codebuddy/` 已经包含技能运行所需模板，无需额外单独复制模板文件
+- `docs/*` 是运行过程中的主产物目录，通常在实际使用命令时逐步生成或维护
+- `spec/*` 是兼容层，主要用于 `research / testcase / AI2AI` 等指南映射流程
+- 如果你想开箱即用质量门禁或保留本仓库示例，可按需预置 `docs/quality/*`、`docs/findings.md`、`docs/progress.md` 与 `spec/*`
 
 ### Q: 三条铁律能关掉吗？
 

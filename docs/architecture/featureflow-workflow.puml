@@ -1,0 +1,246 @@
+@startuml Featureflow Workflow
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontSize 12
+skinparam activityBorderColor #666666
+skinparam activityFontSize 12
+skinparam arrowColor #444444
+skinparam swimlaneBorderColor #999999
+
+title Featureflow 工作流流向图\n新开发项目 vs 老项目扩展功能
+
+|#E8F5E9| 用户入口 |
+|#E3F2FD| 路由决策 |
+|#FFF3E0| 需求阶段 |
+|#F3E5F5| 计划阶段 |
+|#FFF9C4| 实现阶段 |
+|#FFEBEE| 质量阶段 |
+|#ECEFF1| 交付阶段 |
+
+|用户入口|
+start
+:Boss 提出需求;
+:**/Featureflow** <需求>;
+
+|路由决策|
+:**devflow-router** 智能分流;
+note right
+  分流依据：
+  · 需求类型（新功能/扩展/bugfix/重构）
+  · 复杂度分级（H/M/L）
+  · 是否已有项目代码
+end note
+
+if (任务类型?) then (新开发项目 new-feature)
+  :复杂度评估;
+  if (复杂度?) then (H 级)
+    #FFE0B2:需要 /brainstorm;
+  else (L/M 级)
+    #C8E6C9:直接进入 /spec-lite;
+  endif
+else (老项目扩展 extend)
+  #BBDEFB:进入 /extend 专用流程;
+endif
+
+' ===== 新开发项目流程 =====
+
+|需求阶段|
+fork
+  ' 左分支：新开发项目
+  partition "**新开发项目流程**" #E8F5E9 {
+    if (H 级?) then (是)
+      :**/brainstorm**
+      · 澄清模糊需求
+      · 探索技术方案
+      · 确定架构方向;
+      :Boss 确认方向;
+    endif
+
+    :**/spec-lite**
+    · 功能规格定义
+    · 复杂度分级 (H/M/L)
+    · 验收标准
+    · 技术约束;
+    :Boss 审核规格;
+
+    |计划阶段|
+    :**/write-plan**
+    · 任务分解
+    · 依赖排序
+    · 批次编排
+    · 风险标记;
+
+    note right
+      **process-gatekeeper 门禁检查**
+      · 规格完整性 ✓
+      · 验收标准明确 ✓
+      · 技术方案可行 ✓
+      ——
+      未通过 → BLOCKED → 回退上游
+    end note
+
+    :Boss 审核计划;
+
+    |实现阶段|
+    if (任务数 >= 3?) then (是)
+      :**子代理驱动开发**
+      subagent-driven-development
+      ====
+      每个任务：
+      1. 派遣全新子代理
+      2. 严格 TDD 实现
+      3. spec-reviewer 审查
+      4. code-reviewer 审查
+      5. 通过 → 下一任务;
+    else (否)
+      :**/execute-plan**
+      批次执行
+      ====
+      每批：
+      1. 执行 2-3 个任务
+      2. Boss 检查点审查
+      3. 通过 → 下一批;
+    endif
+  }
+
+fork again
+  ' 右分支：老项目扩展
+  partition "**老项目扩展流程**" #E3F2FD {
+    |需求阶段|
+    :**/extend 第一阶段：项目理解**;
+
+    if (GitNexus 可用?) then (是)
+      #C8E6C9:GitNexus 快速路径
+      ====
+      · **模式 E** 全局结构查询
+      · **模式 B** 模块全景
+      · **模式 D** 调用链追踪
+      · 仅精读不足部分;
+    else (否)
+      #FFE0B2:手动阅读路径
+      ====
+      · find 扫描目录结构
+      · 逐文件完整阅读
+      · 手动梳理依赖图
+      · 10-20 分钟;
+    endif
+
+    :输出：项目理解报告
+    · 技术栈 · 架构模式
+    · 核心模块 · 编码风格;
+    :Boss 确认理解正确;
+
+    :**/extend 第二阶段：影响评估**;
+
+    if (GitNexus 可用?) then (是)
+      #C8E6C9:**模式 C** 变更影响分析
+      · 直接影响文件
+      · 间接依赖传播
+      · 影响的执行流;
+    else (否)
+      #FFE0B2:手动分析
+      · git diff + grep 引用;
+    endif
+
+    :输出：影响评估报告
+    · 新增文件清单
+    · 需修改的现有文件
+    · 风险点及缓解措施;
+    :Boss 确认影响范围;
+
+    :**/extend 第三阶段：扩展设计**
+    · 高内聚低耦合
+    · 接口定义
+    · 数据流向;
+    :Boss 分段确认设计;
+
+    |计划阶段|
+    :**/write-plan**
+    （同新项目，但额外要求）
+    · 标注"新增"vs"修改"
+    · 修改类标注风险等级
+    · 每步运行原有测试;
+    :Boss 审核计划;
+
+    |实现阶段|
+    :**安全执行原则**
+    ====
+    1. 先新增，后连接
+    2. 每步回归测试
+    3. 最小接触原有代码
+    4. 可回滚;
+
+    :执行任务
+    （子代理 或 批次执行）;
+
+    note right
+      **老项目额外约束**
+      · 每个任务后运行原有测试套件
+      · 测试失败 → 立即停止 → 报告 Boss
+      · 不改动无关代码
+    end note
+  }
+end fork
+
+' ===== 质量阶段（两条路径汇合）=====
+
+|质量阶段|
+:**/test-gen 或 /unified-test**
+· 单元测试
+· 集成测试
+· 回归测试;
+
+if (测试通过?) then (全部通过)
+  :**/code-review**
+  ====
+  code-reviewer Agent 审查：
+  · 规格符合性
+  · 代码质量
+  · 安全检查
+  · 铁律三检查（兼容性代码）
+  · 三层文档已更新?;
+
+  if (GitNexus 可用?) then (是)
+    #C8E6C9:**模式 C** detect_changes
+    评估完整影响范围;
+  endif
+
+  if (审查结果?) then (通过)
+    |交付阶段|
+    :**/doc-sync**
+    同步三层代码自文档;
+
+    if (GitNexus 可用?) then (是)
+      #C8E6C9:增量检测 + 局部刷新;
+    else (否)
+      #FFE0B2:全量扫描对比;
+    endif
+
+    :**/status** 最终状态汇报;
+    :Boss 验收;
+
+    note right
+      **交付完成标准**
+      1. 可复现证据
+      2. 质量门禁通过
+      3. 文档与代码同步
+      4. 收尾声明
+    end note
+
+    stop
+  else (不通过)
+    :退回修复;
+    note right: 🔴 严重 → 阻塞\n🟡 警告 → 当前迭代修复\n🔵 建议 → 记录不阻塞
+    |实现阶段|
+    :修复问题后重新审查;
+    detach
+  endif
+else (失败)
+  :分析失败原因;
+  |实现阶段|
+  :修复后重新测试;
+  detach
+endif
+
+@enduml

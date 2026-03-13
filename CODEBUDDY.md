@@ -20,6 +20,10 @@
    - `.codebuddy/rules/test-driven-development.md`：测试生成与实现阶段
    - `.codebuddy/rules/code-documentation.md`：`/doc-init`、`/doc-sync`、文档同步阶段
 4. 复杂任务（>=3 步或 >5 次工具调用）强制启用 file-based-memory。
+5. 检测 GitNexus MCP 可用性（可选但推荐）：
+   - 尝试调用 GitNexus 工具，记录 `gitnexusAvailable` 状态
+   - 可用时按需加载：`.codebuddy/rules/gitnexus-code-intelligence.md`
+   - 不可用时不报错，后续流程自动走手动路径
 
 ## 3) 默认入口与路由
 

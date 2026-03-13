@@ -28,6 +28,18 @@ description: 在已有项目上安全地新增功能，高内聚低耦合
 
 ### 1.1 全局结构扫描
 
+**优先路径（GitNexus 可用时）：**
+
+使用 GitNexus **模式 E**（全局结构查询）一步获取：
+- 项目模块划分（Community 聚类）
+- 核心入口文件
+- 模块间依赖关系
+- 技术栈信息（从文件扩展名和 import 模式推断）
+
+然后跳到 1.3 关键入口和依赖图（由 GitNexus 已提供大部分信息）。
+
+**降级路径（GitNexus 不可用时）：**
+
 ```bash
 # 扫描项目目录结构（排除依赖目录）
 find . -type f -name "*.java" -o -name "*.py" -o -name "*.ts" -o -name "*.js" -o -name "*.go" -o -name "*.vue" -o -name "*.jsx" -o -name "*.tsx" -o -name "*.cpp" -o -name "*.c" -o -name "*.rs" -o -name "*.rb" | grep -v node_modules | grep -v vendor | grep -v __pycache__ | grep -v .git | grep -v .svn | head -200
@@ -46,6 +58,10 @@ cat package.json 2>/dev/null || cat pom.xml 2>/dev/null || cat build.gradle 2>/d
 - **构建方式**：构建工具、构建命令、部署方式
 
 ### 1.3 关键入口和依赖图
+
+**优先路径（GitNexus 可用时）：**
+使用 GitNexus **模式 D**（调用链追踪）获取核心模块依赖关系，降级时走手动阅读。
+
 - 找到主入口文件
 - 梳理核心模块之间的依赖关系
 - 识别公共工具/基础设施模块
@@ -97,6 +113,16 @@ cat package.json 2>/dev/null || cat pom.xml 2>/dev/null || cat build.gradle 2>/d
 - 优先级和范围边界在哪？
 
 ### 2.2 影响面分析
+
+**优先路径（GitNexus 可用时）：**
+
+使用 GitNexus **模式 C**（变更影响分析）直接获取：
+- 新增功能将引入的新文件预估（基于相似模块结构）
+- 现有文件中哪些会被影响（通过调用链正反追踪）
+- 影响的执行流有哪些
+
+**降级路径**：手动分析（原有流程不变）。
+
 分析新功能将会：
 - **需要新增的文件/模块**：列出新文件清单
 - **需要修改的现有文件**：列出每个文件需要改什么（越少越好）

@@ -24,6 +24,9 @@ model: inherit
 1. 检测版本控制系统并查看最近的更改：
    - Git: `git diff` 或 `git diff HEAD~1`
    - SVN: `svn diff`
+1.5 **（GitNexus 可用时）** 使用 GitNexus **模式 C**（变更影响分析）获取本次变更的
+    完整影响范围（直接 + 间接依赖），作为审查范围的参考。如果影响范围超出预期，
+    在审查报告中标注为 🟡 风险项。
 2. 聚焦于修改的文件
 3. 识别文件类型：
    - 若包含 `.vue/.js/.jsx/.ts/.tsx`，同时应用 `.codebuddy/skills/web-code-review/SKILL.md` 的前端专项审查框架
