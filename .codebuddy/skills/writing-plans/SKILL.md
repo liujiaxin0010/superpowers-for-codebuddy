@@ -23,6 +23,7 @@ description: 在硬门禁前置条件下编写实施计划。
 
 ```yaml
 specPath: docs/specs/...
+taskType: new-feature|bugfix|refactor|test|research|review-pr|issue-draft-pr|parallel-delivery
 finalTier: L|M|H
 gateStatus: pass
 ```
@@ -39,9 +40,18 @@ gateStatus: pass
    - 旧项目：复用原有日志结构
    - 新项目：落实已选日志框架与字段规范
    - 验证无中文日志、无控制台输出残留（除非用户要求）
+8. 计划必须包含合同摘要：目标、允许修改、禁止修改、验证命令、交付证据、人工确认点、owner
 
 ## 分级附加要求
 
 - L：最小可执行任务链
 - M：补充明确风险缓解任务，并强制代码审查阶段
-- H：必须具备头脑风暴证据，并包含回滚演练任务
+- H：必须具备头脑风暴证据，并包含“回滚准备 + dry-run 演练”任务
+
+## 回滚任务编排约束（默认安全模式）
+
+1. 计划中禁止将“真实回滚执行”设为默认自动任务。
+2. 回滚相关任务默认拆分为两步：
+   - 回滚准备：快照点/备份点、影响范围、验证命令。
+   - 回滚演练：仅 dry-run 或等效无副作用验证。
+3. 若确需真实回滚，必须单独建任务并标记“需 Boss 显式确认后执行”。

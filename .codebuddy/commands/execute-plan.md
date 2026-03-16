@@ -14,7 +14,7 @@
 1. 解析参数：`planPath`，可选 `spec=<path>`、`tier=<L|M|H>`
 2. 调用 `process-gatekeeper`（`command=execute-plan`）
 3. 若阻断：输出阻断报告并停止
-4. 若通过：按批次执行，并展示测试证据
+4. 若通过：加载计划中的合同摘要，按批次执行，并展示测试证据
 5. 执行质量门禁脚本：
    - PowerShell: `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`
    - Shell: `bash .codebuddy/skills/process-gatekeeper/scripts/check-quality.sh`
@@ -26,7 +26,8 @@
 7. 若提供 `spec=<path>`，回填追踪链接：
    - `implementationProgressPath`
    - `implementationSummaryPath`
-8. 若质量门禁 `BLOCKED`：停止收尾并返回修复项；通过后才允许宣告完成
-9. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
+8. 输出时必须包含：验证证据、剩余风险、owner / handoff 建议
+9. 若质量门禁 `BLOCKED`：停止收尾并返回修复项；通过后才允许宣告完成
+10. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

@@ -4,6 +4,12 @@ description: 根据问题单（网址/截图/描述）定位并修复代码缺�
 
 # /fix-bug 问题单修改
 
+请按以下顺序阅读并严格遵循：
+1. `.codebuddy/skills/process-gatekeeper/SKILL.md`（流程硬门禁）
+2. `.codebuddy/skills/task-contracts/SKILL.md`（统一任务合同）
+3. `.codebuddy/skills/bug-fix/SKILL.md`（问题单修复方法论）
+4. `.codebuddy/templates/task-contracts/bugfix.md`（Bugfix 合同模板）
+
 根据问题单信息，全流程完成缺陷定位与修复。
 
 ## 输入方式
@@ -20,6 +26,12 @@ description: 根据问题单（网址/截图/描述）定位并修复代码缺�
 - 🔸 **网址输入**：调用 `chrome-devtools` MCP 读取网页，提取问题单号、描述、现象、期望行为
 - 🔸 **截图输入**：解析图片内容，提取问题单信息（不调用MCP）
 - 🔸 **描述输入**：直接从用户描述中提取关键信息
+
+### 第一步半：生成 bugfix contract
+
+1. 按 `.codebuddy/templates/task-contracts/bugfix.md` 生成最小执行合同
+2. 若缺少复现条件、期望/实际行为、允许修改范围或验证方式：调用 `process-gatekeeper`（`command=fix-bug`）并返回 `BLOCKED`
+3. 合同确认后再进入定位与修改
 
 ### 第二步：上下文读取与问题定位
 
@@ -58,4 +70,9 @@ description: 根据问题单（网址/截图/描述）定位并修复代码缺�
 
 ### 第五步：输出修改记录
 
-按 bug-fix 技能的**修改完成输出格式**输出结果。
+按 bug-fix 技能的**修改完成输出格式**输出结果，并补充：
+
+- bugfix contract 摘要
+- 最小复现关闭证据
+- 回归结果
+- 剩余风险与 owner

@@ -18,3 +18,22 @@
 - [x] 扩展门禁矩阵与 `check-gates.ps1/.sh`
 - [x] 扩展 `check-quality.ps1/.sh` 可选参数 `RequireAi2AiDocs`
 - [x] 回填 3 份历史 spec 的澄清结论、方向确认与追踪链接
+
+## 2026-03-09
+
+- [x] 新增 TaskContract 模板目录 `.codebuddy/templates/task-contracts/`
+- [x] 为 `spec-lite` 模板增加 `TaskContract` 区块与任务类型字段
+- [x] 升级 `process-gatekeeper` 与门禁矩阵，纳入合同完整性检查
+- [x] 升级 `/fix-bug`、`/test-gen`、`/unified-test`、`/code-review`、`/status` 的合同与证据输出要求
+- [x] 新增本地 workflow 文档与 playbook
+- [x] 将项目命名统一为 `Featureflow`
+- [x] 新增 `/issue-draft-pr` 与 `/parallel-delivery` 命令入口
+- [x] 新增 `task-contracts`、`issue-draft-pr`、`parallel-delivery` 技能目录并接入命令
+- [x] 新增 `devflow-router` 技能、`Featureflow` 总控代理与 `/Featureflow` 单入口命令
+- [x] 强化 `/Featureflow`：模糊需求细分为 `must-brainstorm / should-brainstorm`
+
+## 2026-03-13
+
+- [x] 为 GitNexus 自动安装的 4 个 Agent Skills 增加 CodeBuddy 适配说明
+- [x] 在 `gitnexus-code-intelligence`、`project-reading`、`CODEBUDDY.md`、`README.md` 中补充职责边界与命令映射
+- [x] 新增 `.gitnexusignore`，排除 `.claude/skills/`、`AGENT.md`、`CLAUDE.md`

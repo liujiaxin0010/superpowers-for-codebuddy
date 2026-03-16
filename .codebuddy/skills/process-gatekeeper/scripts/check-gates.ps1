@@ -14,6 +14,10 @@ $required = @(
   'test-gen.md',
   'unified-test.md',
   'code-review.md',
+  'fix-bug.md',
+  'Featureflow.md',
+  'issue-draft-pr.md',
+  'parallel-delivery.md',
   'extend.md',
   'status.md',
   'brainstorm.md',
@@ -41,6 +45,14 @@ $requiredPaths = @(
   '.codebuddy\commands\research.md',
   '.codebuddy\commands\testcase.md',
   '.codebuddy\commands\code-self-check.md',
+  '.codebuddy\commands\issue-draft-pr.md',
+  '.codebuddy\commands\parallel-delivery.md',
+  '.codebuddy\commands\Featureflow.md',
+  '.codebuddy\agents\Featureflow.md',
+  '.codebuddy\skills\devflow-router\SKILL.md',
+  '.codebuddy\skills\task-contracts\SKILL.md',
+  '.codebuddy\skills\issue-draft-pr\SKILL.md',
+  '.codebuddy\skills\parallel-delivery\SKILL.md',
   '.codebuddy\skills\spec-lite\SKILL.md',
   '.codebuddy\skills\research\SKILL.md',
   '.codebuddy\skills\testcase\SKILL.md',
@@ -53,7 +65,16 @@ $requiredPaths = @(
   '.codebuddy\skills\process-gatekeeper\scripts\check-gates.ps1',
   '.codebuddy\skills\process-gatekeeper\scripts\check-gates.sh',
   '.codebuddy\skills\process-gatekeeper\scripts\check-quality.ps1',
-  '.codebuddy\skills\process-gatekeeper\scripts\check-quality.sh'
+  '.codebuddy\skills\process-gatekeeper\scripts\check-quality.sh',
+  '.codebuddy\templates\task-contracts\README.md',
+  '.codebuddy\templates\task-contracts\new-feature.md',
+  '.codebuddy\templates\task-contracts\bugfix.md',
+  '.codebuddy\templates\task-contracts\refactor.md',
+  '.codebuddy\templates\task-contracts\test.md',
+  '.codebuddy\templates\task-contracts\research.md',
+  '.codebuddy\templates\task-contracts\review-pr.md',
+  '.codebuddy\templates\task-contracts\issue-draft-pr.md',
+  '.codebuddy\templates\task-contracts\parallel-delivery.md'
 )
 
 foreach ($rel in $requiredPaths) {

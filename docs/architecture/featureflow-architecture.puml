@@ -1,0 +1,220 @@
+@startuml Featureflow Architecture
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam componentStyle rectangle
+skinparam defaultFontSize 12
+skinparam packageBorderColor #666666
+skinparam packageFontSize 14
+skinparam arrowColor #444444
+skinparam noteBorderColor #AAAAAA
+
+title Featureflow 架构全景图\n(superpowers-for-codebuddy)
+
+' ========== 用户入口层 ==========
+package "用户入口层" as EntryLayer #E8F5E9 {
+  component "CODEBUDDY.md\n(会话启动手册)" as CODEBUDDY #C8E6C9
+  component "/Featureflow\n(统一入口)" as MainEntry #A5D6A7
+}
+
+' ========== 路由与门禁层 ==========
+package "路由与门禁层" as RouterLayer #E3F2FD {
+  component "devflow-router\n(智能路由)" as Router #90CAF9
+  component "process-gatekeeper\n(质量门禁)" as Gatekeeper #90CAF9
+  component "task-contracts\n(任务契约模板)" as Contracts #BBDEFB
+}
+
+' ========== 命令层 (19 Commands) ==========
+package "命令层 (19 Commands)" as CmdLayer #FFF3E0 {
+  package "需求阶段" as CmdReq #FFE0B2 {
+    component "/brainstorm" as CmdBrainstorm
+    component "/spec-lite" as CmdSpec
+    component "/research" as CmdResearch
+  }
+  package "计划阶段" as CmdPlan #FFE0B2 {
+    component "/write-plan" as CmdWritePlan
+    component "/execute-plan" as CmdExecPlan
+    component "/parallel-delivery" as CmdParallel
+  }
+  package "实现阶段" as CmdImpl #FFE0B2 {
+    component "/extend" as CmdExtend
+    component "/fix-bug" as CmdFixBug
+    component "/issue-draft-pr" as CmdIssuePR
+  }
+  package "质量阶段" as CmdQuality #FFE0B2 {
+    component "/test-gen" as CmdTestGen
+    component "/unified-test" as CmdUnifiedTest
+    component "/code-review" as CmdCodeReview
+    component "/code-self-check" as CmdSelfCheck
+    component "/simplify" as CmdSimplify
+  }
+  package "文档阶段" as CmdDoc #FFE0B2 {
+    component "/doc-init" as CmdDocInit
+    component "/doc-sync" as CmdDocSync
+    component "/status" as CmdStatus
+    component "/testcase" as CmdTestcase
+  }
+}
+
+' ========== 代理层 (9 Agents) ==========
+package "代理层 (9 Agents)" as AgentLayer #F3E5F5 {
+  component "Featureflow Agent\n(主编排)" as AgentMain #CE93D8
+  component "Bug Fixer" as AgentBug #E1BEE7
+  component "Task Implementer" as AgentTask #E1BEE7
+  component "Code Reviewer" as AgentReview #E1BEE7
+  component "Systematic Debugger" as AgentDebug #E1BEE7
+  component "Project Analyzer" as AgentAnalyze #E1BEE7
+  component "Spec Reviewer" as AgentSpecRev #E1BEE7
+  component "Code Simplifier" as AgentSimplify #E1BEE7
+  component "Unified Test Agent" as AgentTest #E1BEE7
+}
+
+' ========== 技能层 (31 Skills) ==========
+package "技能层 (31 Skills)" as SkillLayer #FFF9C4 {
+  package "流程技能" as SkillProcess #FFF59D {
+    component "brainstorming" as SkBrain
+    component "writing-plans" as SkPlan
+    component "executing-plans" as SkExec
+    component "subagent-driven-dev" as SkSubagent
+    component "dispatching-parallel" as SkDispatch
+    component "finishing-branch" as SkFinish
+    component "version-control" as SkVCS
+    component "using-git-worktrees" as SkWorktree
+  }
+  package "实现技能" as SkillImpl #FFF59D {
+    component "bug-fix" as SkBugFix
+    component "extending-project" as SkExtend
+    component "systematic-debugging" as SkDebug
+    component "issue-draft-pr" as SkIssuePR
+    component "parallel-delivery" as SkParaDel
+    component "research" as SkResearch
+  }
+  package "质量技能" as SkillQuality #FFF59D {
+    component "code-review-standards\n(11 语言)" as SkReviewStd
+    component "code-self-check" as SkSelfCheck
+    component "code-simplifier" as SkSimplify
+    component "unified-test" as SkUnifiedTest
+    component "custom-testing" as SkCustomTest
+    component "testcase" as SkTestcase
+    component "web-code-review" as SkWebReview
+    component "requesting-code-review" as SkReqReview
+    component "receiving-code-review" as SkRecvReview
+  }
+  package "辅助技能" as SkillAux #FFF59D {
+    component "file-based-memory" as SkMemory
+    component "task-contracts" as SkContracts
+    component "spec-lite" as SkSpecLite
+    component "writing-skills" as SkWriting
+    component "postgres-best-practices" as SkPG
+    component "xlsx" as SkXLSX
+  }
+}
+
+' ========== 规则层 (7 Rules) ==========
+package "规则层 (7 Rules · 常驻/按需)" as RuleLayer #FFEBEE {
+  package "常驻加载" as RuleAlways #FFCDD2 {
+    component "verification-before-\ncompletion" as RuleVerify
+    component "file-based-memory" as RuleMemory
+    component "logging-conventions" as RuleLog
+  }
+  package "按需加载" as RuleOnDemand #FFCDD2 {
+    component "project-reading" as RuleRead
+    component "test-driven-development" as RuleTDD
+    component "code-documentation\n(三层自文档)" as RuleDoc
+    component "gitnexus-code-\nintelligence" as RuleGitNexus
+  }
+}
+
+' ========== 持久化层 ==========
+package "持久化层" as PersistLayer #ECEFF1 {
+  database "docs/progress.md\n(进度)" as Progress
+  database "docs/findings.md\n(发现)" as Findings
+  database "docs/quality/*\n(质量报告)" as Quality
+  database "docs/specs/*\n(规格文档)" as Specs
+  database "spec/Me2AI/\n(人类输入)" as SpecMe
+  database "spec/AI2AI/\n(AI产物)" as SpecAI
+}
+
+' ========== 外部集成 ==========
+package "外部集成 (可选)" as ExtLayer #F5F5F5 {
+  component "GitNexus MCP\n(代码知识图谱)" as GitNexus #E0E0E0
+  component "Chrome DevTools MCP\n(前端调试)" as Chrome #E0E0E0
+  component "Git / SVN\n(版本控制)" as VCS #E0E0E0
+}
+
+' ========== 连接关系 ==========
+
+' 入口 → 路由
+CODEBUDDY -down-> MainEntry : 会话启动
+MainEntry -down-> Router : 需求分流
+
+' 路由 → 命令
+Router -down-> CmdBrainstorm : H级
+Router -down-> CmdSpec : L/M级
+Router -down-> CmdFixBug : bugfix
+Router -down-> CmdExtend : extend
+Router -down-> CmdResearch : research
+Router -down-> CmdIssuePR : issue
+Router -down-> CmdParallel : parallel
+Gatekeeper -left-> Router : 门禁阻断\n回退上游
+
+' 命令 → 代理
+CmdFixBug -down-> AgentBug
+CmdExecPlan -down-> AgentTask
+CmdCodeReview -down-> AgentReview
+CmdUnifiedTest -down-> AgentTest
+MainEntry -down-> AgentMain : 编排
+CmdSimplify -down-> AgentSimplify
+
+' 代理 → 技能
+AgentBug -down-> SkBugFix
+AgentBug -down-> SkDebug
+AgentTask -down-> SkExec
+AgentTask -down-> SkSubagent
+AgentReview -down-> SkReviewStd
+AgentReview -down-> SkWebReview
+AgentTest -down-> SkUnifiedTest
+AgentAnalyze -down-> SkExtend
+AgentSpecRev -down-> SkSpecLite
+
+' 技能 → 规则
+SkBugFix -down-> RuleRead
+SkExtend -down-> RuleRead
+SkDebug -down-> RuleRead
+SkExec -down-> RuleTDD
+SkSubagent -down-> RuleDoc
+
+' 规则 → 外部
+RuleGitNexus -down-> GitNexus : 优先路径
+RuleRead -down-> GitNexus : 快速路径
+RuleRead -down[#999999,dashed]-> VCS : 降级路径
+SkBugFix -down[#999999,dashed]-> Chrome : 前端调试
+
+' 命令 → 持久化
+CmdStatus -down-> Progress
+CmdDocSync -down-> RuleDoc
+CmdDocInit -down-> RuleDoc
+
+' 全局持久化
+RuleMemory -down-> Progress
+RuleMemory -down-> Findings
+
+' 主流程链路标注
+note top of CmdLayer
+  **主流程链路 (L/M 级)**
+  /spec-lite → /write-plan → /execute-plan
+  → /test-gen → /code-review → /status
+
+  **主流程链路 (H 级)**
+  /brainstorm → /spec-lite → /write-plan
+  → /execute-plan → /test-gen → /code-review → /status
+end note
+
+' 三条铁律标注
+note right of EntryLayer
+  **三条铁律 (最高优先级)**
+  1. 每次回复先称呼 Boss
+  2. 不确定设计先问 Boss
+  3. 不写兼容性代码
+end note
+
+@enduml

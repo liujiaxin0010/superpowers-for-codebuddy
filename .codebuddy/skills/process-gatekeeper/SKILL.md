@@ -12,7 +12,7 @@ description: 命令执行前置项的硬性流程门禁。
 ## 输入
 
 ```yaml
-command: "write-plan|execute-plan|test-gen|unified-test|code-review|extend|brainstorm|status|research|testcase|code-self-check"
+command: "write-plan|execute-plan|test-gen|unified-test|code-review|extend|brainstorm|status|research|testcase|code-self-check|fix-bug|issue-draft-pr|parallel-delivery|Featureflow"
 tier: "L|M|H"
 spec: "docs/specs/..."
 plan: "docs/plans/..."
@@ -49,8 +49,24 @@ GateResult:
 2. 方案方向确认（候选方向 + 用户已确认方向）
 3. 用户拒绝记录（若有）与替代方向/硬约束
 4. 日志策略（沿用项目日志结构或新项目日志框架选型，且声明英文日志与禁控制台）
+5. `TaskContract` 已生成，且至少包含目标、允许修改、禁止修改、验证命令、交付证据、owner、超边界处理
 
 若存在 `TBD/待定/未确认`、未决项、或方向未确认，应阻断并回退 `/spec-lite` 补充澄清。
+
+### TaskContract 完整性约束（新增）
+
+下游命令进入主体前，必须确认合同字段完整：
+
+1. `objective`
+2. `editablePaths`
+3. `forbiddenPaths`
+4. `verificationCommands`
+5. `deliverables`
+6. `evidence`
+7. `owner`
+8. `outOfScopeHandling`
+
+任一缺失时返回 `blocked`，并引导回上游规格或合同模板补齐。
 
 ### Extend 编排约束
 
@@ -76,6 +92,64 @@ GateResult:
 4. `spec/AI2AI/Protocol_and_Data.md`
 
 任一缺失应阻断并给出下一条补齐命令。
+
+### Test 约束（新增）
+
+`test-gen` 与 `unified-test` 在进入执行前，应确认至少已定义：
+
+1. 覆盖目标
+2. 主路径
+3. 边界条件
+4. 验证命令
+
+若 spec / plan / contract 中缺少上述信息，应阻断并回退到测试合同补齐。
+
+### Bugfix 约束（新增）
+
+`fix-bug` 命令进入修改前，必须具备：
+
+1. 问题描述
+2. 复现步骤或最小复现条件
+3. 期望行为 / 实际行为
+4. 允许修改范围
+5. 验证命令或复现关闭证据要求
+
+若上述信息不能从问题单或用户描述中提取，应先生成 bugfix contract 并阻断执行。
+
+### Issue Draft PR 约束（新增）
+
+`issue-draft-pr` 命令进入主体前，必须具备：
+
+1. 工单链接
+2. 目标 / 非目标
+3. 验收标准
+4. PR 需要包含的说明
+5. owner / handoff 负责人
+
+若工单目标或验收不清，应先阻断并回退到补 acceptance criteria 或 `/spec-lite`。
+
+### Parallel Delivery 约束（新增）
+
+`parallel-delivery` 命令进入主体前，必须具备：
+
+1. 已批准的 `plan`
+2. 子任务拆分
+3. 每个子任务的允许修改目录
+4. 每个子任务的验证命令
+5. 最终收口 owner
+
+若子任务共享核心文件或依赖关系未拆清，应阻断并回退到 `/write-plan`。
+
+### Featureflow 入口约束（新增）
+
+`Featureflow` 是路由入口，不直接承担深层实现；进入主体前必须先完成：
+
+1. 任务类型识别
+2. 推荐命令决策
+3. 缺失前置项清单
+4. 下一步动作说明
+
+若无法判断任务类型，应先阻断并要求补充目标、边界或输入材料。
 
 ### Code Self Check 约束
 

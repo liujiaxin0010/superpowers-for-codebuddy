@@ -1,16 +1,17 @@
-# Superpowers 混合式流程治理技术实现白皮书
+# Featureflow 流程治理技术实现白皮书
 
 ## 1. 文档目的
 
-本文档说明本轮流程治理能力的技术实现原理，聚焦以下新增能力：
+本文档说明 `Featureflow` 当前流程治理能力的技术实现原理，聚焦以下新增能力：
 
 1. `Spec-Lite` 轻规格入口与 L/M/H 分级
 2. `process-gatekeeper` 硬门禁机制
 3. `/extend`、`/write-plan` 的“先判档再选流程”
 4. 质量门禁脚本（通过率、覆盖率、文档同步）
-5. 试运行样例与可追溯产物沉淀
-6. `docs` 主产物 + `spec/Me2AI + spec/AI2AI` 兼容层
-7. 指南阶段别名命令：`/research`、`/testcase`、`/code-self-check`
+5. `TaskContract` 合同层（目标 / 边界 / 验证 / 证据 / owner）
+6. 试运行样例与可追溯产物沉淀
+7. `docs` 主产物 + `spec/Me2AI + spec/AI2AI` 兼容层
+8. 指南阶段别名命令：`/research`、`/testcase`、`/code-self-check`
 
 本文档面向研发、流程治理维护者、平台工程同学。
 
@@ -56,21 +57,46 @@
 关键字段：
 
 1. `taskId`
-2. `recommendedTier`
-3. `finalTier`
-4. `overrideReason`
-5. `specPath`
-6. `planPath`
-7. `requiredChecks`
-8. `completedChecks`
-9. `gateStatus`
+2. `taskType`
+3. `workflow`
+4. `recommendedTier`
+5. `finalTier`
+6. `overrideReason`
+7. `specPath`
+8. `planPath`
+9. `requiredChecks`
+10. `completedChecks`
+11. `gateStatus`
 
 作用：
 
 1. 提供任务分级与前置检查上下文
 2. 作为后续 `/write-plan`、`/execute-plan`、`/status` 的追踪来源
 
-### 4.2 GateResult
+### 4.2 TaskContract
+
+定义位置：`Spec-Lite` 文档中的 `TaskContract` 区块，以及 `.codebuddy/templates/task-contracts/*.md`。
+
+关键字段：
+
+1. `templatePath`
+2. `taskType`
+3. `objective`
+4. `editablePaths`
+5. `forbiddenPaths`
+6. `verificationCommands`
+7. `deliverables`
+8. `evidence`
+9. `humanCheckpoints`
+10. `owner`
+11. `outOfScopeHandling`
+
+作用：
+
+1. 将 `website` 工作流中的 prompt contract 落到仓库内可执行字段
+2. 作为 `/write-plan`、`/execute-plan`、`/status`、`/code-review` 的共用边界层
+
+### 4.3 GateResult
 
 统一门禁返回结构：
 

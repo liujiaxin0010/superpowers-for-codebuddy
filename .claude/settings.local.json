@@ -9,7 +9,8 @@
       "Bash(gh api repos/OthmanAdi/planning-with-files/git/trees/main?recursive=1 --jq '.tree[].path')",
       "Bash(curl -s \"https://api.github.com/repos/OthmanAdi/planning-with-files/git/trees/main?recursive=1\")",
       "Bash(curl -s \"https://api.github.com/repos/OthmanAdi/planning-with-files\")",
-      "Bash(curl -s \"https://api.github.com/search/repositories?q=planning-with-files+user:OthmanAdi\")"
+      "Bash(curl -s \"https://api.github.com/search/repositories?q=planning-with-files+user:OthmanAdi\")",
+      "Bash(ls -d c:/agent/featureflow/superpowers-for-codebuddy/*/)"
     ]
   }
 }

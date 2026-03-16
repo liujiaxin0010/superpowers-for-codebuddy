@@ -19,6 +19,12 @@ description: >
 本技能源自 Code Analysis Guide for Web Code Review 方法论，
 专为 Vue 2.x / Vue 3.x 组件及其相关 JS/TS 代码设计。
 
+## 执行边界（强制）
+
+1. Web 审查阶段只输出问题与建议，默认不修改任何源码。
+2. 输出顺序固定为：问题清单 -> 风险说明 -> 修复建议 -> 等待 Boss 确认。
+3. 若 Boss 未明确下达修复指令，不得进入自动修复动作。
+
 ## 输入
 
 ```typescript

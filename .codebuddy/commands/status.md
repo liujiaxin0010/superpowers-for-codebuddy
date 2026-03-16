@@ -16,7 +16,7 @@
    - `spec/AI2AI/research.md`
    - `spec/AI2AI/Design.md`
    - `spec/AI2AI/plan.md`
-6. 输出 `PASS/BLOCKED`、当前等级、缺失前置项、质量门禁与下一步命令
+6. 输出 `PASS/BLOCKED`、任务类型、当前等级、合同完整性、质量门禁与下一步命令
 
 输出格式：
 
@@ -27,12 +27,16 @@
 状态: {text}
 
 门禁: {PASS|BLOCKED}
+任务类型: {taskType|unknown}
 等级: {L|M|H}
 缺失项: {list|none}
+合同: {complete|partial|missing}
 下一步: {command}
 原因: {message}
 质量门禁: {PASS|BLOCKED|UNKNOWN}
 质量详情: 通过率 {x%|N/A} | 覆盖率 {x%|N/A} | 文档同步 {pass|blocked|unknown}
+Owner/Handoff: {owner|unknown} | {handoff|unknown}
+剩余风险: {list|none}
 
 文件: findings {Y|N} | progress {Y|N} | spec {Y|N} | plan {Y|N} | ai2ai {Y|N}
 错误记录数: {count}

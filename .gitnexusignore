@@ -1,0 +1,5 @@
+# GitNexus auto-installed assistant prompt artifacts are not part of
+# Featureflow/CodeBuddy's active skill source and should not pollute code indexing.
+.claude/skills/
+AGENT.md
+CLAUDE.md

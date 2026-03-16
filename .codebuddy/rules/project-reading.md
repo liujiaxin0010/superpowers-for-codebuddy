@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
 
 # 项目阅读与理解
@@ -11,6 +11,31 @@ alwaysApply: true
 - 每次回复先称呼 **Boss**
 - 不确定的设计决策**必须先问 Boss**
 - **不写兼容性代码**，除非 Boss 主动要求
+
+---
+
+## GitNexus 快速路径（优先）
+
+如果项目已配置 GitNexus MCP 且索引可用，**优先使用 GitNexus 获取代码理解**，然后仅对 GitNexus 无法覆盖的部分进行手动阅读。
+
+这条快速路径等价于 GitNexus 自动安装的 `Exploring` skill 在 CodeBuddy 里的承接实现。即使仓库中存在 `.claude/skills/*`，项目阅读阶段的**实际执行规范仍以本规则为准**；`.claude/skills/*` 只作为 GitNexus 查询思路参考，不作为 CodeBuddy 的活跃 skill 源。
+
+### 快速路径流程
+
+1. 使用 GitNexus `query` 获取项目模块全貌（替代第一步全局扫描）
+2. 使用 GitNexus `context` 获取目标模块的依赖/导出/调用关系（替代第三步技术栈入口定位）
+3. 使用 GitNexus `search` 定位具体代码位置（替代第四步依赖追踪中的 grep）
+4. **仅当 GitNexus 返回的信息不足时**，才进入下方的手动阅读四步法
+
+### 降级条件
+
+以下情况自动降级到手动阅读四步法：
+- GitNexus MCP 不可用
+- GitNexus 索引不存在或已过期
+- 目标文件使用了 GitNexus 不支持的语言
+- GitNexus 返回的结果明显不完整（如关键依赖缺失）
+
+降级时无需询问 Boss，直接切换，在 `docs/progress.md` 中记录降级原因。
 
 ---
 
