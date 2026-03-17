@@ -128,7 +128,7 @@ your-project/
     │   ├── systematic-debugger.md                  # 系统化调试代理
     │   ├── task-implementer.md                     # 任务实现代理
     │   └── unified-test-agent.md                   # 前后端测试代理
-    └── commands/                                   # 斜杠命令（19 个）
+    └── commands/                                   # 斜杠命令（20 个）
         ├── brainstorm.md      → /brainstorm        # 头脑风暴
         ├── spec-lite.md       → /spec-lite         # 轻量规格与分级
         ├── Featureflow.md      → /Featureflow        # 单入口总控命令
@@ -147,6 +147,7 @@ your-project/
         ├── testcase.md        → /testcase          # 测试用例生成
         ├── test-gen.md        → /test-gen          # 测试入口（自动路由）
         ├── unified-test.md    → /unified-test      # 统一测试流程
+        ├── pua.md            → /pua                # PUA 激励引擎（防摆烂）
         └── write-plan.md      → /write-plan        # 编写计划
 ├── docs/                                           # 主产物目录（默认事实源）
 └── spec/                                           # 指南兼容层（Me2AI / AI2AI）
@@ -305,6 +306,7 @@ CLAUDE.md
 | `/parallel-delivery` | 并行交付编排 | **将长任务拆成多个 lane，明确每 lane 边界、验证命令与最终合流 owner** |
 | `/simplify` | 简化代码（保持行为不变） | **针对指定路径收敛复杂度、减少冗余，逐步验证** |
 | `/status` | 查看当前任务进度 | **快速查看阶段进度、持久化文件状态、已记录错误** |
+| `/pua` | 加载 PUA 激励引擎 | **防止 AI 摆烂放弃，任务卡壳时手动激活或传入任务描述立即进入方法论** |
 
 ### 命令使用方式速查（格式 + 示例）
 
@@ -333,6 +335,7 @@ CLAUDE.md
 | `/fix-bug` | `/fix-bug <问题单URL/截图说明/问题描述> [关联文件]` | `/fix-bug 用户详情页点击保存无响应，关联文件 src/user/UserDetail.vue` |
 | `/simplify` | `/simplify [路径或模块]` | `/simplify src/modules/order` |
 | `/status` | `/status` | `/status` |
+| `/pua` | `/pua [当前卡壳的任务描述]` | `/pua 这个 API 调了三次都超时` |
 
 ### 指南流程兼容映射（`docs` 主、`spec` 辅）
 
