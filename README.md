@@ -19,6 +19,7 @@
 | 📚 **辅助方法论文档** | 测试反模式、根因追溯、纵深防御、异步调试、说服原理——深度方法论知识库 |
 | 🧠 **文件即记忆** | 受 Manus AI 启发，用持久化文件代替上下文窗口做工作记忆，防止长任务目标偏移和错误重复 |
 | 🔁 **指南兼容流程层** | 保持 `docs/*` 主链路，同时兼容 `spec/Me2AI + spec/AI2AI` 与 `/research`、`/testcase`、`/code-self-check` 阶段命令 |
+| 🔥 **PUA 万能激励引擎** | 防止 AI 摆烂放弃。任务失败 2+ 次、被动等待、空口完成时自动触发大厂 PUA 话术，强制穷尽一切方案 |
 
 ## 新增流程文档
 
@@ -45,7 +46,7 @@
 your-project/
 ├── CODEBUDDY.md                                    # 主引导文件（铁律 + 工作流定义）
 ├── .codebuddy/
-    ├── skills/                                     # 技能库（31 个，按场景调用）
+    ├── skills/                                     # 技能库（32 个，按场景调用）
     │   ├── brainstorming/                          # 需求澄清与方案发散
     │   │   ├── SKILL.md                            # 头脑风暴主流程
     │   │   └── requirement-doc-template.md         # 需求预分析模板
@@ -106,6 +107,7 @@ your-project/
     │   │   ├── SKILL.md                            # 技能编写主流程
     │   │   └── persuasion-principles.md            # 表达与说服参考
     │   ├── code-self-check/SKILL.md                # Git/SVN 代码自检
+    │   ├── pua/SKILL.md                            # PUA 万能激励引擎（防摆烂）
     │   └── xlsx/                                   # XLSX 生成能力
     │       ├── SKILL.md                            # 表格生成规范
     │       └── scripts/...                         # Office 文档处理脚本
@@ -126,7 +128,7 @@ your-project/
     │   ├── systematic-debugger.md                  # 系统化调试代理
     │   ├── task-implementer.md                     # 任务实现代理
     │   └── unified-test-agent.md                   # 前后端测试代理
-    └── commands/                                   # 斜杠命令（19 个）
+    └── commands/                                   # 斜杠命令（20 个）
         ├── brainstorm.md      → /brainstorm        # 头脑风暴
         ├── spec-lite.md       → /spec-lite         # 轻量规格与分级
         ├── Featureflow.md      → /Featureflow        # 单入口总控命令
@@ -145,6 +147,7 @@ your-project/
         ├── testcase.md        → /testcase          # 测试用例生成
         ├── test-gen.md        → /test-gen          # 测试入口（自动路由）
         ├── unified-test.md    → /unified-test      # 统一测试流程
+        ├── pua.md            → /pua                # PUA 激励引擎（防摆烂）
         └── write-plan.md      → /write-plan        # 编写计划
 ├── docs/                                           # 主产物目录（默认事实源）
 └── spec/                                           # 指南兼容层（Me2AI / AI2AI）
@@ -303,6 +306,7 @@ CLAUDE.md
 | `/parallel-delivery` | 并行交付编排 | **将长任务拆成多个 lane，明确每 lane 边界、验证命令与最终合流 owner** |
 | `/simplify` | 简化代码（保持行为不变） | **针对指定路径收敛复杂度、减少冗余，逐步验证** |
 | `/status` | 查看当前任务进度 | **快速查看阶段进度、持久化文件状态、已记录错误** |
+| `/pua` | 加载 PUA 激励引擎 | **防止 AI 摆烂放弃，任务卡壳时手动激活或传入任务描述立即进入方法论** |
 
 ### 命令使用方式速查（格式 + 示例）
 
@@ -331,6 +335,7 @@ CLAUDE.md
 | `/fix-bug` | `/fix-bug <问题单URL/截图说明/问题描述> [关联文件]` | `/fix-bug 用户详情页点击保存无响应，关联文件 src/user/UserDetail.vue` |
 | `/simplify` | `/simplify [路径或模块]` | `/simplify src/modules/order` |
 | `/status` | `/status` | `/status` |
+| `/pua` | `/pua [当前卡壳的任务描述]` | `/pua 这个 API 调了三次都超时` |
 
 ### 指南流程兼容映射（`docs` 主、`spec` 辅）
 
@@ -786,6 +791,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 | *（新增）* | `.codebuddy/skills/bug-fix/SKILL.md`（问题单修改方法论） |
 | *（新增）* | `.codebuddy/commands/fix-bug.md`（/fix-bug 命令） |
 | *（新增）* | `.codebuddy/agents/bug-fixer.md`（问题单修改专家代理） |
+| *（新增）* | `.codebuddy/skills/pua/SKILL.md`（PUA 万能激励引擎——防止 AI 摆烂、放弃、敷衍） |
 
 ---
 
@@ -820,7 +826,20 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 > 先暂停，我要看一下当前代码
 ```
 
-### 技巧四：用自然语言触发规则
+### 技巧四：用 PUA 激励引擎防止 AI 摆烂
+
+当 AI 反复失败、敷衍交付或被动等待时，PUA skill 会自动介入。你也可以用自然语言主动触发：
+
+```
+"try harder"          → 触发 PUA，强制换思路
+"你再试试"             → 触发 PUA，升级压力等级
+"为什么还不行"          → 触发 PUA，要求穷尽所有方案
+"stop giving up"      → 触发 PUA，禁止放弃
+```
+
+PUA skill 搭配 `systematic-debugging` 和 `verification-before-completion` 效果更佳——调试有方法论，完成有验证，中间有激励。
+
+### 技巧五：用自然语言触发规则
 
 除了斜杠命令，直接用自然语言描述需求，AI 也会自动匹配合适的规则：
 
@@ -828,9 +847,11 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 "帮我调试这个报错"      → 自动触发 systematic-debugger 子代理
 "审查一下我刚写的代码"    → 自动触发 code-reviewer 子代理
 "这个功能开发完了"       → 自动触发 finishing-branch 规则
+"try harder"          → 自动触发 pua 激励引擎
+"你再试试"             → 自动触发 pua 激励引擎
 ```
 
-### 技巧五：扩展功能时明确边界
+### 技巧六：扩展功能时明确边界
 
 使用 `/extend` 时，越清楚地描述功能边界，AI 的扩展方案越安全：
 
@@ -839,7 +860,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 ✅ 清晰：/extend 给订单模块增加导出为 Excel 的功能，不改动现有的订单查询和列表逻辑
 ```
 
-### 技巧六：对 AI 的方案说"不"
+### 技巧七：对 AI 的方案说"不"
 
 AI 提出设计方案后你完全可以否决。三条铁律保证了 AI 遇到拿不准的事必须问你：
 
@@ -849,7 +870,7 @@ AI: Boss，我建议用方案 A（使用事件总线解耦）...
 AI: Boss，明白，按照直接调用的方式重新设计...
 ```
 
-### 技巧七：接手新项目先跑 `/doc-init`
+### 技巧八：接手新项目先跑 `/doc-init`
 
 拿到一个不熟悉的项目？先让 AI 建立三层文档体系，之后不管是 `/extend` 扩展功能还是调试 bug，AI 都能秒懂模块上下文：
 
