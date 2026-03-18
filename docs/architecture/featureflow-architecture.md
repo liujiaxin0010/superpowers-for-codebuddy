@@ -38,7 +38,9 @@ flowchart TB
 
 ```mermaid
 flowchart TD
-  I[输入需求] --> T{识别 taskType}
+  I[输入需求] --> D{明确要求需求预分析文档<br/>或按模板输出?}
+  D -->|是| B0[/brainstorm/]
+  D -->|否| T{识别 taskType}
   T --> A{ambiguityLevel}
 
   A -->|must-brainstorm| B1[/brainstorm/]
@@ -54,7 +56,14 @@ flowchart TD
   R -->|issue-draft-pr| C7[/issue-draft-pr/]
   R -->|parallel-delivery| C8[/parallel-delivery/]
 
-  C1 --> P{前置条件齐备?}
+  B0 --> C1
+  B1 --> C1
+  B2 --> C1
+
+  C1 --> H{finalTier=H 且<br/>brainstormPath 为空?}
+  H -->|是| B3[/brainstorm spec=<specPath> tier=H/]
+  H -->|否| P{前置条件齐备?}
+  B3 --> P
   C2 --> P
   C3 --> P
   C4 --> P
@@ -66,6 +75,11 @@ flowchart TD
   P -->|否| BLK[BLOCKED + 回退上游命令]
   P -->|是| OK[进入对应工作流]
 ```
+
+说明：
+
+- H 级支持两条合法路径：`/brainstorm -> /spec-lite -> /write-plan`，以及 `/spec-lite -> /brainstorm -> /write-plan`
+- `brainstormPath` 是 H 级进入 `/write-plan` 前的统一证据字段
 
 ## 图 3：命令 / Agent / Skill / Rule 依赖图
 

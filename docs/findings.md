@@ -28,3 +28,9 @@
 
 - [GitNexus 适配] 将 GitNexus 自动安装的 `Exploring / Debugging / Impact Analysis / Refactoring` 四类 skill 映射到 CodeBuddy 既有命令与规则，不引入第二套技能事实源。
 - [索引边界] 明确 `.claude/skills/`、`AGENT.md`、`CLAUDE.md` 仅为 GitNexus 提示产物，建议通过 `.gitnexusignore` 排除，避免污染项目代码图谱。
+
+## 2026-03-18
+
+- [路由统一] `/Featureflow` 新增“文档产物意图优先”识别，明确要求“需求预分析文档/需求分析文档/按模板输出”时直接路由 `/brainstorm`。
+- [H级口径统一] 明确 H 级支持 `/brainstorm -> /spec-lite -> /write-plan` 与 `/spec-lite -> /brainstorm -> /write-plan` 两条合法路径，并统一以 `brainstormPath` 作为进入 `/write-plan` 前的证据字段。
+- [AI2AI 阶段化] `spec/AI2AI/*` 明确为按阶段生成的兼容层，不要求在 `/spec-lite` 阶段一次性齐全；`/status` 改为展示 `pending/partial/ready/n/a`。

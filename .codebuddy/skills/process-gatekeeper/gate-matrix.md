@@ -2,7 +2,7 @@
 
 | 命令 | L 级要求 | M/H 级要求 | 阻断后推荐命令 |
 |---|---|---|---|
-| `/write-plan` | 存在有效 spec-lite，且“需求澄清结论+方案方向确认+日志策略+TaskContract”已填写 | spec 完整且风险/验收非空，方向已确认，无 `TBD/待定/未确认` 与未决项，合同字段完整，日志规范已明确 | `/spec-lite ...` |
+| `/write-plan` | 存在有效 spec-lite，且“需求澄清结论+方案方向确认+日志策略+TaskContract”已填写 | spec 完整且风险/验收非空，方向已确认，无 `TBD/待定/未确认` 与未决项，合同字段完整，日志规范已明确；H 级还需 `brainstormPath` | `/spec-lite ...` |
 | `/execute-plan` | 存在计划，且合同中包含验证与证据要求 | 计划 + 门禁通过记录 + 风险缓解条目 + owner/handoff 定义 | `/write-plan ...` |
 | `/test-gen` | 目标路径合法，且已定义覆盖目标、主路径、边界条件 | 必须同时关联 `spec` 与 `plan`，且合同中存在验证命令与证据字段 | `/execute-plan ...` |
 | `/unified-test` | 目标路径合法，且已定义覆盖目标、主路径、边界条件 | 必须同时关联 `spec` 与 `plan`，且合同中存在验证命令与证据字段 | `/execute-plan ...` |

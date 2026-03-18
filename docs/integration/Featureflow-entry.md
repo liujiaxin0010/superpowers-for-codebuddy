@@ -32,9 +32,11 @@
 
 ## 单入口能做什么
 
+- 自动识别文档产物意图（明确要“需求预分析文档”时直接走 `/brainstorm`）
 - 自动识别任务类型
 - 遇到模糊需求时先分成 `must-brainstorm / should-brainstorm`
 - 对严重模糊需求强制先路由到 `/brainstorm`
+- 若 `/spec-lite` 判定为 H 且缺少 `brainstormPath`，自动回退 `/brainstorm spec=<specPath> tier=H`
 - 自动选择下游工作流
 - 缺少前置条件时自动阻断并回退
 - 保持统一的合同、门禁、证据和 owner 约束

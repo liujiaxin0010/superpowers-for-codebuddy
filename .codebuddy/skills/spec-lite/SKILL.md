@@ -126,13 +126,16 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 
 在 spec 文档“追踪链接”中补充以下兼容字段：
 
-1. `researchPath`
-2. `designPath`
-3. `testStrategyPath`
-4. `testcasePath`
-5. `testcaseAnalysisPath`
-6. `implementationProgressPath`
-7. `implementationSummaryPath`
+1. `brainstormPath`
+2. `researchPath`
+3. `designPath`
+4. `testStrategyPath`
+5. `testcasePath`
+6. `testcaseAnalysisPath`
+7. `implementationProgressPath`
+8. `implementationSummaryPath`
+
+这些字段允许在 spec 阶段先占位，由后续 `/brainstorm`、`/research`、`/write-plan`、`/execute-plan`、`/testcase` 按阶段回填；不要求在 `/spec-lite` 阶段一次性生成所有 `spec/AI2AI/*` 实体文档。
 
 ## 评分规则
 
@@ -170,6 +173,7 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 9. 计算评分并得到 `recommendedTier`
 10. 应用覆盖策略并得到 `finalTier`
 11. 写入规格文档与 `GateContext`、`TaskContract`
-12. 返回 `GateResult`：
-   - `H` -> 下一步 `/brainstorm <需求描述>`
+12. 若当前需求已先完成 `/brainstorm`，优先回填 `brainstormPath`；其余 AI2AI 追踪链接允许先占位
+13. 返回 `GateResult`：
+   - `H` -> 下一步 `/brainstorm <需求描述> spec=<specPath> tier=H`
    - `L/M` -> 下一步 `/write-plan spec=<specPath> tier=<finalTier>`

@@ -58,6 +58,10 @@
 
 `/brainstorm -> /spec-lite -> /write-plan -> /execute-plan -> /test-gen|/unified-test -> /code-review -> /status`
 
+或（需求已清晰，但 `/spec-lite` 判定为 H）：
+
+`/spec-lite -> /brainstorm -> /write-plan -> /execute-plan -> /test-gen|/unified-test -> /code-review -> /status`
+
 门禁未通过时，必须 `BLOCKED` 并回退到正确上游步骤，不得硬推进。
 
 ## 5) 持久化记录（强制）

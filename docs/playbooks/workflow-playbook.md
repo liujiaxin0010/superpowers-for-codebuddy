@@ -12,12 +12,14 @@
 
 ### 当前仓库链路
 
-1. `/spec-lite`
-2. `/write-plan`
-3. `/execute-plan`
-4. `/test-gen` 或 `/unified-test`
-5. `/code-review`
-6. `check-quality.ps1/.sh`
+1. 若明确要需求预分析文档，或需求属于 `must/should-brainstorm`，先 `/brainstorm`
+2. `/spec-lite`
+3. 若 `finalTier=H` 且 `brainstormPath` 缺失，执行 `/brainstorm spec=<specPath> tier=H`
+4. `/write-plan`
+5. `/execute-plan`
+6. `/test-gen` 或 `/unified-test`
+7. `/code-review`
+8. `check-quality.ps1/.sh`
 
 ### 合同模板
 

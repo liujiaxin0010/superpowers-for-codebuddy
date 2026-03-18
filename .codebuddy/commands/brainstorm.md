@@ -16,13 +16,15 @@
 2. 若 `finalTier=H`，必须执行完整七阶段
 3. 若 `finalTier=L/M`，可按需执行完整流程
 4. 在可维护性设计中明确日志方案（沿用结构或新项目框架选型、English only、禁控制台）
-5. 输出需求预分析文档，并与后续计划执行链路关联
+5. 输出需求预分析文档（`docs/plans/YYYY-MM-DD-<需求名称>-需求预分析.md`），并与后续计划执行链路关联
 6. 同步兼容文档：
    - `spec/AI2AI/Design.md`
    - `spec/AI2AI/test.md`
 7. 若提供 `spec=<path>`，回填追踪链接：
+   - `brainstormPath: <生成的需求预分析文档路径>`
    - `designPath: spec/AI2AI/Design.md`
    - `testStrategyPath: spec/AI2AI/test.md`
-8. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
+8. 若未提供 `spec=<path>`，后续执行 `/spec-lite` 时仍需将该需求预分析文档路径回填到 `brainstormPath`
+9. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

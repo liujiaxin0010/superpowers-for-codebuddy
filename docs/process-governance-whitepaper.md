@@ -41,12 +41,15 @@
 
 ### 3.1 核心编排链路
 
-1. 新需求默认先进入 `/spec-lite`
-2. 由 `spec-lite` 计算 `recommendedTier` 并得出 `finalTier`
-3. 下游命令统一先过 `process-gatekeeper`
-4. 阻断时返回 `BLOCKED + nextCommand`，不进入命令主体
-5. 通过后按等级分流执行并沉淀文档
-6. 收尾前执行质量门禁脚本，失败则阻断完成
+1. `/Featureflow` 先识别“文档产物意图 + 任务类型 + 模糊等级”
+2. 若用户明确要“需求预分析文档/需求分析文档/按模板输出”，或需求属于 `must/should-brainstorm`，优先进入 `/brainstorm`
+3. 其余清晰新需求默认进入 `/spec-lite`
+4. 由 `spec-lite` 计算 `recommendedTier` 并得出 `finalTier`
+5. 若 `finalTier=H` 且缺少 `brainstormPath`，下游必须回退 `/brainstorm spec=<specPath> tier=H` 补齐证据
+6. 下游命令统一先过 `process-gatekeeper`
+7. 阻断时返回 `BLOCKED + nextCommand`，不进入命令主体
+8. 通过后按阶段沉淀 `docs/*` 主产物与 `spec/AI2AI/*` 兼容文档
+9. 收尾前执行质量门禁脚本，失败则阻断完成
 
 ## 4. 数据契约设计
 
@@ -144,9 +147,14 @@
 3. 覆盖必须携带 `overrideReason`
 4. 缺理由即 `BLOCKED`
 
-### 5.3 澄清优先策略（新增）
+### 5.3 澄清与产物意图优先策略（新增）
 
-为避免“spec 过粗直接进计划”，`/spec-lite` 新增“通用需求澄清 + 方向确认”门禁：
+为避免“spec 过粗直接进计划”，并避免“明明要需求预分析文档却产出成轻规格”，当前链路新增两层优先判断：
+
+1. 文档产物意图优先：用户明确要求“需求预分析文档 / 需求分析文档 / 按头脑风暴模板输出”时，优先 `/brainstorm`
+2. `spec-lite` 澄清门禁：进入 `/spec-lite` 后，必须完成“通用需求澄清 + 方向确认”
+
+`/spec-lite` 的硬门禁内容如下：
 
 1. 需求澄清：目标、场景、边界、约束、运维观测
 2. 方向发散：AI 产出 2-3 个可行方向（优点/代价/风险）
@@ -162,6 +170,20 @@
 2. 新项目必须在 brainstorm/spec 阶段确定日志框架与字段规范
 3. 日志内容要求英文（message/key）
 4. 默认禁用控制台输出，除非用户明确要求
+
+### 5.5 H 级双入口策略（新增）
+
+H 级任务统一允许两条合法路径：
+
+1. 模糊需求或文档导向需求：
+   `/brainstorm -> /spec-lite -> /write-plan`
+2. 需求较清晰，但 `spec-lite` 判定为 H：
+   `/spec-lite -> /brainstorm spec=<specPath> tier=H -> /write-plan`
+
+两条路径的共同要求：
+
+1. 进入 `/write-plan` 前，H 级 spec 必须具备 `brainstormPath`
+2. 若 `brainstormPath` 缺失，下游一律阻断并回退 `/brainstorm`
 
 ## 6. 硬门禁实现机制
 
@@ -202,7 +224,7 @@
 1. 必须解析并校验 `spec` 与 `tier`
 2. 缺失即直接 `BLOCKED`，回退 `/spec-lite`
 3. 门禁通过后仅做分流，不直接越级进入实现
-4. `H` 级必须先走 `/brainstorm` 完整流程
+4. `H` 级必须先走 `/brainstorm` 完整流程，或在已存在 H 级 spec 的情况下补齐 `brainstormPath`
 
 ### 7.2 /write-plan
 
@@ -213,8 +235,9 @@
 1. 缺少 `spec` 或 `tier` 直接阻断
 2. spec 的澄清结论或方向确认若存在 `TBD/待定/未确认` 或未决项，直接阻断并回退 `/spec-lite`
 3. 若用户否决候选方向但未给替代方向，直接阻断
-4. 通过门禁后才允许生成 plan
-5. 计划文档必须写入 `specPath/finalTier/gateStatus`
+4. 若 `tier=H` 且 spec 缺少 `brainstormPath`，直接阻断并回退 `/brainstorm spec=<specPath> tier=H`
+5. 通过门禁后才允许生成 plan
+6. 计划文档必须写入 `specPath/finalTier/gateStatus`
 
 ## 8. 质量门禁脚本设计
 
@@ -290,8 +313,9 @@
 1. 主事实源：`docs/*` 不变
 2. 兼容层：新增 `spec/Me2AI + spec/AI2AI`
 3. 别名命令：`/research`、`/testcase`、`/code-self-check`
-4. `spec-lite` 追踪链接新增 7 个兼容字段
-5. 质量门禁新增可选参数 `RequireAi2AiDocs`，默认关闭，保持历史阈值兼容
+4. `spec-lite` 追踪链接扩展为 8 个兼容字段（含 `brainstormPath`）
+5. `spec/AI2AI/*` 改为按阶段生成，而不是在 `spec-lite` 阶段一次性齐全
+6. 质量门禁新增可选参数 `RequireAi2AiDocs`，默认关闭，保持历史阈值兼容
 
 定位：
 
@@ -306,6 +330,7 @@
 2. 展示门禁 `PASS/BLOCKED`
 3. 展示等级、缺失项、下一步命令
 4. 读取 `docs/quality/last-quality-gate.json` 展示质量门禁状态
+5. 对 `spec/AI2AI` 展示阶段化状态：`pending / partial / ready / n/a`
 
 效果：
 

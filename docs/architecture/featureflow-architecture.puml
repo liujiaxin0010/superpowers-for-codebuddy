@@ -131,7 +131,7 @@ package "持久化层" as PersistLayer #ECEFF1 {
   database "docs/quality/*\n(质量报告)" as Quality
   database "docs/specs/*\n(规格文档)" as Specs
   database "spec/Me2AI/\n(人类输入)" as SpecMe
-  database "spec/AI2AI/\n(AI产物)" as SpecAI
+  database "spec/AI2AI/\n(按阶段生成的AI产物)" as SpecAI
 }
 
 ' ========== 外部集成 ==========
@@ -148,8 +148,8 @@ CODEBUDDY -down-> MainEntry : 会话启动
 MainEntry -down-> Router : 需求分流
 
 ' 路由 → 命令
-Router -down-> CmdBrainstorm : H级
-Router -down-> CmdSpec : L/M级
+Router -down-> CmdBrainstorm : 文档产物意图\nmust/should\nH补证
+Router -down-> CmdSpec : clear new-feature
 Router -down-> CmdFixBug : bugfix
 Router -down-> CmdExtend : extend
 Router -down-> CmdResearch : research
@@ -205,7 +205,10 @@ note top of CmdLayer
   → /test-gen → /code-review → /status
 
   **主流程链路 (H 级)**
-  /brainstorm → /spec-lite → /write-plan
+  路径A: /brainstorm → /spec-lite → /write-plan
+  → /execute-plan → /test-gen → /code-review → /status
+
+  路径B: /spec-lite → /brainstorm → /write-plan
   → /execute-plan → /test-gen → /code-review → /status
 end note
 

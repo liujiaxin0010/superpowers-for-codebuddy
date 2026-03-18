@@ -22,13 +22,14 @@
 1. `docs/*`：主产物与门禁事实源
 2. `spec/Me2AI`：人类输入兼容层
 3. `spec/AI2AI`：AI 过程文档兼容层
+4. `spec/AI2AI` 由各阶段命令按需生成，不要求在 `/spec-lite` 阶段一次性齐全
 
 ## 阶段映射
 
 | 指南阶段 | 推荐命令 | 主产物（docs） | 兼容产物（spec/AI2AI） |
 |---|---|---|---|
 | 阶段1 工程研究 | `/research` | `docs/specs/*`（追踪链接） | `research.md` |
-| 阶段2 方案分析 | `/brainstorm` + `/spec-lite` | `docs/specs/*-spec-lite.md` | `Design.md`, `test.md` |
+| 阶段2 方案分析 | `/brainstorm` + `/spec-lite`，或清晰 H 需求走 `/spec-lite -> /brainstorm` | `docs/specs/*-spec-lite.md` | `Design.md`, `test.md` |
 | 阶段2 计划编写 | `/write-plan` | `docs/plans/*.md` | `plan.md`, `summary.md` |
 | 阶段2 执行编码 | `/execute-plan` | `docs/progress.md`, `docs/findings.md` | `IMPLEMENTATION_PROGRESS.md`, `IMPLEMENTATION_SUMMARY.md`, `Architecture_Info.md`, `Protocol_and_Data.md` |
 | 阶段3 测试用例 | `/testcase` | `docs/specs/*`（追踪链接） | `testcase.md`, `testcase_analysis.md` |
@@ -50,6 +51,11 @@
 
 ### H 任务
 
+两条入口都合法：
+
+1. 模糊需求或明确要需求预分析文档：`/brainstorm -> /spec-lite -> ...`
+2. 需求较清晰但 `/spec-lite` 判定为 `H`：`/spec-lite -> /brainstorm -> ...`
+
 ```bash
 /spec-lite <需求描述>
 /brainstorm <需求描述> spec=<specPath> tier=H
@@ -62,11 +68,12 @@
 
 ## 追踪链接字段（spec-lite）
 
-1. `researchPath`
-2. `designPath`
-3. `testStrategyPath`
-4. `testcasePath`
-5. `testcaseAnalysisPath`
-6. `implementationProgressPath`
-7. `implementationSummaryPath`
+1. `brainstormPath`
+2. `researchPath`
+3. `designPath`
+4. `testStrategyPath`
+5. `testcasePath`
+6. `testcaseAnalysisPath`
+7. `implementationProgressPath`
+8. `implementationSummaryPath`
 

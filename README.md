@@ -2,6 +2,27 @@
 
 `Featureflow` 是一个源自 [obra/superpowers](https://github.com/obra/superpowers) 方法论、面向 CodeBuddy 与终端代理的 AI 开发流程引擎。当前仓库在原有转换基础上，加入了 Prompt Contract、任务工作流目录、硬门禁与证据化收尾机制，所有文档内容均为中文。
 
+## 目录导航
+
+> 本 README 已按“目录导航 + 章节锚点”整理。后续如果你要调整章节顺序或新增章节，优先同步更新这里。
+
+- [相比上游 Superpowers 的增强](#enhancements)
+- [新增流程文档](#new-docs)
+- [三条铁律](#three-rules)
+- [目录结构](#repo-structure)
+- [项目架构图与流程图](#architecture-and-flow)
+- [安装使用](#installation)
+- [MCP 配置（占位）](#mcp-config-placeholder)
+- [可用命令](#commands)
+- [使用技巧](#tips)
+- [Demo 示例](#demos)
+- [常见问题](#faq)
+- [许可证](#license)
+- [流程治理硬门禁更新](#gate-updates)
+
+---
+
+<a id="enhancements"></a>
 ## 相比上游 Superpowers 的增强
 
 | 增强项 | 说明 |
@@ -21,6 +42,7 @@
 | 🔁 **指南兼容流程层** | 保持 `docs/*` 主链路，同时兼容 `spec/Me2AI + spec/AI2AI` 与 `/research`、`/testcase`、`/code-self-check` 阶段命令 |
 | 🔥 **PUA 万能激励引擎** | 防止 AI 摆烂放弃。任务失败 2+ 次、被动等待、空口完成时自动触发大厂 PUA 话术，强制穷尽一切方案 |
 
+<a id="new-docs"></a>
 ## 新增流程文档
 
 - `docs/workflows/prompt-contracts.md`
@@ -30,6 +52,7 @@
 
 ---
 
+<a id="three-rules"></a>
 ## 三条铁律
 
 写入了所有规则和子代理文件中，最高优先级：
@@ -40,6 +63,7 @@
 
 ---
 
+<a id="repo-structure"></a>
 ## 目录结构
 
 ```
@@ -157,6 +181,7 @@ your-project/
 
 **架构升级**：从 `rules/` 扁平结构升级为 `skills/` 层次化结构。每个技能一个目录，Agent 可自行发现和调用。
 
+<a id="architecture-and-flow"></a>
 ## 项目架构图与流程图（Mermaid 可渲染）
 
 ### 1) 当前项目架构图
@@ -189,11 +214,14 @@ graph LR
 
 ```mermaid
 flowchart TD
-    A0[需求输入] --> A1["/spec-lite"]
-    A1 --> A2{finalTier}
+    A0[需求输入] --> A00{明确要求需求预分析文档<br/>或 must/should-brainstorm?}
+    A00 -->|是| A01["/brainstorm"]
+    A00 -->|否| A1["/spec-lite"]
+    A01 --> A1
+    A1 --> A2{finalTier=H 且缺 brainstormPath?}
 
-    A2 -->|L/M| A3["/write-plan"]
-    A2 -->|H| A4["/brainstorm"]
+    A2 -->|否| A3["/write-plan"]
+    A2 -->|是| A4["/brainstorm spec=<specPath> tier=H"]
     A4 --> A3
 
     A3 --> A5["/execute-plan"]
@@ -217,13 +245,14 @@ flowchart TD
 ### 3) 流程治理原理
 
 1. 门禁优先：所有关键命令先过 `process-gatekeeper`，不满足前置条件直接 `BLOCKED`。
-2. 分级分流：`spec-lite` 先计算 `recommendedTier/finalTier`，再决定走 `L/M` 直达计划或 `H` 先头脑风暴。
+2. 分级分流：先判断是否应优先 `/brainstorm`；进入 `/spec-lite` 后，再由 `finalTier` 与 `brainstormPath` 决定是直达计划还是补头脑风暴证据。
 3. 证据闭环：执行阶段必须沉淀 `spec/plan/progress/findings/quality`，并由脚本进行可重复校验。
 4. 双层产物：`docs/*` 是主事实源，`spec/*` 是指南兼容层，通过“追踪链接”保持对应关系。
 5. 可回归验证：`check-gates` 保证门禁接线完整，`check-quality` 保证测试、覆盖率与文档同步可量化验收。
 
 ---
 
+<a id="installation"></a>
 ## 安装使用
 
 ### CodeBuddy IDE
@@ -283,6 +312,30 @@ CLAUDE.md
 
 ---
 
+<a id="mcp-config-placeholder"></a>
+## MCP 配置（占位）
+
+> 本章预留给后续补充 MCP 相关配置步骤。建议后续按下面的小节补齐，目录无需再重做。
+
+### 计划补充内容
+
+1. 支持的 MCP 类型与适用场景
+2. 前置条件与依赖安装
+3. 本地配置文件位置与示例
+4. 启动与连通性验证步骤
+5. 常见报错与排查方法
+6. 与 `Featureflow` / `.codebuddy/*` 的协作约束
+
+### 占位说明
+
+- TODO: 补充 CodeBuddy IDE 的 MCP 配置步骤
+- TODO: 补充 CodeBuddy Code (CLI) 的 MCP 配置步骤
+- TODO: 补充 GitNexus / Chrome DevTools 等 MCP 的示例配置
+- TODO: 补充验证命令、预期输出与失败排查
+
+---
+
+<a id="commands"></a>
 ## 可用命令
 
 | 命令 | 用途 | 场景 |
@@ -342,12 +395,17 @@ CLAUDE.md
 | 指南阶段 | 本仓库命令 | 主产物（docs） | 兼容产物（spec/AI2AI） |
 |---|---|---|---|
 | 工程研究 | `/research` | `docs/specs/*` 追踪链接回填 | `research.md` |
-| 方案分析 | `/brainstorm` + `/spec-lite` | `docs/specs/*-spec-lite.md` | `Design.md`, `test.md` |
+| 方案分析 | `/brainstorm` + `/spec-lite`，或清晰 H 需求走 `/spec-lite -> /brainstorm` | `docs/specs/*-spec-lite.md` | `Design.md`, `test.md` |
 | 编写计划 | `/write-plan` | `docs/plans/*.md` | `plan.md`, `summary.md` |
 | 执行编码 | `/execute-plan` | `docs/progress.md`, `docs/findings.md` | `IMPLEMENTATION_PROGRESS.md`, `IMPLEMENTATION_SUMMARY.md`, `Architecture_Info.md`, `Protocol_and_Data.md` |
 | 测试用例 | `/testcase` | `docs/specs/*` 追踪链接回填 | `testcase.md`, `testcase_analysis.md` |
 | 代码自检 | `/code-self-check` | `docs/quality/code-self-check-report.md` | - |
 | 质量门禁 | `check-quality.ps1/.sh` | `docs/quality/last-quality-gate.json` | 可选校验 AI2AI 文档存在性 |
+
+补充说明：
+
+1. `spec/AI2AI/*` 由各阶段命令按需生成，不要求在 `/spec-lite` 阶段一次性齐全
+2. `/spec-lite` 的职责是生成规格并初始化追踪链接；真正的 AI2AI 文档由后续阶段回填
 
 ### 文档语言约束（新增）
 
@@ -370,8 +428,8 @@ CLAUDE.md
 
 ```bash
 /spec-lite <需求描述>
-/write-plan spec=<specPath> tier=<L|M|H>
-/execute-plan <planPath> spec=<specPath> tier=<L|M|H>
+/write-plan spec=<specPath> tier=<L|M>
+/execute-plan <planPath> spec=<specPath> tier=<L|M>
 /status
 ```
 
@@ -379,14 +437,15 @@ CLAUDE.md
 - `specPath` 使用 `/spec-lite` 生成的规格路径
 - `tier` 使用 `finalTier`（可在 spec 的 `GateContext` 中查看）
 - 若需求澄清或方案方向未确认（例如仍有 `TBD/待定/未确认`），`/write-plan` 会被阻断
+- 若 `/spec-lite` 最终判定为 `H`，则不能直接进 `/write-plan`，需先走“路径 C”
 
-#### 路径 B：复杂/高风险需求（先 `/brainstorm`，再 `/spec-lite`）
+#### 路径 B：明确要需求预分析文档，或需求本身模糊（先 `/brainstorm`，再 `/spec-lite`）
 
 适用特征：
+- 用户明确要求“需求预分析文档”“需求分析文档”或“按模板输出”
 - 需求描述不完整，存在多种方案取舍
 - 跨模块/跨边界改造
-- 涉及 API/DB/Event/Config 契约变化
-- 涉及鉴权、隐私、支付、数据迁移等高风险域
+- 需要先做需求澄清与方案发散，再收敛成 spec
 
 推荐步骤：
 
@@ -401,6 +460,27 @@ CLAUDE.md
 关键要求（必须做）：
 - 在 spec 文档的“Trace Links / 追踪链接”中补充 `brainstormPath`
 - H 级任务若缺少 `brainstormPath`，下游会被 `BLOCKED`
+
+#### 路径 C：需求较清晰，但 `/spec-lite` 判定为 H（先 `/spec-lite`，再补 `/brainstorm`）
+
+适用特征：
+- 需求边界基本清晰，适合先快速收敛成 spec
+- 但 `spec-lite` 打分后落到 H（如涉及数据迁移、权限安全、外部契约变化）
+- 用户没有要求直接产出头脑风暴模板文档
+
+推荐步骤：
+
+```bash
+/spec-lite <需求描述>
+/brainstorm <需求描述> spec=<specPath> tier=H
+/write-plan spec=<specPath> tier=H
+/execute-plan <planPath> spec=<specPath> tier=H
+/code-review spec=<specPath> tier=H plan=<planPath>
+```
+
+关键要求（必须做）：
+- `/brainstorm` 必须回填 `brainstormPath`
+- 进入 `/write-plan` 前，H 级 spec 必须同时具备已确认方向和 `brainstormPath`
 
 #### `/spec-lite` 强制澄清清单（通用需求）
 
@@ -438,7 +518,7 @@ CLAUDE.md
 ```markdown
 ## 10. 追踪链接
 
-- brainstormPath: docs/findings/2026-03-02-payment-migration-brainstorm.md
+- brainstormPath: docs/plans/2026-03-02-payment-migration-需求预分析.md
 - planPath: docs/plans/2026-03-02-payment-migration-plan.md
 - reviewReportPath:
 ```
@@ -498,13 +578,13 @@ CLAUDE.md
 - M 级按流程必须补 `code-review`
 - `status` 可同时看到流程门禁状态与质量门禁状态
 
-#### 示例 3：H 级高风险任务（必须先 brainstorm）
+#### 示例 3：H 级高风险任务（spec 先收敛，再补 brainstorm）
 
 场景：支付状态迁移修复，包含数据/状态迁移风险。
 
 ```bash
-/brainstorm 支付状态迁移并修复重复写入
 /spec-lite 支付状态迁移并修复重复写入
+/brainstorm 支付状态迁移并修复重复写入 spec=docs/specs/2026-03-02-payment-migration-spec-lite.md tier=H
 /write-plan spec=docs/specs/2026-03-02-payment-migration-spec-lite.md tier=H
 /execute-plan docs/plans/2026-03-02-payment-migration-plan.md spec=docs/specs/2026-03-02-payment-migration-spec-lite.md tier=H
 /code-review spec=docs/specs/2026-03-02-payment-migration-spec-lite.md tier=H plan=docs/plans/2026-03-02-payment-migration-plan.md
@@ -513,7 +593,7 @@ CLAUDE.md
 并在 spec 中补齐：
 
 ```markdown
-- brainstormPath: docs/findings/2026-03-02-payment-migration-brainstorm.md
+- brainstormPath: docs/plans/2026-03-02-payment-migration-需求预分析.md
 ```
 
 若跳过 brainstorm，典型阻断输出类似：
@@ -524,7 +604,7 @@ BLOCKED
 - tier: H
 - missing:
   - brainstorm_evidence
-- nextCommand: /brainstorm <需求描述>
+- nextCommand: /brainstorm <需求描述> spec=<specPath> tier=H
 ```
 
 #### 示例 4：常见阻断与修复方式
@@ -795,6 +875,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 
 ---
 
+<a id="tips"></a>
 ## 使用技巧
 
 ### 技巧一：让 AI 先理解再动手
@@ -885,6 +966,7 @@ AI: Boss，明白，按照直接调用的方式重新设计...
 
 ---
 
+<a id="demos"></a>
 ## Demo 示例
 
 ### Demo 1：从零开始一个新项目（头脑风暴 → 生成需求预分析文档）
@@ -1668,6 +1750,7 @@ AI: Boss，已添加。开始生成测试代码...
 
 ---
 
+<a id="faq"></a>
 ## 常见问题
 
 ### Q: 规则太多，AI 会不会上下文过载？
@@ -1684,7 +1767,7 @@ AI: Boss，已添加。开始生成测试代码...
 
 - `.codebuddy/` 已经包含技能运行所需模板，无需额外单独复制模板文件
 - `docs/*` 是运行过程中的主产物目录，通常在实际使用命令时逐步生成或维护
-- `spec/*` 是兼容层，主要用于 `research / testcase / AI2AI` 等指南映射流程
+- `spec/*` 是兼容层，主要用于 `research / testcase / AI2AI` 等指南映射流程；其中 `spec/AI2AI/*` 按阶段逐步生成，不会在 `/spec-lite` 阶段一次性齐全
 - 如果你想开箱即用质量门禁或保留本仓库示例，可按需预置 `docs/quality/*`、`docs/findings.md`、`docs/progress.md` 与 `spec/*`
 
 ### Q: `npx gitnexus analyze` 自动生成了 `.claude/skills/`，会和 CodeBuddy 冲突吗？
@@ -1698,7 +1781,7 @@ AI: Boss，已添加。开始生成测试代码...
 
 ### Q: 三条铁律能关掉吗？
 
-可以。编辑 `CODEBUDDY.md`，删除"三条铁律"部分，并在各规则/代理文件中移除对应的"铁律提醒"段落。
+可以。编辑 `CODEBUDDY.md`，删除"三条铁律"部分，并将各规则/代理文件中的对应提醒或全局引用一并移除。
 
 ### Q: 我的项目既不用 Git 也不用 SVN 怎么办？
 
@@ -1819,11 +1902,13 @@ powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/sc
 
 ---
 
+<a id="license"></a>
 ## 许可证
 
 上游 `obra/superpowers` 项目使用 MIT 许可证。
 
 
+<a id="gate-updates"></a>
 ## 流程治理硬门禁更新（2026-03-02）
 
 本仓库现已接入硬门禁治理层：
@@ -1855,4 +1940,4 @@ powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/sc
 启用 AI2AI 文档校验：
 
 `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1 -RequireAi2AiDocs:$true`
-补充：如果需求边界不清，`/Featureflow` 会先判断是 `must-brainstorm` 还是 `should-brainstorm`，再决定是否优先走 `/brainstorm`。
+补充：如果需求边界不清，或用户明确要求“需求预分析文档 / 按模板输出”，`/Featureflow` 会优先走 `/brainstorm`；若先执行 `/spec-lite` 后判定为 H，则会回退 `/brainstorm spec=<specPath> tier=H` 补齐证据链。

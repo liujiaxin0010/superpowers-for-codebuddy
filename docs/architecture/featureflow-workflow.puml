@@ -27,17 +27,18 @@ start
 :**devflow-router** 智能分流;
 note right
   分流依据：
+  · 文档产物意图（是否明确要需求预分析文档）
+  · 模糊等级（must/should/clear）
   · 需求类型（新功能/扩展/bugfix/重构）
   · 复杂度分级（H/M/L）
   · 是否已有项目代码
 end note
 
 if (任务类型?) then (新开发项目 new-feature)
-  :复杂度评估;
-  if (复杂度?) then (H 级)
-    #FFE0B2:需要 /brainstorm;
-  else (L/M 级)
-    #C8E6C9:直接进入 /spec-lite;
+  if (明确要需求预分析文档\n或需求模糊?) then (是)
+    #FFE0B2:先 /brainstorm;
+  else (否)
+    #C8E6C9:先 /spec-lite;
   endif
 else (老项目扩展 extend)
   #BBDEFB:进入 /extend 专用流程;
@@ -49,8 +50,9 @@ endif
 fork
   ' 左分支：新开发项目
   partition "**新开发项目流程**" #E8F5E9 {
-    if (H 级?) then (是)
+    if (已做前置 brainstorm?) then (是)
       :**/brainstorm**
+      · 生成需求预分析文档
       · 澄清模糊需求
       · 探索技术方案
       · 确定架构方向;
@@ -64,6 +66,14 @@ fork
     · 技术约束;
     :Boss 审核规格;
 
+    if (finalTier=H 且缺\nbrainstormPath?) then (是)
+      :**/brainstorm**
+      · 补齐 H 级头脑风暴证据
+      · 生成需求预分析文档
+      · 回填 brainstormPath / Design / test;
+      :Boss 确认方向;
+    endif
+
     |计划阶段|
     :**/write-plan**
     · 任务分解
@@ -76,6 +86,7 @@ fork
       · 规格完整性 ✓
       · 验收标准明确 ✓
       · 技术方案可行 ✓
+      · H 级 brainstormPath ✓
       ——
       未通过 → BLOCKED → 回退上游
     end note

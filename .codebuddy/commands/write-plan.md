@@ -18,6 +18,7 @@
    - 若存在 `TBD/待定/未确认`：直接 `BLOCKED`
    - 若无 `selectedDirection` 或 `unresolvedItems` 非空：直接 `BLOCKED`
    - 若用户拒绝候选方向但未给出明确替代方向/硬约束：直接 `BLOCKED`
+   - 若 `tier=H` 且 spec 的“追踪链接”中 `brainstormPath` 为空：直接 `BLOCKED` 并回退 `/brainstorm <需求描述> spec=<specPath> tier=H`
    - 若日志策略缺失（未说明沿用结构/框架选型、英文日志约束、禁控制台策略）：直接 `BLOCKED`
    - 若合同缺少目标、边界、验证、证据、owner：直接 `BLOCKED`
 4. 调用 `process-gatekeeper`（`command=write-plan`）

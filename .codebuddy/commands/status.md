@@ -10,7 +10,7 @@
 2. 读取 `docs/specs/` 最新规格并加载 `GateContext`
 3. 若存在 `docs/plans/` 最新计划，也一并读取
 4. 若存在 `docs/quality/last-quality-gate.json`，读取最新质量门禁结果
-5. 检查兼容层关键文档：
+5. 按阶段检查兼容层关键文档，并汇总 `ai2ai` 状态（`pending|partial|ready|n/a`）：
    - `spec/Me2AI/需求描述.md`
    - `spec/Me2AI/技术约束.md`
    - `spec/AI2AI/research.md`
@@ -37,8 +37,9 @@
 质量详情: 通过率 {x%|N/A} | 覆盖率 {x%|N/A} | 文档同步 {pass|blocked|unknown}
 Owner/Handoff: {owner|unknown} | {handoff|unknown}
 剩余风险: {list|none}
+AI2AI 状态: {pending|partial|ready|n/a}
 
-文件: findings {Y|N} | progress {Y|N} | spec {Y|N} | plan {Y|N} | ai2ai {Y|N}
+文件: findings {Y|N} | progress {Y|N} | spec {Y|N} | plan {Y|N} | ai2ai {pending|partial|ready|n/a}
 错误记录数: {count}
 ```
 

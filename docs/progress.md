@@ -37,3 +37,10 @@
 - [x] 为 GitNexus 自动安装的 4 个 Agent Skills 增加 CodeBuddy 适配说明
 - [x] 在 `gitnexus-code-intelligence`、`project-reading`、`CODEBUDDY.md`、`README.md` 中补充职责边界与命令映射
 - [x] 新增 `.gitnexusignore`，排除 `.claude/skills/`、`AGENT.md`、`CLAUDE.md`
+
+## 2026-03-18
+
+- [x] 统一 `/Featureflow`、`README` 与二级文档中的“需求预分析文档”路由规则
+- [x] 明确 H 级双入口路径与 `brainstormPath` 证据要求
+- [x] 将 `spec/AI2AI/*` 的说明统一为“按阶段生成”
+- [x] 更新白皮书、架构图、集成说明与 workflow playbook
