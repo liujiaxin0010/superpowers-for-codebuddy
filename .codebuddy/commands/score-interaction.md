@@ -1,41 +1,41 @@
-Please read and strictly follow the instructions in these files, in order:
-1. `.codebuddy/skills/ai-interaction-scoring/SKILL.md` (scoring dimensions and rules)
-2. `.codebuddy/skills/ai-interaction-scoring/scoring-rules.json` (scoring configuration)
-3. `.codebuddy/skills/ai-interaction-scoring/templates/score-report-template.md` (report template)
-4. `.codebuddy/skills/xlsx/SKILL.md` (XLSX output)
+请按以下顺序阅读并严格遵循：
+1. `.codebuddy/skills/ai-interaction-scoring/SKILL.md`（评分维度与规则）
+2. `.codebuddy/skills/ai-interaction-scoring/scoring-rules.json`（评分配置）
+3. `.codebuddy/skills/ai-interaction-scoring/templates/score-report-template.md`（报告模板）
+4. `.codebuddy/skills/xlsx/SKILL.md`（XLSX 输出）
 
-Your task is:
-Evaluate an AI coding assistant conversation and produce a structured quality scoring report.
+你的任务是：
+评估一段 AI 编码助手的对话，生成结构化的质量评分报告。
 
-Execution steps:
-1. Parse optional parameters: `task=<description>`, `outputDir=<path>`
-2. Accept the conversation content (pasted text, file path, or current conversation context)
-3. Identify the task type and determine 5 core deliverables specific to the task
-4. Collect evidence for each of the 4 scoring dimensions:
-   - **Dimension 1 (Spec-Coding, 10pts)**: Check for requirement clarification, direction evaluation, spec documents, implementation plans, persistent docs, and gate checks
-   - **Dimension 2 (Skills/Agent, 5pts)**: Count distinct skill/agent invocations (de-duplicated)
-   - **Dimension 3 (Project Completion, 10pts)**: Evaluate each deliverable against evidence levels (full/partial/none). User-reported failures override code evidence
-   - **Dimension 4 (Extended Features & UI, 5pts)**: Check for features beyond basic requirements and UI polish
-5. Detect anti-patterns: false completion, premature coding, bug loops, ignored user feedback
-6. Calculate scores for each dimension and total
-7. Identify highlights (strengths and weaknesses)
-8. Generate improvement recommendations
-9. Output `ai-interaction-scoring-report.md` using the template
-10. Output `ai-interaction-scoring-report.xlsx` using the xlsx skill
+执行步骤：
+1. 解析可选参数：`task=<任务描述>`、`outputDir=<输出路径>`
+2. 接收对话内容（粘贴文本、文件路径或当前对话上下文）
+3. 识别任务类型，确定 5 个与任务相关的核心交付物
+4. 在 4 个评分维度中收集证据：
+   - **维度一（Spec-Coding 规范，10 分）**：检查需求澄清、方向评估、规格文档、实施计划、持久化文档、门禁检查
+   - **维度二（Skills/Agent 使用，5 分）**：统计不同技能/Agent 的调用次数（去重）
+   - **维度三（项目完成度，10 分）**：按证据级别（完整/部分/无）评估每个交付物。用户反馈的故障优先于代码证据
+   - **维度四（扩展功能与美化，5 分）**：检查是否有超出基本需求的功能和界面美化
+5. 检测反模式：虚假完成、过早编码、Bug 修复循环、忽略用户反馈
+6. 计算各维度得分及总分
+7. 识别亮点（优势与不足）
+8. 生成改进建议
+9. 使用模板输出 `ai-interaction-scoring-report.md`
+10. 使用 xlsx 技能输出 `ai-interaction-scoring-report.xlsx`
 
-Scoring constraints:
-- Score based on **evidence in the conversation**, not assumptions
-- When evidence is ambiguous, score conservatively (lower)
-- User statements about functionality override code analysis
-- Compilation success alone is NOT sufficient evidence for "feature works"
-- Each dimension is scored independently
-- The report must include specific evidence citations for every score awarded
-- Anti-patterns are flagged even if they do not affect scoring
+评分约束：
+- 基于**对话中的证据**评分，而非假设
+- 证据模糊时，采用保守评分（偏低）
+- 用户关于功能的陈述优先于代码分析
+- 编译成功**不**足以作为"功能正常"的充分证据
+- 各维度独立评分
+- 报告中每个得分必须有可追溯的证据引用
+- 反模式即使不影响评分也必须标记
 
-Output requirements:
-- Report must be in the same language as the conversation (Chinese conversation = Chinese report)
-- XLSX content must use Chinese headers and descriptions
-- All scores must have traceable evidence
-- Recommendations must be actionable and specific
+输出要求：
+- 报告语言与对话语言一致（中文对话 = 中文报告）
+- XLSX 内容使用中文表头和描述
+- 所有得分必须有可追溯的证据
+- 改进建议必须具体、可操作
 
 $ARGUMENTS

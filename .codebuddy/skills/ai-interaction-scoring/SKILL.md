@@ -1,187 +1,187 @@
 ---
 name: ai-interaction-scoring
-description: "AI interaction quality scoring skill. Evaluates AI coding assistant conversations across 4 dimensions: spec-coding compliance, skills/agent usage, project completion, and extended features/UI quality. Outputs structured scoring reports in MD and XLSX formats."
+description: "AI 交互质量评分技能。从 4 个维度评估 AI 编码助手对话质量：Spec-Coding 规范、Skills/Agent 使用、项目完成度、扩展功能与美化。输出结构化的 MD 和 XLSX 评分报告。"
 ---
 
-# AI Interaction Quality Scoring
+# AI 交互质量评分
 
-## Purpose
+## 目标
 
-Evaluate the quality of AI coding assistant conversations by analyzing dialogue content, code artifacts, and process compliance. Since direct project execution is not always possible, scoring relies on **proxy indicators** extracted from conversation evidence.
+通过分析对话内容、代码产物和流程合规性，评估 AI 编码助手的对话质量。由于无法直接运行项目，评分依赖于从对话证据中提取的**代理指标（Proxy Indicators）**。
 
-## Input Parameters
+## 输入参数
 
-`/score-interaction <conversation> [task=<task-description>] [outputDir=<path>]`
+`/score-interaction <对话内容> [task=<任务描述>] [outputDir=<输出路径>]`
 
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| conversation | Yes | - | Conversation content (text/JSON) or file path |
-| task | No | Auto-detect | Task description for context |
-| outputDir | No | `docs/scoring/` | Output directory for reports |
+| 参数 | 必填 | 默认值 | 说明 |
+|------|------|--------|------|
+| conversation | 是 | - | 对话内容（文本/JSON）或文件路径 |
+| task | 否 | 自动识别 | 任务描述，用于确定评分基线 |
+| outputDir | 否 | `docs/scoring/` | 报告输出目录 |
 
-## Scoring Dimensions (Total: 30 Points)
+## 评分维度（总分：30 分）
 
-### Dimension 1: Spec-Coding Compliance (10 Points)
+### 维度一：Spec-Coding 规范（10 分）
 
-Evaluates whether the conversation follows a structured specification-first approach before coding.
+评估对话是否在编码前遵循了结构化的规格优先方法。
 
-| Score | Evidence Criteria |
-|-------|-------------------|
-| 0 | Coding starts immediately with no planning discussion |
-| 3 | Simple requirement description exists but no structured document |
-| 5 | Partial spec: has requirement analysis OR interface design, but not both |
-| 7 | Has requirement analysis + interface design + technical direction, but missing formal spec document |
-| 10 | Full spec-coding workflow: requirement clarification + direction evaluation + formal spec document + implementation plan |
+| 得分 | 证据标准 |
+|------|----------|
+| 0 | 一开始就直接编码，无任何规划讨论 |
+| 3 | 有简单的需求描述但无结构化文档 |
+| 5 | 部分规格：有需求分析或接口设计，但不完整 |
+| 7 | 有需求分析 + 接口设计 + 技术方向，但缺少正式的规格文档 |
+| 10 | 完整的 spec-coding 流程：需求澄清 + 方向评估 + 正式规格文档 + 实施计划 |
 
-**Detection Patterns:**
+**检测模式：**
 
-1. Spec-related keywords: `spec`, `plan`, `design`, `interface definition`, `data structure`, `technical direction`, `API design`
-2. Spec-related commands: `/spec-lite`, `/write-plan`, `/brainstorm`, `/Featureflow`, `/research`
-3. Spec document artifacts: files under `docs/specs/`, `docs/plans/`, `spec/` directories
-4. Requirement clarification evidence: multi-round Q&A before implementation
-5. Direction evaluation evidence: multiple implementation approaches compared with trade-offs
-6. Plan document artifacts: batch/phase planning with task breakdown
+1. Spec 相关关键词：`spec`、`plan`、`设计`、`接口定义`、`数据结构`、`技术方案`、`API 设计`
+2. Spec 相关命令：`/spec-lite`、`/write-plan`、`/brainstorm`、`/Featureflow`、`/research`
+3. Spec 文档产物：`docs/specs/`、`docs/plans/`、`spec/` 目录下的文件
+4. 需求澄清证据：编码前的多轮问答
+5. 方向评估证据：对比多个实现方案及权衡分析
+6. 计划文档产物：包含批次/阶段的任务分解
 
-**Scoring Rules:**
+**评分细则：**
 
-- +2: Requirement clarification phase exists (multi-round Q&A)
-- +2: Technical direction evaluation with multiple options
-- +2: Formal spec document generated (spec-lite or equivalent)
-- +2: Implementation plan with task breakdown and batches
-- +1: Persistent documentation maintained (findings.md, progress.md)
-- +1: Gate checks or quality gates referenced
+- +2：存在需求澄清阶段（多轮问答）
+- +2：技术方向评估，提供多个方案选项
+- +2：生成正式规格文档（spec-lite 或等效文档）
+- +2：包含任务分解和批次的实施计划
+- +1：维护了持久化文档（findings.md、progress.md）
+- +1：引用了门禁检查或质量关卡
 
-### Dimension 2: Skills/Agent Usage (5 Points)
+### 维度二：Skills/Agent 使用（5 分）
 
-Evaluates the breadth of skill and agent utilization during the conversation.
+评估对话中技能和 Agent 的使用广度。
 
-| Score | Evidence Criteria |
-|-------|-------------------|
-| 0 | No `/` commands or agent invocations used |
-| 2 | 1 skill or agent used |
-| 3 | 2 skills or agents used |
-| 4 | 3 skills or agents used |
-| 5 | 4 or more distinct skills or agents used |
+| 得分 | 证据标准 |
+|------|----------|
+| 0 | 未使用任何 `/` 命令或 Agent |
+| 2 | 使用了 1 个技能或 Agent |
+| 3 | 使用了 2 个技能或 Agent |
+| 4 | 使用了 3 个技能或 Agent |
+| 5 | 使用了 4 个及以上不同的技能或 Agent |
 
-**Detection Method:**
+**检测方法：**
 
-1. Count distinct `/xxx` slash command invocations in the conversation
-2. Detect agent calls (code-reviewer, task-implementer, etc.)
-3. Reference skill list from `.codebuddy/commands/` and `.codebuddy/skills/`
-4. Common skills: `/Featureflow`, `/spec-lite`, `/write-plan`, `/execute-plan`, `/code-review`, `/unified-test`, `/test-gen`, `/fix-bug`, `/simplify`, `/brainstorm`, `/extend`, `/research`, `/status`, `/doc-sync`, `/pua`
-5. De-duplicate: same skill invoked multiple times counts as 1
+1. 统计对话中不同 `/xxx` 斜杠命令的调用次数
+2. 检测 Agent 调用（code-reviewer、task-implementer 等）
+3. 参考 `.codebuddy/commands/` 和 `.codebuddy/skills/` 中的技能列表
+4. 常见技能：`/Featureflow`、`/spec-lite`、`/write-plan`、`/execute-plan`、`/code-review`、`/unified-test`、`/test-gen`、`/fix-bug`、`/simplify`、`/brainstorm`、`/extend`、`/research`、`/status`、`/doc-sync`、`/pua`
+5. 去重：同一技能多次调用计为 1 次
 
-### Dimension 3: Project Completion (10 Points)
+### 维度三：项目完成度（10 分）
 
-Evaluates whether the delivered project actually works, using proxy indicators when direct execution is not possible.
+评估交付的项目是否实际可运行，当无法直接执行时使用代理指标。
 
-**Evaluation is task-specific.** The scoring system adapts to the actual task requirements. For each task, identify 5 core deliverables and score 2 points each.
+**评估与任务相关。** 评分系统根据实际任务需求进行调整。针对每个任务识别 5 个核心交付物，每个 2 分。
 
-**Generic Deliverable Assessment Template (2 Points Each):**
+**通用交付物评估模板（每项 2 分）：**
 
-| Assessment Item | Evidence Sources |
-|----------------|-----------------|
-| Core Feature 1 | API endpoint + handler code + frontend integration |
-| Core Feature 2 | API endpoint + handler code + frontend integration |
-| Core Feature 3 | API endpoint + handler code + frontend integration |
-| Core Feature 4 | API endpoint + handler code + frontend integration |
-| UI/UX Completeness | UI framework + layout components + structured styles |
+| 评估项 | 证据来源 |
+|--------|----------|
+| 核心功能 1 | API 端点 + 处理器代码 + 前端集成 |
+| 核心功能 2 | API 端点 + 处理器代码 + 前端集成 |
+| 核心功能 3 | API 端点 + 处理器代码 + 前端集成 |
+| 核心功能 4 | API 端点 + 处理器代码 + 前端集成 |
+| UI/UX 完整性 | UI 框架 + 布局组件 + 结构化样式 |
 
-**For each deliverable, apply the following scoring:**
+**每个交付物按以下标准评分：**
 
-| Evidence Level | Points | Criteria |
-|---------------|--------|----------|
-| Full evidence | 2 | Code exists + tests pass + runtime verification shown |
-| Partial evidence | 1 | Code exists + compiles/builds, but no runtime verification |
-| No evidence | 0 | Code missing or broken, no compilation evidence |
+| 证据级别 | 分值 | 标准 |
+|----------|------|------|
+| 完整证据 | 2 | 代码存在 + 测试通过 + 运行时验证展示 |
+| 部分证据 | 1 | 代码存在 + 编译/构建成功，但无运行时验证 |
+| 无证据 | 0 | 代码缺失或损坏，无编译证据 |
 
-**Supplementary Evidence (Strengthens or Weakens Score):**
+**补充证据（增强或削弱评分）：**
 
-- Startup command (`npm start`, `go run`, etc.) with successful output log
-- Test execution records with pass/fail results
-- Screenshots or `localhost:xxx` access descriptions
-- User confirmation that feature works
-- User reports of bugs or failures (negative evidence)
+- 启动命令（`npm start`、`go run` 等）及成功输出日志
+- 测试执行记录及通过/失败结果
+- 截图或 `localhost:xxx` 访问描述
+- 用户确认功能正常
+- 用户报告 Bug 或故障（负面证据）
 
-**Critical Rule:** If the user explicitly reports that a feature does not work (e.g., "page shows no files"), that feature scores 0 regardless of code existence.
+**核心规则：** 如果用户明确报告某功能不可用（如"页面上没有文件"），该功能无论代码是否存在，一律评 0 分。
 
-### Dimension 4: Extended Features & UI Beautification (5 Points)
+### 维度四：扩展功能与界面美化（5 分）
 
-Evaluates whether the project goes beyond basic requirements.
+评估项目是否超越了基本需求。
 
-| Score | Evidence Criteria |
-|-------|-------------------|
-| 0 | Only basic requirements fulfilled, no extras |
-| 2 | Has extended features OR UI beautification (one of the two) |
-| 3 | Has both, but with known bugs or incomplete implementation |
-| 4 | Has both with mostly working implementation |
-| 5 | Has both with verified working implementation |
+| 得分 | 证据标准 |
+|------|----------|
+| 0 | 仅完成基本需求，无额外功能 |
+| 2 | 有扩展功能或界面美化（二者之一） |
+| 3 | 两者兼具，但存在已知 Bug 或实现不完整 |
+| 4 | 两者兼具，大部分功能正常 |
+| 5 | 两者兼具，且经验证可正常工作 |
 
-**Extended Feature Keywords:**
+**扩展功能关键词：**
 
-- Category/tags, priority levels, search/filter, drag-and-drop sorting
-- Completion statistics, local storage/localStorage, dark mode
-- File preview, batch operations, real-time sync, notifications
-- Pagination, export, import, keyboard shortcuts
+- 分类/标签、优先级、搜索/筛选、拖拽排序
+- 完成统计、本地存储/localStorage、深色模式
+- 文件预览、批量操作、实时同步、通知
+- 分页、导出、导入、快捷键
 
-**UI Beautification Keywords:**
+**界面美化关键词：**
 
-- Responsive/responsive design, animation/transition, theme/dark mode
-- Icons/icon library, mobile adaptation/media query
-- UI component library (Ant Design, Element Plus, Naive UI, etc.)
-- Layout components, grid system, card/panel design
+- 响应式设计、动画/过渡效果、主题/深色模式
+- 图标/图标库、移动端适配/媒体查询
+- UI 组件库（Ant Design、Element Plus、Naive UI 等）
+- 布局组件、栅格系统、卡片/面板设计
 
-## Execution Flow
+## 执行流程
 
-1. **Parse Input**: Extract conversation content and optional parameters
-2. **Task Identification**: Determine the task type and core deliverables
-3. **Evidence Collection**: Scan conversation for scoring evidence across all 4 dimensions
-4. **Score Calculation**: Apply scoring rules with evidence mapping
-5. **Highlight Analysis**: Identify strengths and weaknesses
-6. **Report Generation**: Output MD report + XLSX summary
+1. **解析输入**：提取对话内容和可选参数
+2. **任务识别**：确定任务类型和核心交付物
+3. **证据收集**：在 4 个维度中扫描对话证据
+4. **分数计算**：按评分规则映射证据并计算得分
+5. **亮点分析**：识别优势和不足
+6. **报告生成**：输出 MD 报告 + XLSX 汇总表
 
-## Output Artifacts
+## 输出产物
 
-### Primary: `ai-interaction-scoring-report.md`
+### 主报告：`ai-interaction-scoring-report.md`
 
-Generated in `outputDir` using the template at `templates/score-report-template.md`.
+在 `outputDir` 目录下使用 `templates/score-report-template.md` 模板生成。
 
-### Secondary: `ai-interaction-scoring-report.xlsx`
+### 汇总表：`ai-interaction-scoring-report.xlsx`
 
-Generated using the `xlsx` skill with the following columns:
+使用 `xlsx` 技能生成，包含以下列：
 
-| Column | Field | Required | Description |
-|--------|-------|----------|-------------|
-| A | Dimension | * | Scoring dimension name |
-| B | Max Score | * | Maximum possible score |
-| C | Actual Score | * | Awarded score |
-| D | Score Rate | * | Percentage (Actual/Max) |
-| E | Key Evidence | * | Primary evidence summary |
-| F | Deduction Reasons | | Reasons for point deductions |
-| G | Improvement Suggestions | | Actionable improvement advice |
+| 列 | 字段名 | 必填 | 说明 |
+|----|--------|------|------|
+| A | 评分维度 | * | 评分维度名称 |
+| B | 满分 | * | 该维度最高分 |
+| C | 得分 | * | 实际得分 |
+| D | 得分率 | * | 百分比（得分/满分） |
+| E | 关键证据 | * | 主要证据摘要 |
+| F | 扣分原因 | | 扣分原因说明 |
+| G | 改进建议 | | 可操作的改进建议 |
 
-XLSX formatting requirements:
-- Header row: bold, light blue background, frozen first row
-- Score Rate column: percentage format with conditional coloring (green >= 80%, yellow >= 60%, red < 60%)
-- Auto-fit column widths
-- Summary row at bottom with total score
+XLSX 格式要求：
+- 表头行：加粗、浅蓝色背景、冻结首行
+- 得分率列：百分比格式，条件着色（绿色 >= 80%、黄色 >= 60%、红色 < 60%）
+- 列宽自适应
+- 底部汇总行显示总分
 
-## Anti-Patterns to Detect
+## 反模式检测
 
-The scoring system should flag the following negative patterns:
+评分系统应标记以下负面模式：
 
-| Anti-Pattern | Impact | Detection |
-|-------------|--------|-----------|
-| False Completion | Deduct from Dim 3 | Claims "done" without test evidence |
-| Premature Coding | Deduct from Dim 1 | Starts coding before any planning |
-| Bug Loop | Deduct from Dim 3 | Same bug fixed 3+ times without resolution |
-| Scope Creep | Note in report | Significant feature additions not in original spec |
-| Ignored User Feedback | Deduct from Dim 3 | User reports issue, AI claims it's fixed without evidence |
+| 反模式 | 影响 | 检测方式 |
+|--------|------|----------|
+| 虚假完成 | 维度三扣分 | 声称"已完成"但未运行测试验证 |
+| 过早编码 | 维度一扣分 | 跳过规划直接编码 |
+| Bug 修复循环 | 维度三扣分 | 同一 Bug 修复 3 次以上仍未解决 |
+| 范围蔓延 | 在报告中标注 | 显著的功能增加不在原始 spec 范围内 |
+| 忽略用户反馈 | 维度三扣分 | 用户报告问题，AI 未解决或无证据地声称已修复 |
 
-## Scoring Calibration Notes
+## 评分校准说明
 
-- Scoring is based on **evidence in the conversation**, not assumptions
-- When evidence is ambiguous, score conservatively (lower)
-- User statements about functionality override code analysis (user says "doesn't work" = it doesn't work)
-- Compilation success alone is not sufficient evidence for "feature works"
-- Each dimension is scored independently; high scores in one do not compensate for low scores in another
+- 评分基于**对话中的证据**，而非假设
+- 当证据模糊时，采用保守评分（偏低）
+- 用户关于功能的陈述优先于代码分析（用户说"不能用" = 不能用）
+- 编译成功不足以作为"功能正常"的充分证据
+- 各维度独立评分；某一维度的高分不能弥补另一维度的低分

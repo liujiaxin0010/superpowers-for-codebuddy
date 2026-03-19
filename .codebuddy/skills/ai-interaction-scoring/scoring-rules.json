@@ -2,20 +2,18 @@
   "version": "1.0.0",
   "dimensions": {
     "spec_coding": {
-      "name": "Spec-Coding Compliance",
-      "nameCN": "Spec-Coding 规范",
+      "name": "Spec-Coding 规范",
       "maxScore": 10,
       "breakdownItems": [
         {
           "id": "requirement_clarification",
-          "label": "Requirement Clarification",
-          "labelCN": "需求澄清",
+          "label": "需求澄清",
           "points": 2,
           "evidence": {
             "positive": [
-              "Multi-round Q&A before implementation",
-              "Explicit requirement questions asked",
-              "User confirmation of requirements received"
+              "编码前存在多轮需求问答",
+              "明确提出了需求相关问题",
+              "获得了用户对需求的确认"
             ],
             "keywords": [
               "requirement", "clarify", "confirm", "scope", "boundary",
@@ -25,14 +23,13 @@
         },
         {
           "id": "direction_evaluation",
-          "label": "Technical Direction Evaluation",
-          "labelCN": "技术方向评估",
+          "label": "技术方向评估",
           "points": 2,
           "evidence": {
             "positive": [
-              "Multiple implementation approaches compared",
-              "Trade-off analysis presented",
-              "User selected from options"
+              "对比了多个实现方案",
+              "展示了权衡分析",
+              "用户从选项中做出了选择"
             ],
             "keywords": [
               "option", "approach", "trade-off", "compare", "direction",
@@ -42,14 +39,13 @@
         },
         {
           "id": "spec_document",
-          "label": "Formal Spec Document",
-          "labelCN": "规格文档",
+          "label": "规格文档",
           "points": 2,
           "evidence": {
             "positive": [
-              "Spec file generated under docs/specs/",
-              "/spec-lite command invoked",
-              "GateContext or TaskContract produced"
+              "在 docs/specs/ 下生成了规格文件",
+              "调用了 /spec-lite 命令",
+              "产出了 GateContext 或 TaskContract"
             ],
             "filePatterns": [
               "docs/specs/*-spec-lite.md",
@@ -59,14 +55,13 @@
         },
         {
           "id": "implementation_plan",
-          "label": "Implementation Plan",
-          "labelCN": "实施计划",
+          "label": "实施计划",
           "points": 2,
           "evidence": {
             "positive": [
-              "Plan file generated under docs/plans/",
-              "/write-plan command invoked",
-              "Task breakdown with batches/phases"
+              "在 docs/plans/ 下生成了计划文件",
+              "调用了 /write-plan 命令",
+              "包含批次/阶段的任务分解"
             ],
             "filePatterns": [
               "docs/plans/*-plan.md"
@@ -75,13 +70,12 @@
         },
         {
           "id": "persistent_docs",
-          "label": "Persistent Documentation",
-          "labelCN": "持久化文档",
+          "label": "持久化文档",
           "points": 1,
           "evidence": {
             "positive": [
-              "findings.md maintained and updated",
-              "progress.md maintained and updated"
+              "维护并更新了 findings.md",
+              "维护并更新了 progress.md"
             ],
             "filePatterns": [
               "docs/findings.md",
@@ -91,14 +85,13 @@
         },
         {
           "id": "gate_checks",
-          "label": "Quality Gates",
-          "labelCN": "质量门禁",
+          "label": "质量门禁",
           "points": 1,
           "evidence": {
             "positive": [
-              "Gate check invoked before execution",
-              "process-gatekeeper referenced",
-              "BLOCKED status handled properly"
+              "执行前调用了门禁检查",
+              "引用了 process-gatekeeper",
+              "正确处理了 BLOCKED 状态"
             ],
             "keywords": [
               "gate", "gatekeeper", "blocked", "pass",
@@ -109,15 +102,14 @@
       ]
     },
     "skills_usage": {
-      "name": "Skills/Agent Usage",
-      "nameCN": "Skills/Agent 使用",
+      "name": "Skills/Agent 使用",
       "maxScore": 5,
       "scoringTable": [
-        { "count": 0, "score": 0 },
-        { "count": 1, "score": 2 },
-        { "count": 2, "score": 3 },
-        { "count": 3, "score": 4 },
-        { "count": 4, "score": 5 }
+        { "count": 0, "score": 0, "description": "未使用任何技能或 Agent" },
+        { "count": 1, "score": 2, "description": "使用了 1 个技能或 Agent" },
+        { "count": 2, "score": 3, "description": "使用了 2 个技能或 Agent" },
+        { "count": 3, "score": 4, "description": "使用了 3 个技能或 Agent" },
+        { "count": 4, "score": 5, "description": "使用了 4 个及以上不同的技能或 Agent" }
       ],
       "knownSkills": [
         "/Featureflow",
@@ -152,52 +144,54 @@
       ]
     },
     "project_completion": {
-      "name": "Project Completion",
-      "nameCN": "项目完成度",
+      "name": "项目完成度",
       "maxScore": 10,
       "deliverableCount": 5,
       "pointsPerDeliverable": 2,
       "evidenceLevels": [
         {
           "level": "full",
+          "label": "完整证据",
           "points": 2,
-          "criteria": "Code exists + tests pass + runtime verification shown"
+          "criteria": "代码存在 + 测试通过 + 展示了运行时验证"
         },
         {
           "level": "partial",
+          "label": "部分证据",
           "points": 1,
-          "criteria": "Code exists + compiles/builds, but no runtime verification"
+          "criteria": "代码存在 + 编译/构建成功，但无运行时验证"
         },
         {
           "level": "none",
+          "label": "无证据",
           "points": 0,
-          "criteria": "Code missing or broken, no compilation evidence"
+          "criteria": "代码缺失或损坏，无编译证据"
         }
       ],
       "negativeOverrides": [
         {
           "pattern": "user_reports_failure",
-          "description": "User explicitly reports a feature does not work",
-          "action": "Set deliverable score to 0 regardless of code existence"
+          "description": "用户明确报告功能不可用",
+          "action": "无论代码是否存在，该交付物评 0 分"
         },
         {
           "pattern": "false_completion",
-          "description": "AI claims completion without test evidence",
-          "action": "Cap deliverable score at 1 (partial)"
+          "description": "AI 声称完成但未提供测试证据",
+          "action": "该交付物最高评 1 分（部分）"
         },
         {
           "pattern": "bug_loop",
-          "description": "Same bug fixed 3+ times without resolution",
-          "action": "Deduct 1 point from affected deliverable"
+          "description": "同一 Bug 修复 3 次以上仍未解决",
+          "action": "受影响的交付物扣 1 分"
         }
       ]
     },
     "extended_features": {
-      "name": "Extended Features & UI Beautification",
-      "nameCN": "扩展功能与美化",
+      "name": "扩展功能与美化",
       "maxScore": 5,
       "subDimensions": {
         "extensions": {
+          "label": "扩展功能",
           "maxScore": 2.5,
           "keywords": [
             "category", "tag", "priority", "search", "filter",
@@ -211,6 +205,7 @@
           ]
         },
         "beautification": {
+          "label": "界面美化",
           "maxScore": 2.5,
           "keywords": [
             "responsive", "animation", "transition", "theme",
@@ -222,49 +217,51 @@
         }
       },
       "bugPenalty": {
-        "description": "Known bugs in extended features reduce score",
+        "description": "扩展功能中存在已知 Bug 时扣分",
         "deduction": 0.5
       }
     }
   },
   "antiPatterns": {
     "false_completion": {
-      "label": "False Completion",
-      "labelCN": "虚假完成",
-      "detection": "Claims task done without running verification commands",
-      "impact": "Deduct from project completion dimension"
+      "label": "虚假完成",
+      "detection": "声称任务完成但未运行验证命令",
+      "impact": "在项目完成度维度中扣分"
     },
     "premature_coding": {
-      "label": "Premature Coding",
-      "labelCN": "过早编码",
-      "detection": "Starts writing code before any planning or requirement discussion",
-      "impact": "Deduct from spec-coding dimension"
+      "label": "过早编码",
+      "detection": "未经任何规划或需求讨论直接编码",
+      "impact": "在 Spec-Coding 规范维度中扣分"
     },
     "bug_loop": {
-      "label": "Bug Fix Loop",
-      "labelCN": "Bug修复循环",
-      "detection": "Same issue fixed 3+ times without resolution",
-      "impact": "Deduct from project completion dimension"
+      "label": "Bug 修复循环",
+      "detection": "同一问题修复 3 次以上仍未解决",
+      "impact": "在项目完成度维度中扣分"
     },
     "ignored_user_feedback": {
-      "label": "Ignored User Feedback",
-      "labelCN": "忽略用户反馈",
-      "detection": "User reports issue but AI does not address it or claims it is fixed without evidence",
-      "impact": "Deduct from project completion dimension"
+      "label": "忽略用户反馈",
+      "detection": "用户报告问题但 AI 未解决或无证据地声称已修复",
+      "impact": "在项目完成度维度中扣分"
     }
   },
+  "scoreLevels": [
+    { "level": "优秀", "min": 25, "max": 30, "description": "流程合规、功能完整、界面精致" },
+    { "level": "良好", "min": 19, "max": 24, "description": "基本合规、核心功能可用、存在小缺陷" },
+    { "level": "合格", "min": 13, "max": 18, "description": "部分合规、部分功能可用、存在明显缺陷" },
+    { "level": "待改进", "min": 0, "max": 12, "description": "流程、功能或两者均存在显著差距" }
+  ],
   "outputConfig": {
     "defaultOutputDir": "docs/scoring/",
     "reportFilename": "ai-interaction-scoring-report.md",
     "xlsxFilename": "ai-interaction-scoring-report.xlsx",
     "xlsxColumns": [
-      { "header": "Dimension", "headerCN": "评分维度", "field": "dimension", "width": 25 },
-      { "header": "Max Score", "headerCN": "满分", "field": "maxScore", "width": 10 },
-      { "header": "Actual Score", "headerCN": "得分", "field": "actualScore", "width": 10 },
-      { "header": "Score Rate", "headerCN": "得分率", "field": "scoreRate", "width": 12 },
-      { "header": "Key Evidence", "headerCN": "关键证据", "field": "evidence", "width": 50 },
-      { "header": "Deduction Reasons", "headerCN": "扣分原因", "field": "deductions", "width": 40 },
-      { "header": "Improvement Suggestions", "headerCN": "改进建议", "field": "suggestions", "width": 40 }
+      { "header": "评分维度", "field": "dimension", "width": 25 },
+      { "header": "满分", "field": "maxScore", "width": 10 },
+      { "header": "得分", "field": "actualScore", "width": 10 },
+      { "header": "得分率", "field": "scoreRate", "width": 12 },
+      { "header": "关键证据", "field": "evidence", "width": 50 },
+      { "header": "扣分原因", "field": "deductions", "width": 40 },
+      { "header": "改进建议", "field": "suggestions", "width": 40 }
     ],
     "xlsxFormatting": {
       "headerStyle": {
