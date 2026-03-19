@@ -41,6 +41,7 @@
 | 🧠 **文件即记忆** | 受 Manus AI 启发，用持久化文件代替上下文窗口做工作记忆，防止长任务目标偏移和错误重复 |
 | 🔁 **指南兼容流程层** | 保持 `docs/*` 主链路，同时兼容 `spec/Me2AI + spec/AI2AI` 与 `/research`、`/testcase`、`/code-self-check` 阶段命令 |
 | 🔥 **PUA 万能激励引擎** | 防止 AI 摆烂放弃。任务失败 2+ 次、被动等待、空口完成时自动触发大厂 PUA 话术，强制穷尽一切方案 |
+| 📊 **AI 交互质量评分** | `/score-interaction` 命令，4 维度 30 分制评估对话质量（Spec-Coding 规范、Skills 使用、项目完成度、扩展功能），输出 `{姓名}_{工号}_{需求名称}.md/.xlsx` 结构化报告 |
 
 <a id="new-docs"></a>
 ## 新增流程文档
@@ -70,7 +71,7 @@
 your-project/
 ├── CODEBUDDY.md                                    # 主引导文件（铁律 + 工作流定义）
 ├── .codebuddy/
-    ├── skills/                                     # 技能库（32 个，按场景调用）
+    ├── skills/                                     # 技能库（33 个，按场景调用）
     │   ├── brainstorming/                          # 需求澄清与方案发散
     │   │   ├── SKILL.md                            # 头脑风暴主流程
     │   │   └── requirement-doc-template.md         # 需求预分析模板
@@ -132,6 +133,11 @@ your-project/
     │   │   └── persuasion-principles.md            # 表达与说服参考
     │   ├── code-self-check/SKILL.md                # Git/SVN 代码自检
     │   ├── pua/SKILL.md                            # PUA 万能激励引擎（防摆烂）
+    │   ├── ai-interaction-scoring/                  # AI 交互质量评分
+    │   │   ├── SKILL.md                            # 评分维度与规则
+    │   │   ├── scoring-rules.json                  # 评分配置（关键词、权重、阈值）
+    │   │   └── templates/
+    │   │       └── score-report-template.md         # 评分报告模板
     │   └── xlsx/                                   # XLSX 生成能力
     │       ├── SKILL.md                            # 表格生成规范
     │       └── scripts/...                         # Office 文档处理脚本
@@ -152,7 +158,7 @@ your-project/
     │   ├── systematic-debugger.md                  # 系统化调试代理
     │   ├── task-implementer.md                     # 任务实现代理
     │   └── unified-test-agent.md                   # 前后端测试代理
-    └── commands/                                   # 斜杠命令（20 个）
+    └── commands/                                   # 斜杠命令（21 个）
         ├── brainstorm.md      → /brainstorm        # 头脑风暴
         ├── spec-lite.md       → /spec-lite         # 轻量规格与分级
         ├── Featureflow.md      → /Featureflow        # 单入口总控命令
@@ -172,6 +178,7 @@ your-project/
         ├── test-gen.md        → /test-gen          # 测试入口（自动路由）
         ├── unified-test.md    → /unified-test      # 统一测试流程
         ├── pua.md            → /pua                # PUA 激励引擎（防摆烂）
+        ├── score-interaction.md → /score-interaction # AI 交互质量评分
         └── write-plan.md      → /write-plan        # 编写计划
 ├── docs/                                           # 主产物目录（默认事实源）
 └── spec/                                           # 指南兼容层（Me2AI / AI2AI）
@@ -360,6 +367,7 @@ CLAUDE.md
 | `/simplify` | 简化代码（保持行为不变） | **针对指定路径收敛复杂度、减少冗余，逐步验证** |
 | `/status` | 查看当前任务进度 | **快速查看阶段进度、持久化文件状态、已记录错误** |
 | `/pua` | 加载 PUA 激励引擎 | **防止 AI 摆烂放弃，任务卡壳时手动激活或传入任务描述立即进入方法论** |
+| `/score-interaction` | AI 交互质量评分 | **评估 AI 编码助手对话质量，4 维度 30 分制，输出 `{姓名}_{工号}_{需求名称}.md/.xlsx` 报告** |
 
 ### 命令使用方式速查（格式 + 示例）
 
@@ -389,6 +397,7 @@ CLAUDE.md
 | `/simplify` | `/simplify [路径或模块]` | `/simplify src/modules/order` |
 | `/status` | `/status` | `/status` |
 | `/pua` | `/pua [当前卡壳的任务描述]` | `/pua 这个 API 调了三次都超时` |
+| `/score-interaction` | `/score-interaction <对话内容> name=<姓名> id=<工号> task=<需求名称> [outputDir=<路径>]` | `/score-interaction 对话记录.txt name=张三 id=10086 task=文件映射服务` |
 
 ### 指南流程兼容映射（`docs` 主、`spec` 辅）
 
