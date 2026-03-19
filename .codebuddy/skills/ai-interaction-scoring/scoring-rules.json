@@ -1,0 +1,282 @@
+{
+  "version": "1.0.0",
+  "dimensions": {
+    "spec_coding": {
+      "name": "Spec-Coding Compliance",
+      "nameCN": "Spec-Coding 规范",
+      "maxScore": 10,
+      "breakdownItems": [
+        {
+          "id": "requirement_clarification",
+          "label": "Requirement Clarification",
+          "labelCN": "需求澄清",
+          "points": 2,
+          "evidence": {
+            "positive": [
+              "Multi-round Q&A before implementation",
+              "Explicit requirement questions asked",
+              "User confirmation of requirements received"
+            ],
+            "keywords": [
+              "requirement", "clarify", "confirm", "scope", "boundary",
+              "需求", "澄清", "确认", "范围", "边界"
+            ]
+          }
+        },
+        {
+          "id": "direction_evaluation",
+          "label": "Technical Direction Evaluation",
+          "labelCN": "技术方向评估",
+          "points": 2,
+          "evidence": {
+            "positive": [
+              "Multiple implementation approaches compared",
+              "Trade-off analysis presented",
+              "User selected from options"
+            ],
+            "keywords": [
+              "option", "approach", "trade-off", "compare", "direction",
+              "方案", "方向", "对比", "权衡", "选择"
+            ]
+          }
+        },
+        {
+          "id": "spec_document",
+          "label": "Formal Spec Document",
+          "labelCN": "规格文档",
+          "points": 2,
+          "evidence": {
+            "positive": [
+              "Spec file generated under docs/specs/",
+              "/spec-lite command invoked",
+              "GateContext or TaskContract produced"
+            ],
+            "filePatterns": [
+              "docs/specs/*-spec-lite.md",
+              "docs/specs/*-spec.md"
+            ]
+          }
+        },
+        {
+          "id": "implementation_plan",
+          "label": "Implementation Plan",
+          "labelCN": "实施计划",
+          "points": 2,
+          "evidence": {
+            "positive": [
+              "Plan file generated under docs/plans/",
+              "/write-plan command invoked",
+              "Task breakdown with batches/phases"
+            ],
+            "filePatterns": [
+              "docs/plans/*-plan.md"
+            ]
+          }
+        },
+        {
+          "id": "persistent_docs",
+          "label": "Persistent Documentation",
+          "labelCN": "持久化文档",
+          "points": 1,
+          "evidence": {
+            "positive": [
+              "findings.md maintained and updated",
+              "progress.md maintained and updated"
+            ],
+            "filePatterns": [
+              "docs/findings.md",
+              "docs/progress.md"
+            ]
+          }
+        },
+        {
+          "id": "gate_checks",
+          "label": "Quality Gates",
+          "labelCN": "质量门禁",
+          "points": 1,
+          "evidence": {
+            "positive": [
+              "Gate check invoked before execution",
+              "process-gatekeeper referenced",
+              "BLOCKED status handled properly"
+            ],
+            "keywords": [
+              "gate", "gatekeeper", "blocked", "pass",
+              "门禁", "阻断", "通过"
+            ]
+          }
+        }
+      ]
+    },
+    "skills_usage": {
+      "name": "Skills/Agent Usage",
+      "nameCN": "Skills/Agent 使用",
+      "maxScore": 5,
+      "scoringTable": [
+        { "count": 0, "score": 0 },
+        { "count": 1, "score": 2 },
+        { "count": 2, "score": 3 },
+        { "count": 3, "score": 4 },
+        { "count": 4, "score": 5 }
+      ],
+      "knownSkills": [
+        "/Featureflow",
+        "/spec-lite",
+        "/write-plan",
+        "/execute-plan",
+        "/code-review",
+        "/unified-test",
+        "/test-gen",
+        "/fix-bug",
+        "/simplify",
+        "/brainstorm",
+        "/extend",
+        "/research",
+        "/status",
+        "/doc-sync",
+        "/pua",
+        "/code-self-check",
+        "/testcase",
+        "/issue-draft-pr",
+        "/parallel-delivery",
+        "/score-interaction"
+      ],
+      "knownAgents": [
+        "process-gatekeeper",
+        "code-review-standards",
+        "web-code-review",
+        "devflow-router",
+        "task-contracts",
+        "file-based-memory",
+        "xlsx"
+      ]
+    },
+    "project_completion": {
+      "name": "Project Completion",
+      "nameCN": "项目完成度",
+      "maxScore": 10,
+      "deliverableCount": 5,
+      "pointsPerDeliverable": 2,
+      "evidenceLevels": [
+        {
+          "level": "full",
+          "points": 2,
+          "criteria": "Code exists + tests pass + runtime verification shown"
+        },
+        {
+          "level": "partial",
+          "points": 1,
+          "criteria": "Code exists + compiles/builds, but no runtime verification"
+        },
+        {
+          "level": "none",
+          "points": 0,
+          "criteria": "Code missing or broken, no compilation evidence"
+        }
+      ],
+      "negativeOverrides": [
+        {
+          "pattern": "user_reports_failure",
+          "description": "User explicitly reports a feature does not work",
+          "action": "Set deliverable score to 0 regardless of code existence"
+        },
+        {
+          "pattern": "false_completion",
+          "description": "AI claims completion without test evidence",
+          "action": "Cap deliverable score at 1 (partial)"
+        },
+        {
+          "pattern": "bug_loop",
+          "description": "Same bug fixed 3+ times without resolution",
+          "action": "Deduct 1 point from affected deliverable"
+        }
+      ]
+    },
+    "extended_features": {
+      "name": "Extended Features & UI Beautification",
+      "nameCN": "扩展功能与美化",
+      "maxScore": 5,
+      "subDimensions": {
+        "extensions": {
+          "maxScore": 2.5,
+          "keywords": [
+            "category", "tag", "priority", "search", "filter",
+            "drag", "sort", "statistics", "localStorage", "dark mode",
+            "preview", "batch", "real-time", "notification", "pagination",
+            "export", "import", "keyboard shortcut",
+            "分类", "标签", "优先级", "搜索", "筛选",
+            "拖拽", "排序", "统计", "本地存储", "深色模式",
+            "预览", "批量", "实时", "通知", "分页",
+            "导出", "导入", "快捷键"
+          ]
+        },
+        "beautification": {
+          "maxScore": 2.5,
+          "keywords": [
+            "responsive", "animation", "transition", "theme",
+            "icon", "media query", "mobile", "grid",
+            "Ant Design", "Element Plus", "Naive UI", "Material UI",
+            "Tailwind", "Bootstrap", "card", "panel", "layout",
+            "响应式", "动画", "主题", "图标", "移动端适配"
+          ]
+        }
+      },
+      "bugPenalty": {
+        "description": "Known bugs in extended features reduce score",
+        "deduction": 0.5
+      }
+    }
+  },
+  "antiPatterns": {
+    "false_completion": {
+      "label": "False Completion",
+      "labelCN": "虚假完成",
+      "detection": "Claims task done without running verification commands",
+      "impact": "Deduct from project completion dimension"
+    },
+    "premature_coding": {
+      "label": "Premature Coding",
+      "labelCN": "过早编码",
+      "detection": "Starts writing code before any planning or requirement discussion",
+      "impact": "Deduct from spec-coding dimension"
+    },
+    "bug_loop": {
+      "label": "Bug Fix Loop",
+      "labelCN": "Bug修复循环",
+      "detection": "Same issue fixed 3+ times without resolution",
+      "impact": "Deduct from project completion dimension"
+    },
+    "ignored_user_feedback": {
+      "label": "Ignored User Feedback",
+      "labelCN": "忽略用户反馈",
+      "detection": "User reports issue but AI does not address it or claims it is fixed without evidence",
+      "impact": "Deduct from project completion dimension"
+    }
+  },
+  "outputConfig": {
+    "defaultOutputDir": "docs/scoring/",
+    "reportFilename": "ai-interaction-scoring-report.md",
+    "xlsxFilename": "ai-interaction-scoring-report.xlsx",
+    "xlsxColumns": [
+      { "header": "Dimension", "headerCN": "评分维度", "field": "dimension", "width": 25 },
+      { "header": "Max Score", "headerCN": "满分", "field": "maxScore", "width": 10 },
+      { "header": "Actual Score", "headerCN": "得分", "field": "actualScore", "width": 10 },
+      { "header": "Score Rate", "headerCN": "得分率", "field": "scoreRate", "width": 12 },
+      { "header": "Key Evidence", "headerCN": "关键证据", "field": "evidence", "width": 50 },
+      { "header": "Deduction Reasons", "headerCN": "扣分原因", "field": "deductions", "width": 40 },
+      { "header": "Improvement Suggestions", "headerCN": "改进建议", "field": "suggestions", "width": 40 }
+    ],
+    "xlsxFormatting": {
+      "headerStyle": {
+        "bold": true,
+        "backgroundColor": "B8CCE4",
+        "freezeFirstRow": true
+      },
+      "scoreRateConditional": {
+        "green": ">= 0.8",
+        "yellow": ">= 0.6",
+        "red": "< 0.6"
+      }
+    }
+  }
+}

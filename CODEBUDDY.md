@@ -47,6 +47,7 @@
 | review-pr | `/code-review` |
 | issue-draft-pr | `/issue-draft-pr` |
 | parallel-delivery | `/parallel-delivery` |
+| scoring | `/score-interaction` |
 
 ## 4) 主流程最小链路
 
@@ -99,6 +100,7 @@
 - `/status`：查看进度
 - `/doc-sync`：文档同步
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
+- `/score-interaction`：AI 交互质量评分
 
 ## 9) 详细文档位置（按需加载）
 

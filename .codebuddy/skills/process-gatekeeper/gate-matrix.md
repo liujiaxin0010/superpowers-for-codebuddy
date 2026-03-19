@@ -17,3 +17,4 @@
 | `/research` | 允许执行；若有 Me2AI 文档则优先读取 | 建议关联 `spec` 与 `tier` 并回填 `researchPath` | `/research ...` |
 | `/testcase` | 需要 `target`、`spec`、`plan` | 必须具备 `Design + Architecture_Info + Protocol_and_Data` | `/execute-plan ...` |
 | `/code-self-check` | 需可确定 VCS（git/svn）并生成 diff | 可选自动修复时必须保留修复证据 | `/code-self-check ...` |
+| `/score-interaction` | 需提供对话内容（文本/文件路径/当前上下文） | 建议关联 `task` 描述以确定评分基线；输出 MD + XLSX 报告 | `/score-interaction ...` |
