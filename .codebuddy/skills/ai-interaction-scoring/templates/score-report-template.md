@@ -1,6 +1,7 @@
 # AI 交互质量评分报告
 
-## 任务：{{taskDescription}}
+## 被评人：{{name}}（工号：{{id}}）
+## 需求名称：{{taskDescription}}
 ## 评分日期：{{scoringDate}}
 ## 对话来源：{{conversationSource}}
 

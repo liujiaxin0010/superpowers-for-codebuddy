@@ -252,8 +252,13 @@
   ],
   "outputConfig": {
     "defaultOutputDir": "docs/scoring/",
-    "reportFilename": "ai-interaction-scoring-report.md",
-    "xlsxFilename": "ai-interaction-scoring-report.xlsx",
+    "filenamePattern": "{name}_{id}_{task}",
+    "filenamePatternDescription": "姓名_工号_需求名称",
+    "filenameExample": "张三_10086_文件映射服务",
+    "reportExtension": ".md",
+    "xlsxExtension": ".xlsx",
+    "requiredFields": ["name", "id", "task"],
+    "requiredFieldsDescription": "如果缺少姓名、工号或需求名称，必须在评分前向用户询问",
     "xlsxColumns": [
       { "header": "评分维度", "field": "dimension", "width": 25 },
       { "header": "满分", "field": "maxScore", "width": 10 },
