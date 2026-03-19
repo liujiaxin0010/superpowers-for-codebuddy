@@ -11,13 +11,25 @@ description: "AI 交互质量评分技能。从 4 个维度评估 AI 编码助�
 
 ## 输入参数
 
-`/score-interaction <对话内容> [task=<任务描述>] [outputDir=<输出路径>]`
+`/score-interaction <对话内容> [name=<姓名>] [id=<工号>] [task=<需求名称>] [outputDir=<输出路径>]`
 
 | 参数 | 必填 | 默认值 | 说明 |
 |------|------|--------|------|
 | conversation | 是 | - | 对话内容（文本/JSON）或文件路径 |
-| task | 否 | 自动识别 | 任务描述，用于确定评分基线 |
+| name | 是 | - | 被评人姓名，用于报告文件命名 |
+| id | 是 | - | 被评人工号，用于报告文件命名 |
+| task | 是 | - | 需求名称，用于评分基线和文件命名 |
 | outputDir | 否 | `docs/scoring/` | 报告输出目录 |
+
+## 输出文件命名规则
+
+报告文件名格式：`{姓名}_{工号}_{需求名称}.md` / `{姓名}_{工号}_{需求名称}.xlsx`
+
+示例：
+- `张三_10086_文件映射服务.md`
+- `张三_10086_文件映射服务.xlsx`
+
+如果参数缺失，必须在评分前向用户询问姓名、工号和需求名称。
 
 ## 评分维度（总分：30 分）
 
@@ -142,11 +154,11 @@ description: "AI 交互质量评分技能。从 4 个维度评估 AI 编码助�
 
 ## 输出产物
 
-### 主报告：`ai-interaction-scoring-report.md`
+### 主报告：`{姓名}_{工号}_{需求名称}.md`
 
 在 `outputDir` 目录下使用 `templates/score-report-template.md` 模板生成。
 
-### 汇总表：`ai-interaction-scoring-report.xlsx`
+### 汇总表：`{姓名}_{工号}_{需求名称}.xlsx`
 
 使用 `xlsx` 技能生成，包含以下列：
 
