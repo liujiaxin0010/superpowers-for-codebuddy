@@ -1,10 +1,6 @@
 ---
 name: unified-test
-description: >
-  通用单元测试主技能。根据目标文件类型自动路由到对应的语言适配器（.vue → Jest / .go → go test），
-  统筹测试生成、执行、修复、覆盖率收集、迭代改进的完整流程。
-  当用户需要为 .vue 或 .go 文件编写、运行、修复单元测试或提升覆盖率时触发此技能。
-  即使用户只提到"单元测试"、"测试用例"、"覆盖率"等关键词，也应触发此技能。
+description: "通用单元测试主技能。用于为 `.vue` 或 `.go` 文件生成、执行、修复单元测试并提升覆盖率；会根据目标文件自动路由到对应适配器和编排器。用户提到“单元测试/测试用例/覆盖率/修测试/给这个文件补测试”时触发。"
 ---
 
 # Unified Test — 通用单元测试主技能
@@ -17,6 +13,37 @@ description: >
 
 本技能的核心价值是**语言无关的统一调度**——所有语言特定逻辑由适配器封装，
 编排逻辑（重试、覆盖率迭代等）完全共享。
+
+## 资源加载规则
+
+### 先按目标文件类型决定适配器
+
+1. `.vue`：读取 `skills/vue-test-adapter.md`
+2. `.go`：读取 `skills/go-test-adapter.md`
+3. 其他类型：直接返回不支持，不继续加载其他资源
+
+### 再按模式读取编排资源
+
+确定适配器后，再读取：
+
+- `skills/test-orchestrator.md`
+
+只有在需要理解执行失败分类、修复决策或统一结果时，再读取：
+
+- `skills/test-executor-core.md`
+
+### 覆盖率或示例需要时
+
+按需读取：
+
+- `references/coverage-strategies.md`
+- `references/vue-test-example.js`
+- `references/go-test-example.go`
+
+### 不要怎么加载
+
+1. 不要一开始就把 `skills/` 和 `references/` 全部读入上下文
+2. 不要在文件类型尚未确认时加载无关适配器
 
 ## 输入参数
 
@@ -86,6 +113,8 @@ interface UnifiedTestInput {
 - `execute` 模式：必须有 testFile
 - `coverage` 模式：必须有 testFile 和 targetFile
 - `full` 模式：必须有 targetFile
+
+若模式参数与必需输入不匹配，直接返回 `unsupported` 或 `blocked`，不要继续进入编排器。
 
 ## Step 3: 调用通用编排器
 
@@ -184,3 +213,10 @@ interface UnifiedTestResult {
 | `references/vue-test-example.js` | 参考 | 前端测试样例 |
 | `references/go-test-example.go` | 参考 | 后端测试样例 |
 | `references/coverage-strategies.md` | 参考 | 覆盖率提升策略 |
+
+## 禁止事项
+
+1. 不要在不支持的文件类型上硬走统一测试流程
+2. 不要在未确认模式参数合法时继续进入编排器
+3. 不要一次性加载全部 adapter 和 reference 文件
+4. 不要把 `README.md` 这类辅助说明当成主执行依据

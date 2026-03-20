@@ -1,6 +1,6 @@
 ---
 name: code-review-standards
-description: "专业的多语言代码审查与优化指导。支持代码审查、代码质量分析、性能优化、安全审计、重构建议、最佳实践评估。支持 Go、Python、Java、JavaScript/TypeScript、Vue、C/C++、Rust、Lua、Shell、BAT、PowerShell 共 11 种语言。"
+description: "多语言代码审查技能。用于对 Go、Python、Java、JavaScript/TypeScript、Vue、C/C++、Rust、Lua、Shell、BAT、PowerShell 代码做结构化审查，输出按严重度分组的问题清单、修复建议和 XLSX 缺陷汇总。用户提到“代码审查/code review/检查代码质量/PR 审查/审计代码/有没有问题”时触发。"
 ---
 
 # 编码规范代码审查技能
@@ -30,6 +30,29 @@ description: "专业的多语言代码审查与优化指导。支持代码审查
    - 主报告：`code-review-report.md`（包含通用 + Web 专项结果）
    - 缺陷汇总：`code-review-report.xlsx`
    - 前端专项结构化结果：`web-code-review-report.json`（若触发）
+
+## 资源加载规则
+
+### 必须加载什么
+
+对每种被审查语言，**必须同时加载**：
+
+1. 对应的 `standards/*.md`
+2. 对应的 `references/*-review-checklist.md`
+
+### 何时加载什么
+
+- 只审查 Python 文件：只加载 `standards/python.md` + `references/python-review-checklist.md`
+- 只审查 Java 文件：只加载 `standards/java.md` + `references/java-review-checklist.md`
+- 混合语言变更：只加载变更涉及语言的规范与清单，不要一次性加载全部 20+ 份文件
+- 生成 XLSX 汇总表时，再读取 `defect-classification.json`
+- 审查包含前端文件时，再协同加载 `web-code-review`
+
+### 禁止的加载方式
+
+1. 禁止只加载 `standards/` 而跳过 `references/`
+2. 禁止只加载 `references/` 而跳过 `standards/`
+3. 禁止因为“看起来保险”而把全部语言规范一次性读入上下文
 
 ## 规范文件映射
 
@@ -84,6 +107,8 @@ description: "专业的多语言代码审查与优化指导。支持代码审查
 - `.sh/.bash` → Shell, `.bat/.cmd` → BAT, `.ps1/.psm1` → PowerShell
 - 如果项目包含多种语言，加载所有相关规范和清单
 
+若只审查当前 diff，优先按 diff 中出现的语言决定加载范围；不要因为仓库里存在其他语言而扩大加载范围。
+
 ### 第三步：细读分析代码
 
 在正式审查前，必须先深入阅读和理解代码：
@@ -95,6 +120,12 @@ description: "专业的多语言代码审查与优化指导。支持代码审查
 5. **对照规范**：将代码实现与编码规范逐条对照，标记不符合项
 
 此步骤确保审查基于充分理解，避免误判。
+
+若审查目标是 PR 或 diff：
+
+1. 先读 diff
+2. 再补读受影响文件的必要上下文
+3. 只有当 diff 无法解释问题时，才扩大到相关模块
 
 ### 第四步：逐文件审查
 
@@ -283,3 +314,11 @@ XLSX 格式要求：
 - **消除魔法数字**：使用命名常量
 - **简化条件**：减少嵌套，使用卫语句
 - **消除重复**：DRY 原则
+
+## 禁止事项
+
+1. 不要只凭风格偏好给出审查结论
+2. 不要在未读上下文时直接判断“这是 bug”
+3. 不要一次性加载所有语言规范，稀释重点
+4. 不要把“代码修改”混进默认只读审查阶段
+5. 不要遗漏严重度、位置、影响和修复建议中的任一项
