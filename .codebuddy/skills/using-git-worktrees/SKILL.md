@@ -24,6 +24,14 @@ description: Git worktree 隔离开发技能。用于在 Git 项目中为并行�
 2. 只做一个短平快任务，且当前目录完全干净
 3. 用户明确要求就在当前目录工作
 
+## 资源加载规则
+
+当遇到“同名分支是否复用、旧 worktree 是否残留、清理失败怎么办”时，再读取：
+
+- `references/worktree-edge-cases.md`
+
+不要在普通创建流程中一开始就加载全部边界案例。
+
 ## 前置条件
 
 1. 仓库是 Git
@@ -76,6 +84,14 @@ grep -q "^worktrees/" .gitignore 2>/dev/null || echo "worktrees/" >> .gitignore
 git worktree add .worktrees/feature-功能描述 -b feature/功能描述 main
 ```
 
+## 复用与冲突判断
+
+遇到同名分支或同名目录时，先判断：
+
+1. 是当前任务的旧 worktree，可复用
+2. 是历史遗留 worktree，需先清理
+3. 是其他任务正在使用，必须改名或阻断
+
 ## 使用规则
 
 1. 进入 worktree 后，所有提交、推送、测试都在该目录内完成
@@ -98,6 +114,16 @@ git branch -d feature/功能描述
 git worktree remove .worktrees/feature-功能描述 --force
 git branch -D feature/功能描述
 ```
+
+## 清理失败时的处理
+
+若 `git worktree remove` 失败，优先检查：
+
+1. 是否还有未提交改动
+2. 是否有进程占用目录
+3. 是否该先合并、stash 或明确放弃
+
+未确认前不要直接强制删除。
 
 ## 与并行任务的关系
 

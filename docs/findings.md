@@ -163,3 +163,72 @@
 | 将 `research` 的重点转向“判断框架 + 结束条件” | 让研究从报告模板升级为研究协议 |
 | 将 `writing-plans` 的重点转向“拆解决策矩阵 + 质量检查” | 提高计划可执行性与自检能力 |
 | 将 `file-based-memory` 的重点转向“模板/脚本强制触发 + Do Not Load 风格规则” | 提升导航型 skill 的精度 |
+
+## 2026-03-20 Remaining C Tier Upgrade
+
+### 新发现
+
+- `code-self-check` 的核心问题不在主骨架，而在缺少更细的 diff 场景矩阵与 `applyFix` 风险分级
+- `using-git-worktrees` 已有主流程，但还缺“复用、残留、清理失败”这类真实边界场景
+- `requesting-code-review` 需要把“审查深度选择”与“发起前材料准备”拆成显式资源
+- `custom-testing` 需要一个真实可落地的外部规则模板，才能从“规则说明”升级到“规则资产”
+
+### 本轮决策
+
+| 决策 | 理由 |
+|---|---|
+| 为 `code-self-check` 新增 `references/diff-scenarios.md` | 提高 diff 场景判断与 `applyFix` 边界清晰度 |
+| 为 `using-git-worktrees` 新增 `references/worktree-edge-cases.md` | 补齐复用/残留/清理失败等高频边界案例 |
+| 为 `requesting-code-review` 新增审查深度矩阵与审查请求模板 | 让发起审查时的分流和材料准备更标准化 |
+| 为 `custom-testing` 新增 `templates/external-test-rules-template.md` | 提供可直接落地的项目测试规则资产 |
+
+## 2026-03-20 Remaining C Tier Regrade
+
+### 复评结论
+
+- 在纳入 `code-self-check`、`using-git-worktrees`、`custom-testing`、`requesting-code-review` 的最新补强后，全库均分提升到 `95.8 / 120`
+- 当前等级分布为 `A=1, B=15, C=17, D=0, F=0`
+- 这 4 个 skill 均提升到 `93` 左右，已从 `C` 档底部抬升到中上段
+
+### 新决策
+
+| 决策 | 理由 |
+|---|---|
+| 为 `code-self-check` 增补 diff 场景矩阵 | 让自检从通用 checklist 升级为场景化审查协议 |
+| 为 `using-git-worktrees` 增补边界案例 | 让主技能覆盖真实使用中的复用与清理问题 |
+| 为 `custom-testing` 增补外部规则模板资产 | 让规则说明变成可落地模板 |
+| 为 `requesting-code-review` 增补深度矩阵与请求模板 | 让“发起审查”动作更标准化 |
+## 2026-03-20 Near-B C Tier Upgrade
+
+### 新发现
+
+- `testcase` 距离 `B` 最近，但还缺高风险样例与追踪矩阵样例，导致实操层略弱
+- `ai-interaction-scoring` 已有模板与规则文件，但还缺证据抽取顺序和 `BLOCKED` 条件
+- `receiving-code-review` 的流程已清晰，但缺统一回复模板，实操一致性不足
+- `custom-testing` 需要补规则冲突解析样例，避免“有规则但不会裁决”
+
+### 本轮决策
+
+| 决策 | 理由 |
+|---|---|
+| 为 `testcase` 新增 `references/testcase-patterns.md` | 提供高风险链路和追踪矩阵样例 |
+| 为 `ai-interaction-scoring` 新增 `references/evidence-patterns.md` | 提高证据归类与保守评分的一致性 |
+| 为 `receiving-code-review` 新增 `templates/review-response-template.md` | 提高逐条处理 review 的输出一致性 |
+| 为 `custom-testing` 新增 `references/rule-resolution-examples.md` | 提高规则冲突场景下的裁决能力 |
+
+## 2026-03-20 Near-B C Tier Regrade
+
+### 复评结论
+
+- 在纳入 `testcase`、`ai-interaction-scoring`、`receiving-code-review`、`custom-testing` 的最新补强后，全库均分提升到 `95.9 / 120`
+- 当前等级分布为 `A=1, B=17, C=15, D=0, F=0`
+- `testcase` 与 `ai-interaction-scoring` 已进入 `B` 档；`receiving-code-review` 与 `custom-testing` 升至高 `C`
+
+### 新决策
+
+| 决策 | 理由 |
+|---|---|
+| 为 `testcase` 补高风险样例与追踪矩阵资源 | 让测试设计从原则走向可落地样式 |
+| 为 `ai-interaction-scoring` 补证据模式与阻断规则 | 让评分动作更稳定、可解释 |
+| 为 `receiving-code-review` 补回复模板 | 让 review 反馈处理更标准化 |
+| 为 `custom-testing` 补规则冲突样例 | 让规则解释从“知道”升级为“会裁决” |

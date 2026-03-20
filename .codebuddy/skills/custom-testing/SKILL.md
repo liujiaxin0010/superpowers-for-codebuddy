@@ -97,6 +97,18 @@ description: 自定义测试规则技能。用于在生成或修改单元测试�
 
 在此处填写项目真实规则；如果使用外部规则文件，则外部文件优先。
 
+## 模板加载规则
+
+若用户希望建立一个共享的项目测试规则文件，而当前仓库还没有现成版本，可创建时参考：
+
+- `templates/external-test-rules-template.md`
+
+若出现“多个测试风格冲突、外部规则与仓库现状不一致、硬规则与软规则纠缠”的情况，再读取：
+
+- `references/rule-resolution-examples.md`
+
+只有在需要产出外部规则文件时才读取模板，不要在普通测试生成时加载。
+
 ```yaml
 # framework: pytest | unittest | jest | vitest | junit5 | go-testing
 # external_test_rules: docs/test-rules.md
@@ -122,6 +134,7 @@ description: 自定义测试规则技能。用于在生成或修改单元测试�
 2. Service 层禁止连真实数据库
 3. Fixture、Builder、Factory 的使用约定
 4. 哪些测试禁止 snapshot
+5. 哪些场景必须补集成测试而不是只写单测
 
 ## AI 的执行纪律
 
@@ -131,6 +144,14 @@ description: 自定义测试规则技能。用于在生成或修改单元测试�
 4. 不能用“默认更熟悉的框架”替换项目指定框架
 5. 规则有歧义时，带着已确认信息向 Boss 提问
 6. 若规则来自仓库推断，必须优先服从目标模块附近的现有测试
+
+## 规则冲突处理
+
+若显式规则与仓库现状冲突：
+
+1. 先服从显式规则
+2. 再在输出里标记“与现有仓库风格不一致”
+3. 必要时建议 Boss 统一收口，而不是悄悄混用两套风格
 
 ## 与 TDD 的关系
 

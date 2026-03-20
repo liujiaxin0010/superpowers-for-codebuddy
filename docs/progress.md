@@ -68,9 +68,9 @@
 
 ## 最新结果
 
-- 复评分均分：`95.4 / 120`
-- 分布：`A=1, B=15, C=17, D=0, F=0`
-- 当前后续建议：如继续优化，优先 `code-self-check`、`using-git-worktrees`、`custom-testing`、`requesting-code-review`
+- 复评分均分：`95.9 / 120`
+- 分布：`A=1, B=17, C=15, D=0, F=0`
+- 当前后续建议：如继续优化，优先 `code-simplifier`、`requesting-code-review`、`extending-project`、`finishing-branch`
 
 ### 阶段 4：Mid C Tier Optimization
 - **状态：** completed
@@ -134,6 +134,43 @@
 - 若要闭环到分数，下一步直接重跑一次全库复评分
 - 若准备收尾，可开始整理提交策略与分批 commit 说明
 
+### 阶段 9：Remaining C Tier Upgrade
+- **状态：** completed
+- 执行操作：
+  - 增强 `code-self-check` 的 diff 场景矩阵与 `applyFix` 风险边界
+  - 增强 `using-git-worktrees` 的复用/残留/清理失败边界案例
+  - 增强 `requesting-code-review` 的审查深度矩阵与请求模板
+  - 为 `custom-testing` 增加外部规则模板资产
+- 创建/修改的文件：
+  - `.codebuddy/skills/code-self-check/SKILL.md`
+  - `.codebuddy/skills/code-self-check/references/diff-scenarios.md`
+  - `.codebuddy/skills/using-git-worktrees/SKILL.md`
+  - `.codebuddy/skills/using-git-worktrees/references/worktree-edge-cases.md`
+  - `.codebuddy/skills/custom-testing/SKILL.md`
+  - `.codebuddy/skills/custom-testing/templates/external-test-rules-template.md`
+  - `.codebuddy/skills/requesting-code-review/SKILL.md`
+- `.codebuddy/skills/requesting-code-review/references/review-depth-matrix.md`
+- `.codebuddy/skills/requesting-code-review/templates/review-request-template.md`
+
+## 下一步建议
+
+- 若要继续提分，优先 `code-simplifier`、`extending-project`、`finishing-branch`、`version-control-branching`
+- 若准备收尾，可开始整理新的提交说明并分批 commit
+
+### 阶段 10：Remaining C Tier Regrade
+- **状态：** completed
+- 执行操作：
+  - 将 `code-self-check`、`using-git-worktrees`、`custom-testing`、`requesting-code-review` 的最新补强纳入复评分
+  - 刷新 `skill-library-final-regrade.md`
+  - 同步 `findings.md` 与 `progress.md`
+
+### 阶段 11：Near-B C Tier Regrade
+- **状态：** completed
+- 执行操作：
+  - 将 `testcase`、`ai-interaction-scoring`、`receiving-code-review`、`custom-testing` 的最新补强纳入复评分
+  - 刷新 `skill-library-final-regrade.md`
+  - 同步 `findings.md` 与 `progress.md`
+
 ### 阶段 7：Bottom C Tier Regrade
 - **状态：** completed
 - 执行操作：
@@ -147,3 +184,25 @@
   - 将 `research`、`writing-plans`、`file-based-memory` 的最新补强纳入复评分
   - 刷新 `skill-library-final-regrade.md`
   - 同步 `findings.md` 与 `progress.md`
+
+### 阶段 9：Near-B C Tier Upgrade
+- **状态：** completed
+- 执行操作：
+  - 为 `testcase` 增加高风险样例与追踪矩阵 reference
+  - 为 `ai-interaction-scoring` 增加证据模式 reference 与 blocked 条件
+  - 为 `receiving-code-review` 增加回复模板
+  - 为 `custom-testing` 增加规则冲突解析 examples
+- 创建/修改的文件：
+  - `.codebuddy/skills/testcase/SKILL.md`
+  - `.codebuddy/skills/testcase/references/testcase-patterns.md`
+  - `.codebuddy/skills/ai-interaction-scoring/SKILL.md`
+  - `.codebuddy/skills/ai-interaction-scoring/references/evidence-patterns.md`
+  - `.codebuddy/skills/receiving-code-review/SKILL.md`
+  - `.codebuddy/skills/receiving-code-review/templates/review-response-template.md`
+  - `.codebuddy/skills/custom-testing/SKILL.md`
+  - `.codebuddy/skills/custom-testing/references/rule-resolution-examples.md`
+
+## 下一步建议
+
+- 若要闭环到分数，下一步立即重跑一次全库复评分
+- 若准备收尾，可开始整理新的提交说明并分批 commit
