@@ -1,191 +1,149 @@
 ---
-description: 自定义测试方法论，定义项目专属的单元测试生成规范
+name: custom-testing
+description: 自定义测试规则技能。用于在生成或修改单元测试前加载项目专属的测试约定，统一测试框架、命名、目录、覆盖要求、Mock 策略和断言风格。用户提到“项目测试规范/按项目规则写测试/自定义测试方法论”时触发。
 ---
 
 # 自定义测试方法论
 
-本规则允许 Boss 定义项目专属的单元测试生成方法论。AI 生成测试时**必须严格遵循**本规则中的自定义配置，不得使用 AI 自己"习惯"的测试风格。
+本技能用于告诉 AI：**这个项目的测试要怎么写**。它不负责决定“何时写测试”，而是负责决定“按什么规则写测试”。
 
-## ⚠️ 铁律提醒
+## 何时使用
 
-遵循 [CODEBUDDY.md](../../../CODEBUDDY.md) 中定义的全局“三条铁律（最高优先级）”，此处不再重复展开。
+以下场景必须使用：
 
----
+1. 项目已有明确测试规范
+2. 用户要求“按项目约定”生成测试
+3. 同一个仓库中存在特殊目录、命名、Mock 或覆盖要求
 
-## 工作机制
+## 规则优先级
 
-本规则提供两种配置方式：
+按以下顺序解释规则，后者不得覆盖前者：
 
-### 方式一：在本文件中直接定义规则
+1. 外部规则文件 `external_test_rules`
+2. 本文件中的项目配置
+3. 仓库里已存在的测试习惯
+4. 通用测试最佳实践
 
-Boss 在下方的 `## 自定义测试规则` 区域直接编写测试规则。AI 读取后严格遵循。
+若高优先级与低优先级冲突，以高优先级为准。
 
-### 方式二：指定外部规则文件
+## 规则类型
 
-Boss 在项目中放置一个自定义测试规则文件（如 `docs/test-rules.md` 或 `.codebuddy/test-rules.md`），然后在下方配置路径。AI 在生成测试前先读取该文件。
+把规则分成两类：
 
----
+1. **硬规则**：框架、测试目录、命名模式、最低覆盖要求、禁止直连外部依赖
+2. **软规则**：推荐的分组方式、断言风格、是否偏好 spy、是否使用 AAA/GWT
 
-## 自定义测试配置
+硬规则冲突时必须阻断；软规则冲突时可以按仓库主流风格裁决，但要说明依据。
 
-### 测试框架与工具
+## 阻断条件
+
+出现以下任一情况时，返回 `BLOCKED`：
+
+1. 指定了 `external_test_rules`，但文件不存在
+2. 同一规则出现冲突值，且无法判断哪个优先
+3. 项目要求与现有测试框架明显不兼容，且用户未给出裁决
+
+## 使用流程
+
+### 1. 先读取规则
+
+生成测试前必须先确定：
+
+1. 使用什么测试框架
+2. 测试文件放哪
+3. 命名规则是什么
+4. 最低覆盖要求是什么
+5. 哪些依赖必须 mock，哪些不应 mock
+6. 断言风格和清理策略是什么
+
+### 1.5 如果没有显式规则，先从仓库推断
+
+优先抽样现有测试文件，判断：
+
+1. 测试框架
+2. 文件命名后缀
+3. 测试目录位置
+4. 常见 Mock 方式
+5. 常见断言风格
+
+若仓库里存在多种风格：
+
+1. 以当前目标模块附近的测试为先
+2. 若仍冲突，以数量更多的一侧为准
+3. 若冲突仍无法裁决，返回 `BLOCKED`
+
+### 2. 处理缺失规则
+
+若缺少非关键规则，可以按现有仓库习惯补齐；若缺少关键规则，必须询问 Boss。关键规则包括：
+
+1. 测试框架
+2. 测试目录/文件命名
+3. 最低覆盖要求
+4. 外部依赖是否必须 mock
+
+### 3. 生成测试时严格遵循
+
+不得因为“模型习惯”擅自切换命名风格、目录结构或 Mock 策略。
+
+### 4. 输出时说明采用了哪些规则
+
+若规则来自推断而不是显式配置，必须说明：
+
+1. 规则来自哪些现有测试文件
+2. 哪些是硬规则，哪些是软规则
+3. 是否存在仍待 Boss 确认的空白项
+
+## 配置区
+
+在此处填写项目真实规则；如果使用外部规则文件，则外部文件优先。
 
 ```yaml
-# Boss 在此定义项目使用的测试框架（取消注释并修改）
-# framework: JUnit 5          # Java: JUnit 5 / TestNG / Spock
-# framework: pytest            # Python: pytest / unittest
-# framework: Jest              # JS/TS: Jest / Vitest / Mocha
-# framework: Go testing        # Go: testing / testify
-# mock_library: Mockito        # Java: Mockito / PowerMock / EasyMock
-# mock_library: pytest-mock    # Python: pytest-mock / unittest.mock
-# assertion_style: AssertJ     # Java: AssertJ / Hamcrest / JUnit assert
-# coverage_tool: JaCoCo        # 覆盖率工具
-# test_runner: Maven Surefire  # 测试运行器
-```
-
-### 外部规则文件路径
-
-```yaml
-# 如果 Boss 有单独的测试规则文档，在此指定路径
-# AI 在生成测试前必须先读取此文件
+# framework: pytest | unittest | jest | vitest | junit5 | go-testing
 # external_test_rules: docs/test-rules.md
-# external_test_rules: .codebuddy/test-rules.md
-```
-
----
-
-## 自定义测试规则
-
-**Boss 在此区域编写项目专属的测试规则。以下是模板，Boss 可以自由修改：**
-
-<!-- 
-======================================================================
-Boss：请在这里编写你的自定义测试规则。
-AI 生成测试时必须严格遵循。以下是模板示例，请根据项目实际情况修改。
-======================================================================
--->
-
-### 测试命名规范
-
-```
-# 定义你的测试方法命名规范，例如：
-# 方案 A: should_动作_when_条件（BDD 风格）
-# 方案 B: test_功能_场景_期望结果
-# 方案 C: 方法名_输入状态_期望输出
-# 方案 D: given_前置_when_动作_then_结果
-
-# 当前项目使用（Boss 请选择或自定义）：
-# naming: should_{action}_when_{condition}
-```
-
-### 测试文件组织
-
-```
-# 测试文件的存放位置和命名规则，例如：
-# 方案 A: 与源码同目录的 __tests__/ 子目录
-# 方案 B: 独立的 test/ 或 tests/ 目录，镜像 src/ 结构
-# 方案 C: 与源码同目录，文件名加 .test. 或 .spec. 后缀
-
-# 当前项目使用（Boss 请选择或自定义）：
-# location: src/__tests__/
+# location: tests/
 # file_naming: {SourceFileName}.test.{ext}
-```
-
-### 测试结构模板
-
-```
-# 每个测试文件的结构模板，例如：
-# - 是否使用 describe/it 嵌套分组
-# - 是否使用 setup/teardown
-# - 是否使用 AAA 模式（Arrange-Act-Assert）
-# - 是否使用 Given-When-Then 模式
-# - 是否要求每个 describe 块对应一个公共方法
-
-# 当前项目使用（Boss 请选择或自定义）：
-# structure: AAA  # Arrange-Act-Assert
-# grouping: describe_per_method  # 每个公共方法一个 describe 块
-```
-
-### 覆盖要求
-
-```
-# 测试覆盖的最低要求，例如：
-# - 每个公共方法至少 N 个测试用例
-# - 必须覆盖：正常路径、边界条件、异常路径
-# - 分支覆盖率目标
-# - 是否需要测试 private 方法（通常不需要）
-
-# 当前项目使用（Boss 请选择或自定义）：
-# min_cases_per_method: 3  # 每个公共方法至少3个用例
+# naming: should_{action}_when_{condition}
+# structure: AAA
+# min_cases_per_method: 3
 # required_scenarios: [normal, boundary, error]
 # branch_coverage: 80%
-# test_private: false
+# mock_external: true
+# mock_database: true
+# mock_utils: false
+# assertion_style: fluent
+# cleanup_strategy: after_each
 ```
 
-### Mock/Stub 策略
+## 项目特殊规则
 
-```
-# 如何使用 Mock 和 Stub，例如：
-# - 哪些依赖应该被 mock（外部服务、数据库、文件系统）
-# - 哪些依赖不应该被 mock（纯内存工具类）
-# - 是否使用 spy 代替 mock
-# - 是否使用 test doubles 的命名约定
+在此处写项目专属约束，例如：
 
-# 当前项目使用（Boss 请选择或自定义）：
-# mock_external: true    # mock 所有外部依赖
-# mock_database: true    # mock 数据库层
-# mock_utils: false      # 不 mock 工具类
-# prefer_spy: false      # 不优先使用 spy
-```
-
-### 断言风格
-
-```
-# 断言的编写风格，例如：
-# - 使用哪个断言库
-# - 是否使用流式断言（assertThat().isEqualTo()）
-# - 是否在每个测试中只用一个逻辑断言
-# - 错误消息是否必须包含业务描述
-
-# 当前项目使用（Boss 请选择或自定义）：
-# style: fluent  # assertThat 风格
-# one_assert_per_test: false  # 允许多个相关断言
-# custom_message: true  # 断言必须包含描述性消息
-```
-
-### 项目特殊规则
-
-```
-# Boss 在此添加项目特有的测试规则，例如：
-# - 特定的数据准备方式（Builder模式、Factory、Fixture文件）
-# - 特定的清理策略（@AfterEach、事务回滚）
-# - 对特定组件的测试要求（Controller 用 MockMvc、Service 用单元测试）
-# - 禁止的做法
-# - 强制的做法
-
-# 当前项目特殊规则（Boss 请自定义）：
-# [在此编写]
-```
-
----
+1. Controller 测试必须使用什么方式
+2. Service 层禁止连真实数据库
+3. Fixture、Builder、Factory 的使用约定
+4. 哪些测试禁止 snapshot
 
 ## AI 的执行纪律
 
-1. **读取配置优先**：生成测试前，必须先读取本文件中的所有自定义配置
-2. **如果指定了外部规则文件**，必须先读取外部文件，外部文件的规则优先级高于本文件的默认模板
-3. **严格遵循命名规范**：测试方法名必须符合 Boss 定义的命名模式
-4. **严格遵循结构模板**：测试文件组织和内部结构必须符合 Boss 的要求
-5. **覆盖要求不打折**：每个方法的测试用例数量不得少于 Boss 要求的最低值
-6. **Mock 策略不擅改**：按 Boss 的 mock 策略决定哪些依赖需要 mock
-7. **不确定就问**：如果 Boss 的配置中有歧义或未覆盖的场景，**必须询问 Boss**
+1. 先读规则，再写测试
+2. 外部规则文件存在时必须优先读取
+3. 命名、目录、Mock、断言风格必须服从项目配置
+4. 不能用“默认更熟悉的框架”替换项目指定框架
+5. 规则有歧义时，带着已确认信息向 Boss 提问
+6. 若规则来自仓库推断，必须优先服从目标模块附近的现有测试
 
----
+## 与 TDD 的关系
 
-## 与 TDD 规则的关系
+本技能不替代 TDD：
 
-本规则**不替代** `test-driven-development` 规则，而是**补充**它：
+1. TDD 决定先写测试还是先写实现
+2. 本技能决定测试长什么样、放在哪里、覆盖到什么程度
 
-- TDD 规则定义**何时**写测试（先写测试）和**流程**（红-绿-重构）
-- 本规则定义**如何**写测试（命名、结构、覆盖、风格）
+## 禁止事项
 
-两者同时生效。AI 必须同时遵循 TDD 流程和本规则中的自定义测试方法论。
+1. 不要跳过规则读取直接按模型习惯写测试
+2. 不要把外部规则文件和本文件配置混着解释却不说明优先级
+3. 不要在项目要求 Jest 时擅自写成 Vitest，或反之
+4. 不要在规则冲突时私自拍板
+5. 不要把“可选建议”当成“强制规范”
+6. 不要从无关模块的测试风格反推当前模块规则

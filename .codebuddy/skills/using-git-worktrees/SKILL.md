@@ -1,124 +1,116 @@
 ---
-description: Git Worktree 隔离开发，避免分支切换干扰
+name: using-git-worktrees
+description: Git worktree 隔离开发技能。用于在 Git 项目中为并行任务、子代理分发或脏工作目录创建独立工作树，避免分支切换互相干扰。用户提到“worktree/隔离开发/多个分支并行/独立工作目录”时触发。
 ---
 
 # Git Worktree 隔离开发
 
-为每个功能创建隔离的 Git worktree，避免分支切换的上下文开销和未提交更改的风险。
-
-## ⚠️ 铁律提醒
-
-遵循 [CODEBUDDY.md](../../../CODEBUDDY.md) 中定义的全局“三条铁律（最高优先级）”，此处不再重复展开。
+在 Git 项目中，用独立工作树代替频繁切分支，降低上下文污染和本地改动冲突。
 
 ## 何时使用
 
-- 需要在已有项目上开发新功能，且不想影响当前工作目录
-- 需要同时维护多个功能分支
-- 并行代理分发时，每个代理需要独立的工作目录
-- **仅适用于 Git 项目**（SVN 项目不支持 worktree）
+以下情况优先使用 worktree：
 
-## 初始化流程
+1. 当前主工作目录已有未提交改动
+2. 需要同时推进两个及以上任务
+3. 需要为并行代理提供互不干扰的工作目录
+4. 需要把实验性任务与主任务隔离
 
-### 1. 检测 worktree 目录
+## 何时不用
+
+以下情况不建议使用本技能：
+
+1. 不是 Git 项目
+2. 只做一个短平快任务，且当前目录完全干净
+3. 用户明确要求就在当前目录工作
+
+## 前置条件
+
+1. 仓库是 Git
+2. 基础分支明确，通常为 `main`
+3. 基线测试可运行
+4. worktree 目录有明确放置位置
+
+## 阻断条件
+
+出现以下任一情况时，返回 `BLOCKED`：
+
+1. 当前仓库不是 Git
+2. 基础分支不明确
+3. 已存在同名分支或同名 worktree，且无法确认是否复用
+4. 基线验证失败
+
+## 目录策略
+
+优先复用已有 worktree 目录；若不存在，则默认使用 `.worktrees/`。
+
+创建前必须确认：
+
+1. `.gitignore` 已忽略 worktree 目录
+2. 路径命名与任务语义一致
+
+## 创建协议
+
+### 1. 选定目录
 
 ```bash
-# 检查是否已有 worktree 目录
 if [ -d ".worktrees" ]; then
-    WORKTREE_DIR=".worktrees"
+  WORKTREE_DIR=".worktrees"
 elif [ -d "worktrees" ]; then
-    WORKTREE_DIR="worktrees"
+  WORKTREE_DIR="worktrees"
 else
-    WORKTREE_DIR=".worktrees"
-    mkdir -p "$WORKTREE_DIR"
+  WORKTREE_DIR=".worktrees"
 fi
 ```
 
-### 2. 确保 worktree 目录被忽略
+### 2. 确保忽略规则存在
 
 ```bash
-# 确认 .gitignore 中包含 worktree 目录
-grep -q "^\.worktrees/" .gitignore 2>/dev/null || echo ".worktrees/" >> .gitignore
+grep -q "^\\.worktrees/" .gitignore 2>/dev/null || echo ".worktrees/" >> .gitignore
 grep -q "^worktrees/" .gitignore 2>/dev/null || echo "worktrees/" >> .gitignore
 ```
 
-### 3. 创建功能 worktree
+### 3. 创建工作树
 
 ```bash
-FEATURE_NAME="feature/告警联动"
-WORKTREE_PATH="$WORKTREE_DIR/$FEATURE_NAME"
-
-# 创建 worktree + 新分支
-git worktree add "$WORKTREE_PATH" -b "$FEATURE_NAME" main
-
-# 进入 worktree
-cd "$WORKTREE_PATH"
-
-# 安装依赖（如果项目需要）
-npm install 2>/dev/null || mvn dependency:resolve 2>/dev/null || pip install -r requirements.txt 2>/dev/null || true
-
-# 运行基准测试，确保基线干净
-# 记录测试结果作为后续回归对比的基线
+git worktree add .worktrees/feature-功能描述 -b feature/功能描述 main
 ```
 
-## 开发流程
+## 使用规则
 
-```
-在 worktree 中正常开发
-  ↓
-所有更改都隔离在 worktree 目录中
-  ↓
-主工作目录完全不受影响
-  ↓
-开发完成后合并回主分支
-  ↓
-清理 worktree
-```
+1. 进入 worktree 后，所有提交、推送、测试都在该目录内完成
+2. 一个 worktree 只服务一个明确任务
+3. 若多个任务共享核心文件，不要假装可以并行，先停下来重拆任务
+4. 不要在 worktree 内再频繁切换到其他分支
 
-### 在 worktree 中工作
+## 清理规则
+
+在合并或放弃任务后，才允许清理：
 
 ```bash
-cd .worktrees/feature/告警联动
-
-# 正常开发...
-# 所有 git 操作（commit/push）都在这个 worktree 中独立进行
-
-git add .
-git commit -m "feat: 实现告警联动规则引擎"
+git worktree remove .worktrees/feature-功能描述
+git branch -d feature/功能描述
 ```
 
-### 合并与清理
+若明确放弃任务且 Boss 已确认，可用强制清理：
 
 ```bash
-# 回到主工作目录
-cd /path/to/main/repo
-
-# 合并功能分支
-git merge feature/告警联动
-
-# 清理 worktree
-git worktree remove .worktrees/feature/告警联动
-
-# 删除功能分支（可选）
-git branch -d feature/告警联动
+git worktree remove .worktrees/feature-功能描述 --force
+git branch -D feature/功能描述
 ```
 
-## 与并行代理的配合
+## 与并行任务的关系
 
-当使用 `dispatching-parallel-agents` 并行分发任务时：
+当 `parallel-delivery` 或并行代理需要隔离目录时：
 
-```bash
-# 为每个并行任务创建独立 worktree
-git worktree add .worktrees/task-1 -b task/linkage-rule-engine main
-git worktree add .worktrees/task-2 -b task/linkage-action-executor main
-git worktree add .worktrees/task-3 -b task/linkage-log-service main
+1. 每个 lane 或每个子代理使用独立 worktree
+2. lane 名称和分支名必须能追溯到任务
+3. 最终由统一 owner 收口合流
 
-# 每个子代理在各自的 worktree 中独立工作
-# 完全不会互相干扰
-```
+## 禁止事项
 
-## 注意事项
-
-- 同一分支不能同时被两个 worktree 检出
-- worktree 中不要使用 `git checkout` 切换分支
-- 清理 worktree 之前确保所有更改已提交或已合并
-- SVN 项目不支持 worktree，使用标准分支管理
+1. 不要在 SVN 项目里尝试 worktree
+2. 不要让多个任务共用同一个 worktree
+3. 不要在 worktree 内随意 `git checkout` 到无关分支
+4. 不要在未合并或未确认放弃时清理 worktree
+5. 不要忽略同名分支或同名目录冲突

@@ -1,130 +1,127 @@
 ---
-description: 版本控制分支管理策略和工作流
+name: version-control-branching
+description: 版本控制分支管理技能。用于在设计批准后选择 Git 分支、Git worktree 或 SVN 分支策略，建立隔离开发环境并确认基线干净。用户提到“创建分支/切分支/开新功能分支/branching/版本控制分支管理”时触发。
 ---
 
 # 版本控制分支管理
 
-在设计批准后创建隔离的开发分支，支持 Git 和 SVN 两种版本控制系统。
+在开始实现前，为任务选择合适的隔离策略，而不是默认直接在当前工作目录开干。
 
-## ⚠️ 铁律提醒
+## 何时使用
 
-遵循 [CODEBUDDY.md](../../../CODEBUDDY.md) 中定义的全局“三条铁律（最高优先级）”，此处不再重复展开。
+以下情况优先使用本技能：
 
-## 触发条件
+1. 需求已被批准，准备进入实现
+2. 需要隔离当前工作目录，避免污染已有改动
+3. 需要为新功能、bug 修复或重构创建独立开发空间
 
-在头脑风暴完成、设计获得 Boss 批准后激活。
+## 选择协议
 
-## 第一步：检测版本控制系统
+先判断版本控制系统，再决定是普通分支还是 worktree：
+
+1. **Git + 当前目录有未提交改动**：优先使用 `using-git-worktrees`
+2. **Git + 需要并行开发多个任务**：优先使用 `using-git-worktrees`
+3. **Git + 只是单一任务、无需并行、当前目录干净**：可使用普通分支
+4. **SVN**：使用标准 SVN 分支流程
+5. **无法识别版本控制系统**：返回 `BLOCKED`
+
+## 分流矩阵
+
+| 条件 | 推荐动作 |
+|---|---|
+| Git + 当前目录干净 + 单任务 | 普通分支 |
+| Git + 当前目录有未提交改动 | 切到 `using-git-worktrees` |
+| Git + 多任务并行 | 切到 `using-git-worktrees` |
+| SVN | 标准 SVN 分支 |
+| 无法识别 VCS | `BLOCKED` |
+
+## 阻断条件
+
+出现以下任一情况时，返回 `BLOCKED`：
+
+1. 无法识别 `.git` 或 `.svn`
+2. 基线测试失败
+3. 当前目录存在未解释的改动，且用户未说明如何处理
+4. 目标分支或基础分支不明确
+
+## 基线检查
+
+开始创建分支前，必须确认：
+
+1. 当前依赖可安装或已安装完成
+2. 现有测试通过，至少主路径可运行
+3. 没有未解释的本地脏改动
+4. 已明确基础分支或基础路径（如 `main/trunk`）
+
+## 基础分支判断
+
+默认从稳定主线切出：
+
+1. Git：默认 `main`
+2. SVN：默认 `trunk`
+
+若用户要求从其他分支切出，必须说明原因，例如：
+
+1. 当前任务基于某个 release 分支维护
+2. 需要延续未发布分支的上下文
+
+## Git 策略
+
+### 优先使用普通分支的条件
+
+只有同时满足以下条件才建议普通分支：
+
+1. 当前工作目录干净
+2. 没有并行任务
+3. 不需要多个代理或多人同时落地不同任务
+
+### 普通分支最小流程
 
 ```bash
-if [ -d .git ]; then
-    echo "VCS=git"
-elif [ -d .svn ] || svn info &>/dev/null; then
-    echo "VCS=svn"
-else
-    echo "VCS=未知，请询问 Boss"
-fi
-```
-
----
-
-## Git 工作流
-
-### 创建分支（推荐使用工作树实现隔离）
-
-```bash
-# 方式一：使用 Git Worktree（推荐，实现完全隔离）
-git worktree add ../项目名-功能描述 -b feature/功能描述
-
-# 切换到工作树目录
-cd ../项目名-功能描述
-
-# 方式二：普通分支（如果不需要并行开发）
+git checkout main
+git pull
 git checkout -b feature/功能描述
 ```
 
-### 设置工作环境
-```bash
-# 安装依赖
-npm install  # 或 pip install -r requirements.txt 等
+## Git 分支命名
 
-# 运行测试确认基线干净
-npm test
-```
+- 功能：`feature/功能描述`
+- 修复：`fix/bug描述`
+- 重构：`refactor/描述`
 
-### 常用命令
-```bash
-git status                    # 查看状态
-git diff                      # 查看变更
-git add . && git commit -m "msg"  # 提交
-git log --oneline -10         # 查看最近提交
-git worktree list             # 列出所有工作树
-```
+命名应体现任务目的，不要用 `test1`、`tmp`、`new-branch` 这类无信息名称。
 
-### 命名约定
+## SVN 策略
 
-| 类型 | 分支名 |
-|---|---|
-| 功能 | `feature/功能描述` |
-| 修复 | `fix/bug描述` |
-| 重构 | `refactor/描述` |
-
----
-
-## SVN 工作流
-
-### 创建分支
+SVN 项目按标准分支路径处理：
 
 ```bash
-# 获取仓库根 URL
 SVN_ROOT=$(svn info --show-item repos-root-url)
-
-# 创建功能分支
-svn copy "$SVN_ROOT/trunk" "$SVN_ROOT/branches/feature-功能描述" \
-    -m "创建功能分支: 功能描述"
-
-# 切换到功能分支
+svn copy "$SVN_ROOT/trunk" "$SVN_ROOT/branches/feature-功能描述" -m "创建功能分支: 功能描述"
 svn switch "$SVN_ROOT/branches/feature-功能描述"
 ```
 
-### 设置工作环境
-```bash
-# 确认已切换到正确分支
-svn info | grep "Relative URL"
+## 与 worktree 的关系
 
-# 安装依赖
-npm install  # 或 pip install -r requirements.txt 等
+若 Git 项目满足以下任一条件，不要在本技能里继续展开普通分支操作，直接切换到 `using-git-worktrees`：
 
-# 运行测试确认基线干净
-npm test
-```
+1. 当前目录已有未提交改动
+2. 需要多个并行任务
+3. 需要隔离代理工作目录
 
-### 常用命令
-```bash
-svn status                    # 查看状态
-svn diff                      # 查看变更
-svn add --force . 2>/dev/null # 添加新文件
-svn commit -m "msg"           # 提交
-svn log -l 10                 # 查看最近提交
-svn info                      # 查看当前分支信息
-```
+## 命名与可追溯性
 
-### 命名约定
+分支名至少应回答：
 
-| 类型 | 分支路径 |
-|---|---|
-| 功能 | `branches/feature-功能描述` |
-| 修复 | `branches/fix-bug描述` |
-| 重构 | `branches/refactor-描述` |
+1. 这是功能、修复还是重构
+2. 它对应哪个任务或需求
 
----
+不满足这两点的分支名，默认视为无效命名。
 
-## 验证干净基线
+## 禁止事项
 
-无论使用哪种版本控制，创建分支后都必须确认：
-- ✅ 所有现有测试通过
-- ✅ 没有未提交的更改
-- ✅ 依赖安装完整
-- ✅ 开发服务器能正常启动（如适用）
-
-基线验证失败时，立即向 Boss 报告，不要继续。
+1. 不要在脏工作目录里直接新开普通分支
+2. 不要在未跑基线验证时创建实现分支
+3. 不要把 worktree 适用场景硬塞回普通分支
+4. 不要使用无语义分支名
+5. 不要在无法识别版本控制系统时继续推进

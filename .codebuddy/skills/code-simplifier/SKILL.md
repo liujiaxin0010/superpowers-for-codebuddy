@@ -1,214 +1,131 @@
 ---
-description: 代码简化，减少复杂度和冗余代码
+name: code-simplifier
+description: 代码简化技能。用于在不改变功能行为的前提下，减少重复、拍平复杂条件、拆分过长函数、改善命名和替换低价值手写实现。用户提到“简化代码/降低复杂度/清理实现/减少冗余/simplify”时触发。
 ---
 
-# 代码简化（Code Simplifier）
+# 代码简化
 
-基于 Anthropic 官方 code-simplifier 插件设计。在长时间编码后、PR 提交前、或简化历史代码时使用。**核心原则：只改实现方式，不改功能行为。**
-
-## ⚠️ 铁律提醒
-
-遵循 [CODEBUDDY.md](../../../CODEBUDDY.md) 中定义的全局“三条铁律（最高优先级）”，此处不再重复展开。
-
----
+目标不是“把代码写得更短”，而是**在不改行为的前提下，让代码更容易理解、验证和维护**。
 
 ## 何时使用
 
-- Boss 明确要求简化代码
-- 长时间编码会话结束后清理代码
-- PR 提交前做最后一轮简化
-- 对历史遗留代码进行重构
-- 使用 `/simplify` 命令时
+以下情况优先使用本技能：
 
-## 不可违反的约束
+1. Boss 明确要求简化代码
+2. 长时间编码后准备收尾
+3. PR 前要做最后一轮清理
+4. 某段代码明显复杂、重复、难读，但业务行为已基本稳定
 
-1. **保持功能不变** — 永远不改代码做什么，只改怎么做。所有原始功能、输出和行为必须完全保留
-2. **所有测试必须通过** — 简化后运行全量测试，一个都不能少
-3. **不引入新依赖** — 简化不是重写
-4. **不跨模块重构** — 只在当前文件/模块范围内简化，除非 Boss 明确要求
-5. **可读性优于简洁** — 目标是让代码更容易理解，不是让行数最少
+## 前置条件
 
----
+开始简化前，至少满足以下条件之一：
 
-## 简化策略（按优先级）
+1. 现有测试足够覆盖行为
+2. 可以先补最小行为验证
+3. 改动范围已被 Boss 明确限定
 
-### 策略一：消除冗余
+若行为尚不清楚、测试缺失且无法补最小验证，不要贸然简化。
 
-**DRY 原则** — 找到重复代码，提取为可复用函数/方法/模块：
+## 阻断条件
 
-```java
-// ❌ 重复逻辑散布在多处
-public void createOrder(OrderDTO dto) {
-    if (dto.getAmount() <= 0) throw new BusinessException("金额必须大于0");
-    if (dto.getAmount() > 999999) throw new BusinessException("金额超出上限");
-    // ...业务逻辑
-}
-public void updateOrder(Long id, OrderDTO dto) {
-    if (dto.getAmount() <= 0) throw new BusinessException("金额必须大于0");
-    if (dto.getAmount() > 999999) throw new BusinessException("金额超出上限");
-    // ...业务逻辑
-}
+出现以下任一情况时，返回 `BLOCKED`：
 
-// ✅ 提取公共校验
-private void validateAmount(BigDecimal amount) {
-    if (amount.compareTo(BigDecimal.ZERO) <= 0) throw new BusinessException("金额必须大于0");
-    if (amount.compareTo(MAX_AMOUNT) > 0) throw new BusinessException("金额超出上限");
-}
-```
+1. 无法确认当前行为，也无法建立最小验证
+2. 继续简化必须修改公共 API 或跨模块契约
+3. 用户要求的是重构或新增功能，而不是“保持行为不变的简化”
 
-**用标准库替代手写实现**：
+## 核心约束
 
-```python
-# ❌ 手写去重保序
-def unique_ordered(items):
-    seen = set()
-    result = []
-    for item in items:
-        if item not in seen:
-            seen.add(item)
-            result.append(item)
-    return result
+1. 保持功能不变，只改实现方式
+2. 不引入新依赖，除非 Boss 明确要求
+3. 不跨模块大重构，除非 Boss 明确授权
+4. 可读性优先于“更少行数”
+5. 每轮简化后都要重新验证
 
-# ✅ 使用 dict.fromkeys（Python 3.7+ 保序）
-def unique_ordered(items):
-    return list(dict.fromkeys(items))
-```
+## 简化决策规则
 
-### 策略二：简化条件逻辑
+### 先判断是哪种坏味道
 
-**Guard Clause 提前返回**：
+1. **重复逻辑**：优先提取公共函数或复用标准库
+2. **深层嵌套**：优先改成卫语句或提前返回
+3. **超长函数**：优先按职责拆分
+4. **命名含糊**：优先改善命名而不是重写逻辑
+5. **低价值手写实现**：优先替换成语言/标准库已有能力
 
-```go
-// ❌ 深层嵌套
-func processOrder(order *Order) error {
-    if order != nil {
-        if order.Status == "pending" {
-            if order.Amount > 0 {
-                // ...实际逻辑（已经缩进了3层）
-                return nil
-            } else {
-                return errors.New("invalid amount")
-            }
-        } else {
-            return errors.New("invalid status")
-        }
-    } else {
-        return errors.New("nil order")
-    }
-}
+### 再判断哪一个最值得先动
 
-// ✅ Guard Clause 拍平
-func processOrder(order *Order) error {
-    if order == nil {
-        return errors.New("nil order")
-    }
-    if order.Status != "pending" {
-        return errors.New("invalid status")
-    }
-    if order.Amount <= 0 {
-        return errors.New("invalid amount")
-    }
-    // ...实际逻辑（缩进只有1层）
-    return nil
-}
-```
+优先级从高到低：
 
-**简化布尔表达式**：
+1. **低风险 + 高频阅读痛点**
+2. **低风险 + 明显重复**
+3. **低风险 + 明显嵌套/过长函数**
+4. **中风险但收益显著**
+5. **高风险、牵涉公共契约** → 默认延后
 
-```javascript
-// ❌ 冗余判断
-if (isValid === true) { ... }
-if (list.length > 0 ? true : false) { ... }
-if (value !== null && value !== undefined) { ... }
+### 后判断是否值得动
 
-// ✅ 简洁
-if (isValid) { ... }
-if (list.length > 0) { ... }
-if (value != null) { ... }
-```
+优先处理：
 
-### 策略三：拆分大函数
+1. 低风险、高收益的简化
+2. 最近改过、上下文还清晰的代码
+3. 会影响理解和维护效率的复杂点
 
-超过 **50 行**的函数应该考虑拆分。判断标准：函数名是否需要用"和"来描述它做的事？
+延后处理：
 
-```python
-# ❌ 一个函数做太多事
-def process_and_save_and_notify(data):
-    # 验证...（20行）
-    # 处理...（30行）
-    # 保存...（15行）
-    # 通知...（10行）
-    pass
+1. 行为不稳定的区域
+2. 牵一发而动全身的公共 API
+3. 需要跨模块联动的大重构
 
-# ✅ 单一职责
-def process_order(data):
-    validated = validate(data)
-    result = calculate(validated)
-    save(result)
-    notify(result)
-```
+## 收益判断
 
-### 策略四：改善命名
+如果简化不能至少带来以下一项，就不要动：
 
-```go
-// ❌ 含糊的命名
-func do(d map[string]interface{}) error { ... }
-var tmp = getResult()
-for _, v := range items { ... }
+1. 降低认知负担
+2. 减少重复逻辑
+3. 降低嵌套层级
+4. 让验证和维护更容易
 
-// ✅ 描述性命名
-func processPayment(payload map[string]interface{}) error { ... }
-var activeUsers = fetchActiveUsers()
-for _, order := range pendingOrders { ... }
-```
-
-### 策略五：现代化语法
-
-使用语言的现代特性替换冗长的旧写法（但不为了用新特性而用）：
-
-```go
-// Go: 使用 errors.Is / errors.As 替代字符串比较
-// ❌
-if err.Error() == "not found" { ... }
-// ✅
-if errors.Is(err, ErrNotFound) { ... }
-
-// Go: 使用 slices 包（Go 1.21+）
-// ❌
-sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-// ✅
-slices.SortFunc(items, func(a, b Item) int { return cmp.Compare(a.Name, b.Name) })
-```
-
----
-
-## 简化不做的事
-
-| 禁止操作 | 原因 |
-|---|---|
-| 改变公共 API 签名 | 会破坏调用方 |
-| 删除"看起来没用"的代码 | 可能有隐含依赖，需要 Boss 确认 |
-| 过度抽象（为2处重复创建接口） | 过早抽象比重复更有害 |
-| 嵌套三元表达式 | 降低可读性 |
-| 合并不相关的逻辑 | 违反单一职责 |
-| 删除有价值的注释 | 保留复杂逻辑的解释注释 |
-| 改变错误处理策略 | 这是行为变更 |
-
----
+仅仅“更短”“更炫”“更像某种写法”不算有效收益。
 
 ## 执行流程
 
-1. **确定范围** — 只简化最近修改的文件，或 Boss 指定的范围
-2. **运行测试** — 确认简化前测试全部通过（建立基线）
-3. **逐文件分析** — 识别简化机会，按策略优先级排序
-4. **向 Boss 报告计划** — 展示将要做的简化及理由
-5. **Boss 确认后执行** — 逐步简化，每步后运行测试
-6. **运行全量测试** — 确保所有测试仍然通过
-7. **更新三层文档** — 如果简化导致接口或职责变化，同步更新注释和 CONTEXT.md
-8. **展示 diff** — 向 Boss 展示简化前后的对比
+1. 确定简化范围
+2. 跑基线验证，确认当前行为稳定
+3. 列出 1-3 个最值得动的简化点
+4. 从最低风险项开始逐步简化
+5. 每步后都跑验证
+6. 输出简化前后差异和收益
 
----
+## 简化后的验收
 
-## 辅助文档
+完成后至少回答：
 
-- **测试反模式清单** → `.codebuddy/skills/test-driven-development/testing-anti-patterns.md`（简化后测试质量不能降低）
+1. 去掉了什么复杂度
+2. 保留了什么行为
+3. 用什么证据证明行为没变
+
+## 停止条件
+
+出现以下任一情况时，停止继续简化：
+
+1. 需要改公共 API 才能继续
+2. 测试开始无法证明行为一致
+3. 简化收益已经很低，只是在追求“更短”
+4. 开始引入更高抽象成本或更强耦合
+
+## 常见反模式
+
+1. **为了短而短**：行数少了，但语义更晦涩
+2. **过度抽象**：只为两处重复就引入接口、继承层或复杂模板
+3. **顺手重构**：本来只想简化一个函数，最后改了半个模块
+4. **删看似没用的代码**：没有证据就删除，容易破坏隐含依赖
+5. **改错误处理策略**：这不是简化，这是行为变更
+6. **把命名优化伪装成架构重构**：借简化之名扩大改动面
+
+## 禁止事项
+
+1. 不要改变公共 API 签名
+2. 不要删除“看起来没用”的逻辑而不验证
+3. 不要把简化扩展成跨模块重构
+4. 不要在未跑验证时宣称“行为不变”
+5. 不要用更炫的语法替代更清晰的写法
