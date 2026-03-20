@@ -1,6 +1,6 @@
 ---
 name: process-gatekeeper
-description: 命令执行前置项的硬性流程门禁。
+description: 命令执行前置项的硬性流程门禁。用于在 `/write-plan`、`/execute-plan`、`/research`、`/testcase`、`/code-review`、`/fix-bug`、`/Featureflow` 等命令进入主体前检查 spec、plan、TaskContract、tier、owner、验证命令和头脑风暴证据是否齐备；若不满足则返回 `BLOCKED` 并给出下一条命令。
 ---
 
 # 流程门禁（Process Gatekeeper）
@@ -40,6 +40,55 @@ GateResult:
 ## 命令要求
 
 详见 `gate-matrix.md`。
+
+## 门禁矩阵使用规则
+
+### 何时读取 `gate-matrix.md`
+
+1. 已知 `command` 后，优先只查该命令对应行
+2. 只有在需要比较多个候选命令时，才扩大到多行
+
+### 不要怎么读
+
+1. 不要每次都把整张矩阵全文加载进上下文
+2. 不要在未确定 `command` 时就开始逐条套所有门禁
+
+## 输出协议
+
+### 阻断时
+
+优先使用：`templates/blocked-report.md`
+
+输出必须包含：
+
+1. `command`
+2. `tier`
+3. `missing[]`
+4. `reason`
+5. `nextCommand`
+
+### 通过时
+
+优先使用：`templates/pass-report.md`
+
+输出必须包含：
+
+1. `command`
+2. `tier`
+3. `completedChecks[]`
+
+## 脚本使用规则
+
+### `scripts/check-gates.*`
+
+当门禁字段需要做确定性检查时使用，用于：
+
+1. 校验 spec/plan/contract 关键字段是否存在
+2. 统一返回 pass / blocked 结果
+
+### `scripts/check-quality.*`
+
+只在接近收尾、发布前或质量闸口阶段使用；不要在普通前置门禁中提前运行。
 
 ### Spec 完整性约束
 
@@ -175,3 +224,11 @@ GateResult:
 2. 覆盖率阈值（默认 80%）
 3. 文档同步状态（doc-sync 报告 + findings/progress 文件）
 4. 可选校验 `spec/AI2AI` 关键文档（`RequireAi2AiDocs=true`）
+
+## 禁止事项
+
+1. 不要把门禁当作“提醒”，一旦阻断就必须停止主体执行
+2. 不要返回 `blocked` 却不给下一条可执行命令
+3. 不要在缺少 `command` 语义的情况下乱套门禁
+4. 不要把质量闸口和普通前置门禁混为一谈
+5. 不要在 H 级任务缺少 `brainstormPath` 时继续放行
