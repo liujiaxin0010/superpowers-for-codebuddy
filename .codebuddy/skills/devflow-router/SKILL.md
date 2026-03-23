@@ -1,6 +1,6 @@
 ---
 name: devflow-router
-description: Featureflow 总控路由技能。用于把任意开发请求统一收口到一个入口，自动识别文档产物意图、任务类型、判断前置条件，并路由到 brainstorm、spec-lite、fix-bug、research、test、review、issue-draft-pr 或 parallel-delivery 等工作流。
+description: Featureflow 总控路由技能。用于把任意开发请求统一收口到一个入口，自动识别文档产物意图、任务类型、判断前置条件，并路由到 brainstorm、spec-lite、fix-bug、research、test、review、issue-draft-pr 或 parallel-delivery 等工作流。用户提到"Featureflow/统一入口/自动路由/我该用什么命令/帮我判断走哪个流程/从哪里开始"时触发。
 ---
 
 # Featureflow 总控路由

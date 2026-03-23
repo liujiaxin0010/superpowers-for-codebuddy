@@ -1,11 +1,19 @@
 ---
 name: issue-draft-pr
-description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR 交付链路。适用于目标相对清晰、验收可定义、需要异步交接和 owner 收口的任务。
+description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR 交付链路。适用于目标相对清晰、验收可定义、需要异步交接和 owner 收口的任务。用户提到"issue 转 PR/工单到 PR/draft PR/从 issue 开始开发/Jira 工单实现/工单交付"时触发。
 ---
 
 # 工单到 Draft PR
 
 把 issue / Jira 输入收敛成可执行合同、规格、计划、证据和 draft PR 说明。
+
+## 资源加载规则
+
+当工单质量判断需要参考标准证据格式、或准备输出最终 draft PR 描述时，再读取：
+
+- `references/draft-pr-checklist.md`
+
+当工单只有标题或描述模糊、需要帮助 owner 补齐 acceptance criteria 时，不要加载证据清单——先完成需求补齐。
 
 ## 何时使用
 
@@ -65,10 +73,12 @@ PR 描述必须包含：
 
 ## 禁止事项
 
-1. 不要在工单不清晰时就开始写代码——先补需求再实现
-2. 不要把 draft PR 当成最终 PR——draft 意味着仍需 review
-3. 不要在 PR 描述中写"已完成所有功能"却不给逐条证据
-4. 不要跳过 `/code-review` 直接标记为 ready for review
+1. 不要在工单不清晰时就开始写代码——模糊需求产出的代码大概率需要全部返工，浪费的上下文和时间不可回收
+2. 不要把 draft PR 当成最终 PR——draft 意味着仍需 review，直接合并会绕过质量门禁
+3. 不要在 PR 描述中写"已完成所有功能"却不给逐条证据——无证据的声明无法被 reviewer 验证，等同于未测试
+4. 不要跳过 `/code-review` 直接标记为 ready for review——未审查的代码可能包含安全漏洞或架构问题，合并后修复成本成倍增加
+5. 不要在 review 阶段补需求或改方向——review 的目的是验证实现质量，方向变更应回退到 spec 阶段
+6. 不要把工单的所有 label/tag 当作需求——label 是分类标签不是验收标准，以 acceptance criteria 为准
 
 ## 参考
 

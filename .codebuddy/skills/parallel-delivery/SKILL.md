@@ -1,6 +1,6 @@
 ---
 name: parallel-delivery
-description: 多 lane 并行交付技能。用于将长任务拆分成低耦合子任务，为每个 lane 明确文件边界、验证命令和最终合流 owner，并配合 worktree 或独立会话执行。
+description: 多 lane 并行交付技能。用于将长任务拆分成低耦合子任务，为每个 lane 明确文件边界、验证命令和最终合流 owner，并配合 worktree 或独立会话执行。用户提到"并行交付/多 lane/拆成多条线并行/长任务拆分并行推进/parallel delivery/多任务同时交付"时触发。
 ---
 
 # 并行交付（Parallel Delivery）

@@ -1,6 +1,6 @@
 ---
 name: spec-lite
-description: 轻量规格生成，自动给出 L/M/H 分级建议并输出门禁上下文。用户提到"出规格/写 spec/需求分析/分级/spec-lite"时触发。
+description: 轻量规格生成技能。用于在编码前明确范围、分级（L/M/H）和门禁上下文，输出可执行的 spec 文档和 GateContext/TaskContract/GateResult。用户提到"出规格/写 spec/需求分析/分级/spec-lite/任务定级/生成规格文档"时触发。
 ---
 
 # Spec-Lite（轻量规格）
