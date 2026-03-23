@@ -44,6 +44,32 @@ description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR �
 - 合同缺少 owner
 - 试图直接把 review 阶段当成补需求阶段
 
+## 工单质量快速判断
+
+| 信号 | 判断 | 动作 |
+|---|---|---|
+| 有明确 acceptance criteria | 可直接进入合同 | 继续 |
+| 有目标但无验收标准 | 需补充 | 先与 owner 确认验收条件 |
+| 只有标题或一句话描述 | 不可执行 | BLOCKED，要求 owner 补齐 |
+| 包含设计稿/原型链接 | 验收可视化 | 将视觉验收纳入证据 |
+
+## Draft PR 最小质量标准
+
+PR 描述必须包含：
+
+1. **工单映射**：哪些 acceptance criteria 被满足，逐条对应
+2. **验证证据**：测试输出、截图或命令结果，不是"已测试"
+3. **未覆盖项**：明确声明哪些验收条件本次未实现
+4. **风险声明**：已知风险和缓解措施
+5. **Handoff**：reviewer 应重点关注什么
+
+## 禁止事项
+
+1. 不要在工单不清晰时就开始写代码——先补需求再实现
+2. 不要把 draft PR 当成最终 PR——draft 意味着仍需 review
+3. 不要在 PR 描述中写"已完成所有功能"却不给逐条证据
+4. 不要跳过 `/code-review` 直接标记为 ready for review
+
 ## 参考
 
 - Draft PR 证据清单：`references/draft-pr-checklist.md`

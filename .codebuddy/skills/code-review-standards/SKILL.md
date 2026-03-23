@@ -219,27 +219,7 @@ description: "多语言代码审查技能。用于对 Go、Python、Java、JavaS
 
 ### 第六步：生成 XLSX 缺陷汇总表
 
-使用 `xlsx` 技能生成 `code-review-report.xlsx`，包含以下表头：
-
-| 列 | 字段名 | 是否必填 | 说明 |
-|----|--------|---------|------|
-| A | 评审人员 | * | 审查执行者名称 |
-| B | 描述 | * | 缺陷的详细描述 |
-| C | 位置 | | 文件路径:行号 |
-| D | 模块 | | 所属功能模块 |
-| E | 缺陷严重程度 | * | 严重/一般/提示 |
-| F | 缺陷来源 | * | 见缺陷分类数据 |
-| G | 缺陷类型 | | 见缺陷分类数据 |
-| H | 缺陷子类型 | | 见缺陷分类数据 |
-| I | 缺陷界定 | * | 确认/不是缺陷/重复/延期处理 |
-
-XLSX 格式要求：
-- **表格内所有内容必须使用中文**（表头、缺陷描述、模块名称、改进建议、严重程度等全部中文）
-- 表头行加粗，背景色浅蓝，冻结首行
-- 必填字段列标题带 `*` 标记
-- 列宽自适应内容
-- 使用数据验证（下拉列表）限制枚举字段的可选值
-- 缺陷分类的下拉选项参考 `defect-classification.json`
+使用 `xlsx` 技能生成 `code-review-report.xlsx`。XLSX 列定义和格式要求见 `references/xlsx-column-spec.md`。
 
 ---
 
@@ -288,22 +268,7 @@ XLSX 格式要求：
 
 ---
 
-## 推荐静态分析工具
-
-| 语言 | 工具 |
-|------|------|
-| Go | golangci-lint, go vet, staticcheck |
-| Python | pylint, flake8, mypy, bandit |
-| Java | SpotBugs, PMD, SonarQube |
-| JavaScript/TS | ESLint, TypeScript compiler |
-| Vue | eslint-plugin-vue, Vetur |
-| C/C++ | clang-tidy, cppcheck, Valgrind, AddressSanitizer |
-| Rust | clippy, rustfmt, cargo-audit |
-| Lua | luacheck, selene |
-| Shell/Bash | shellcheck, shfmt |
-| PowerShell | PSScriptAnalyzer |
-
----
+各语言推荐的静态分析工具见 `references/static-analysis-tools.md`。
 
 ## 重构建议模式
 

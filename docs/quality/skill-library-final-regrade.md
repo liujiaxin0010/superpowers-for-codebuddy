@@ -1,172 +1,150 @@
 # Skill Library Final Regrade
 
-**日期**: 2026-03-20  
+**日期**: 2026-03-23  
 **范围**: `.codebuddy/skills/` 全库 33 个 skills  
 **口径**: 使用 `skill-judge` 的 8 维、120 分模型复评分  
-**基线**: 以当前 worktree 状态为准，包含尚未提交的 `references/`、`templates/` 与删除的辅助文件  
+**本轮方法**: 对阶段 23 新变更的 4 个高杠杆技能重新评分；其余 29 个未变更 skills 沿用上一轮复评分数，并刷新全库总表、均分与分布  
+**基线**: 以当前 worktree 为准，包含尚未提交的 `references/`、`templates/` 与主 `SKILL.md` 改动  
 
 ## 总结
 
-- 平均分：`95.9 / 120`
-- 等级分布：`A=1, B=17, C=15, D=0, F=0`
-- 相比首轮复评：`83.2 -> 95.9`
-- 结论：技能库已经进入“主链稳定、重型技能完成结构下沉、`B` 档成为主体”的状态
+- 平均分：`99.6 / 120`
+- 等级分布：`A=5, B=28, C=0, D=0, F=0`
+- 相比首轮复评：`83.2 -> 99.6`
+- 相比上一轮总表：`99.2 -> 99.6`
+- 结论：技能库已经从“全库清零 `C` 档”继续推进到“5 个 `A` 档作为标杆、其余全部稳定 `B` 档”的状态
 
-这轮整体提分主要来自四类修复：
+本轮提分主要来自三类动作：
 
-1. 为大量 skills 补齐高质量中文 `name/description`
-2. 将重型主文件改为“主文件路由 + references/templates 下沉”
-3. 将教程式正文改造成协议式 skill
-4. 为高 `C` 档 skill 增加判断框架、样例 reference 与模板资产
+1. 把 `process-gatekeeper` 的命令级细则从主文件下沉到专门门禁细则
+2. 把 `systematic-debugging` 与 `devflow-router` 继续压成高密度主路由，并给出结构化模板
+3. 为 `xlsx` 增加任务路由矩阵，进一步强化 Tool 型资源触发
 
 ## 新总表
 
 | 分数 | 等级 | Skill |
 |---|---|---|
+| 110 | A | `process-gatekeeper` |
+| 109 | A | `xlsx` |
 | 108 | A | `bug-fix` |
-| 107 | B | `process-gatekeeper` |
-| 104 | B | `systematic-debugging` |
-| 103 | B | `devflow-router` |
+| 108 | A | `devflow-router` |
+| 108 | A | `systematic-debugging` |
+| 104 | B | `receiving-code-review` |
+| 102 | B | `requesting-code-review` |
+| 101 | B | `code-simplifier` |
+| 100 | B | `custom-testing` |
 | 100 | B | `task-contracts` |
+| 99 | B | `code-self-check` |
+| 99 | B | `dispatching-parallel-agents` |
+| 99 | B | `finishing-branch` |
 | 99 | B | `spec-lite` |
 | 99 | B | `subagent-driven-development` |
 | 98 | B | `brainstorming` |
+| 98 | B | `executing-plans` |
+| 98 | B | `postgres-best-practices` |
 | 97 | B | `file-based-memory` |
 | 97 | B | `parallel-delivery` |
+| 97 | B | `pua` |
 | 97 | B | `research` |
+| 97 | B | `using-git-worktrees` |
+| 97 | B | `version-control-branching` |
 | 97 | B | `web-code-review` |
 | 97 | B | `writing-plans` |
 | 96 | B | `ai-interaction-scoring` |
 | 96 | B | `code-review-standards` |
+| 96 | B | `extending-project` |
 | 96 | B | `issue-draft-pr` |
 | 96 | B | `testcase` |
 | 96 | B | `unified-test` |
-| 95 | C | `receiving-code-review` |
-| 94 | C | `custom-testing` |
-| 93 | C | `code-self-check` |
-| 93 | C | `postgres-best-practices` |
-| 93 | C | `pua` |
-| 93 | C | `using-git-worktrees` |
-| 93 | C | `xlsx` |
-| 92 | C | `dispatching-parallel-agents` |
-| 92 | C | `executing-plans` |
-| 92 | C | `writing-skills` |
-| 91 | C | `extending-project` |
-| 91 | C | `finishing-branch` |
-| 91 | C | `version-control-branching` |
-| 90 | C | `code-simplifier` |
-| 90 | C | `requesting-code-review` |
+| 96 | B | `writing-skills` |
 
-## 提升最大的 Skills
+## 本轮提分的 4 个高杠杆技能
 
-| Skill | 旧分 | 新分 | 变化 |
-|---|---:|---:|---:|
-| `testcase` | 57 | 96 | +39 |
-| `research` | 62 | 97 | +35 |
-| `version-control-branching` | 59 | 91 | +32 |
-| `using-git-worktrees` | 62 | 93 | +31 |
-| `custom-testing` | 68 | 94 | +26 |
-| `executing-plans` | 68 | 92 | +24 |
-| `finishing-branch` | 68 | 91 | +23 |
-| `file-based-memory` | 76 | 97 | +21 |
-| `writing-plans` | 81 | 97 | +16 |
-| `writing-skills` | 76 | 92 | +16 |
+| Skill | 旧分 | 新分 | 变化 | 复评判断 |
+|---|---:|---:|---:|---|
+| `devflow-router` | 103 | 108 | +5 | 路由逻辑下沉、主文件瘦身后，已冲入 `A` |
+| `systematic-debugging` | 104 | 108 | +4 | 报告模板与架构升级反思补齐后，已冲入 `A` |
+| `process-gatekeeper` | 107 | 110 | +3 | 门禁细则拆分后，成为当前全库最高分技能 |
+| `xlsx` | 106 | 109 | +3 | Tool 路由进一步强化后，进入 `A` |
 
 ## 关键结论
 
-### 1. 主链 skills 已进入稳定区间
+### 1. 高杠杆第一组 4 个技能里，4 个都已冲入 `A`
 
-下列主链技能已经具备较完整的触发、阻断、协议与资源装载设计：
-
-- `research`
-- `spec-lite`
-- `writing-plans`
-- `executing-plans`
 - `process-gatekeeper`
-- `file-based-memory`
-- `code-self-check`
+  - 主文件从“堆所有命令细则”转成“门禁路由 + 矩阵 + 模板 + 脚本边界”
+- `systematic-debugging`
+  - 主文件从“长流程说明”转成“调试协议 + 专项文档触发 + 报告模板”
+- `devflow-router`
+  - 主文件从“路由规则堆叠”转成“路由协议 + 模糊需求参考 + 输出模板”
+- `xlsx`
+  - 在 Tool 型结构基础上继续补强任务路由矩阵，让资源加载更精确
 
-### 2. 重型高杠杆 skills 已完成结构下沉
+### 2. 当前 5 个 `A` 档已经形成清晰标杆
 
-- `brainstorming`
-  - 主 `SKILL.md` 已压成路由层
-  - 阶段细节下沉到 `brainstorming/references/stage-guide.md`
-- `subagent-driven-development`
-  - 主 `SKILL.md` 已压成路由层
-  - implementer / spec-reviewer / code-reviewer 模板已真实落盘到 `templates/`
-- `postgres-best-practices`
-  - 主文件改为决策层
-  - SQL 示例下沉到 `references/query-patterns.md`
-- `pua`
-  - 主文件保留触发与方法论
-  - 具体话术风味下沉到 `references/flavor-pack.md`
+当前 `A` 档：
 
-### 3. 中游 C 档已成片抬升，部分成功进入 B 档
+- `process-gatekeeper`
+- `xlsx`
+- `bug-fix`
+- `devflow-router`
+- `systematic-debugging`
 
-以下 skills 已从“偏通用说明”转向“协议式技能”：
+这 5 个技能覆盖了：
 
-- `extending-project`
-- `requesting-code-review`
-- `receiving-code-review`
-- `ai-interaction-scoring`
-- `unified-test`
-- `custom-testing`
-- `code-simplifier`
-- `finishing-branch`
-- `version-control-branching`
-- `code-self-check`
-- `using-git-worktrees`
+1. 流程硬门禁
+2. 高风险文件格式处理
+3. 缺陷修复
+4. 总控路由
+5. 根因调试
 
-其中以下 3 个已成功冲入 `B`：
+### 3. 其余 28 个技能全部稳定在 `B`
 
-- `testcase`
-- `ai-interaction-scoring`
-- `unified-test`
+当前已经没有 `C` 档、`D` 档或 `F` 档。  
+如果继续提分，重点已经不再是“清尾”，而是“把少数高杠杆 `B` 再推成新的 `A` 标杆”。
 
-### 4. 最后一轮接近 B 的 C 档提分有效
+## 下一步建议
 
-通过补强样例资源、证据模式和模板资产：
+如果继续冲 `A`，建议下一批按这个顺序：
 
-- `testcase`: `94 -> 96`
-- `ai-interaction-scoring`: `93 -> 96`
-- `receiving-code-review`: `93 -> 95`
-- `custom-testing`: `90 -> 94`
+1. `requesting-code-review`
+2. `task-contracts`
+3. `custom-testing`
+4. `writing-skills`
 
-说明接近 `B` 的 `C` 档，继续提分最有效的方法不是加长正文，而是：
+如果目标是结束本轮整库优化，现在已经完全可以转入收尾：
 
-1. 增加按需加载的样例资源
-2. 增加明确的 `BLOCKED` 条件
-3. 增加统一输出模板
-
-## 仍然最值得继续优化的 4 个
-
-1. `code-simplifier`
-   - 已具备收益判断，但仍可继续补语言/场景差异化经验
-2. `requesting-code-review`
-   - 发起协议已清晰，但还可继续强化审查深度分流
-3. `extending-project`
-   - 扩展决策协议已成型，但仍可继续下沉阶段细节
-4. `finishing-branch`
-   - 收尾路径矩阵已补齐，但还可补与 PR 模板/团队收口的连接
+1. 整理提交说明
+2. 归纳最有效的改法
+3. 以当前 `A` 档技能为模板约束后续新 skill
 
 ## 评分说明
 
-本次复评分以当前仓库中的实际文件为准，包含以下未提交但已存在的资源：
+本轮重新复评的 4 个 skills 及其新增资源为：
 
-- `brainstorming/references/stage-guide.md`
-- `subagent-driven-development/templates/implementer-prompt.md`
-- `subagent-driven-development/templates/spec-reviewer-prompt.md`
-- `subagent-driven-development/templates/code-reviewer-prompt.md`
-- `postgres-best-practices/references/query-patterns.md`
-- `pua/references/flavor-pack.md`
-- `code-self-check/references/diff-scenarios.md`
-- `using-git-worktrees/references/worktree-edge-cases.md`
-- `custom-testing/templates/external-test-rules-template.md`
-- `custom-testing/references/rule-resolution-examples.md`
-- `requesting-code-review/references/review-depth-matrix.md`
-- `requesting-code-review/templates/review-request-template.md`
-- `testcase/references/testcase-patterns.md`
-- `ai-interaction-scoring/references/evidence-patterns.md`
-- `receiving-code-review/templates/review-response-template.md`
+- `process-gatekeeper`
+  - `SKILL.md`
+  - `gate-matrix.md`
+  - `command-gate-rules.md`
+  - `templates/blocked-report.md`
+  - `templates/pass-report.md`
+- `systematic-debugging`
+  - `SKILL.md`
+  - `root-cause-tracing.md`
+  - `defense-in-depth.md`
+  - `condition-based-waiting.md`
+  - `architecture-escalation.md`
+  - `templates/debug-report-template.md`
+- `devflow-router`
+  - `SKILL.md`
+  - `references/routing-matrix.md`
+  - `references/ambiguity-routing.md`
+  - `references/import-bundle.md`
+  - `templates/route-decision-template.md`
+- `xlsx`
+  - `SKILL.md`
+  - `references/task-routing-matrix.md`
+  - 既有 `financial-modeling-standards.md` / `formula-quality-workflow.md` / `python-automation-guide.md` / `windows-paths.md`
+  - `templates/spreadsheet-delivery-template.md`
 
-若继续优化剩余 `C` 档，建议继续使用同一口径复评，避免标准漂移。
+其余 29 个 skills 本轮未发生文件变化，因此沿用上一轮复评分数，以保持复评口径稳定。

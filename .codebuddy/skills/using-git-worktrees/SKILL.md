@@ -1,11 +1,27 @@
 ---
 name: using-git-worktrees
-description: Git worktree 隔离开发技能。用于在 Git 项目中为并行任务、子代理分发或脏工作目录创建独立工作树，避免分支切换互相干扰。用户提到“worktree/隔离开发/多个分支并行/独立工作目录”时触发。
+description: Git worktree 隔离开发技能。用于在 Git 项目中为并行任务、子代理分发、release 维护或脏工作目录创建独立工作树，避免分支切换互相干扰，并整理 worktree 创建与清理决策。用户提到“worktree/隔离开发/多个分支并行/独立工作目录/清理 worktree”时触发。
 ---
 
 # Git Worktree 隔离开发
 
 在 Git 项目中，用独立工作树代替频繁切分支，降低上下文污染和本地改动冲突。
+
+## 资源加载规则
+
+当遇到“同名分支是否复用、旧 worktree 是否残留、清理失败怎么办”时，再读取：
+
+- `references/worktree-edge-cases.md`
+
+当不是最简单的“从 main 新开一个独立 worktree”场景，或者需要向 Boss / owner 说明创建决策时，再读取：
+
+- `templates/worktree-decision-template.md`
+
+当准备清理、复用或放弃一个 worktree 时，再读取：
+
+- `templates/worktree-cleanup-report.md`
+
+普通创建流程不要一开始就把边界案例和清理模板全部读入。
 
 ## 何时使用
 
@@ -24,14 +40,6 @@ description: Git worktree 隔离开发技能。用于在 Git 项目中为并行�
 2. 只做一个短平快任务，且当前目录完全干净
 3. 用户明确要求就在当前目录工作
 
-## 资源加载规则
-
-当遇到“同名分支是否复用、旧 worktree 是否残留、清理失败怎么办”时，再读取：
-
-- `references/worktree-edge-cases.md`
-
-不要在普通创建流程中一开始就加载全部边界案例。
-
 ## 前置条件
 
 1. 仓库是 Git
@@ -48,41 +56,12 @@ description: Git worktree 隔离开发技能。用于在 Git 项目中为并行�
 3. 已存在同名分支或同名 worktree，且无法确认是否复用
 4. 基线验证失败
 
-## 目录策略
-
-优先复用已有 worktree 目录；若不存在，则默认使用 `.worktrees/`。
-
-创建前必须确认：
-
-1. `.gitignore` 已忽略 worktree 目录
-2. 路径命名与任务语义一致
-
 ## 创建协议
 
-### 1. 选定目录
-
-```bash
-if [ -d ".worktrees" ]; then
-  WORKTREE_DIR=".worktrees"
-elif [ -d "worktrees" ]; then
-  WORKTREE_DIR="worktrees"
-else
-  WORKTREE_DIR=".worktrees"
-fi
-```
-
-### 2. 确保忽略规则存在
-
-```bash
-grep -q "^\\.worktrees/" .gitignore 2>/dev/null || echo ".worktrees/" >> .gitignore
-grep -q "^worktrees/" .gitignore 2>/dev/null || echo "worktrees/" >> .gitignore
-```
-
-### 3. 创建工作树
-
-```bash
-git worktree add .worktrees/feature-功能描述 -b feature/功能描述 main
-```
+1. 优先复用已存在的 worktree 根目录；若没有，默认使用 `.worktrees/`
+2. 创建前确认 `.gitignore` 已忽略 worktree 目录
+3. worktree 路径与分支名必须能回溯到任务语义
+4. 正式创建前说明：目录、基线、分支名、是否复用旧 worktree
 
 ## 复用与冲突判断
 
@@ -101,19 +80,7 @@ git worktree add .worktrees/feature-功能描述 -b feature/功能描述 main
 
 ## 清理规则
 
-在合并或放弃任务后，才允许清理：
-
-```bash
-git worktree remove .worktrees/feature-功能描述
-git branch -d feature/功能描述
-```
-
-若明确放弃任务且 Boss 已确认，可用强制清理：
-
-```bash
-git worktree remove .worktrees/feature-功能描述 --force
-git branch -D feature/功能描述
-```
+在合并或放弃任务后，才允许清理。若明确放弃任务且 Boss 已确认，才允许强制清理。
 
 ## 清理失败时的处理
 
@@ -132,6 +99,14 @@ git branch -D feature/功能描述
 1. 每个 lane 或每个子代理使用独立 worktree
 2. lane 名称和分支名必须能追溯到任务
 3. 最终由统一 owner 收口合流
+
+## 输出要求
+
+1. 说明基线分支
+2. 说明 worktree 目录
+3. 说明是否复用旧 worktree
+4. 说明清理或保留策略
+5. 非默认场景时套用创建决策模板或清理报告模板
 
 ## 禁止事项
 

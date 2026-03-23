@@ -175,3 +175,12 @@ category: 缺陷大类（5 类之一）
 | `references/defect-classification.md` | 完整缺陷分类表（source/type/subtype） | Step 4 分类定位时 |
 | `references/review-checklist.md` | 5 大类别的详细检查项清单 | Step 2 逐类扫描时 |
 | `templates/defect-report-template.json` | 报告 JSON 模板 | Step 6 输出时 |
+
+## 禁止事项
+
+1. 不要把 Suggest 级别的风格偏好标为 Major——夸大严重度会让开发者对真正的严重问题脱敏
+2. 不要在未读取完整组件上下文时就报告"未使用变量"——父组件 props、mixin、全局注入都可能在别处引用
+3. 不要对框架约定写法给出"重构建议"——例如 Vue 2 的 Options API 写法不是缺陷，不应建议迁移 Composition API
+4. 不要在审查阶段直接修改源码——审查产出是报告，修复需要 Boss 明确确认后才能执行
+5. 不要忽略 <template> 和 <style> 部分只审查 <script>——视觉呈现类和交互体验类缺陷大量存在于模板和样式中
+6. 不要对同一模式的问题重复报告多条——相同模式只报一条并注明"同类问题还出现在…"，否则报告噪声过大
