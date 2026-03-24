@@ -73,6 +73,23 @@
 |---|--------|------|----------|------|
 {{deliverablesList}}
 
+#### 代码分析验证结果（如启用）
+
+{{#if codeAnalysisEnabled}}
+**项目路径：** `{{projectDir}}`
+**项目类型：** {{projectType}}
+
+| # | 交付物 | 对话证据 | 文件存在 | 实现充分性 | 测试覆盖 | 交叉判定 | 最终得分 |
+|---|--------|----------|----------|-----------|----------|----------|----------|
+{{codeAnalysisResults}}
+
+**结构完整性：** {{structureCompleteness}}
+**依赖完整性：** {{dependencyIntegrity}}
+**构建可行性：** {{buildFeasibility}}
+{{else}}
+未提供 `projectDir`，跳过代码分析，仅基于对话证据评分。
+{{/if}}
+
 #### 补充证据
 {{supplementaryEvidence}}
 
@@ -105,6 +122,7 @@
 | 过早编码 | {{ap2Detected}} | {{ap2Count}} | {{ap2Impact}} |
 | Bug 修复循环 | {{ap3Detected}} | {{ap3Count}} | {{ap3Impact}} |
 | 忽略用户反馈 | {{ap4Detected}} | {{ap4Count}} | {{ap4Impact}} |
+| 代码虚报 | {{ap5Detected}} | {{ap5Count}} | {{ap5Impact}} |
 
 ---
 
@@ -128,8 +146,9 @@
 
 本报告由 `ai-interaction-scoring` 技能（v1.0.0）生成。
 
-- 评分基于对话证据（代理指标）
+- 评分基于对话证据（代理指标），可选叠加代码分析验证
 - 用户关于功能的陈述优先于代码分析
+- 启用代码分析时，对话证据与代码分析结果交叉验证
 - 各维度独立评分
 - 证据模糊时采用保守评分
 - 反模式检测作为负面修正因子

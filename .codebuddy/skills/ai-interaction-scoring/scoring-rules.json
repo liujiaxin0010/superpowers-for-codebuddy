@@ -184,7 +184,90 @@
           "description": "同一 Bug 修复 3 次以上仍未解决",
           "action": "受影响的交付物扣 1 分"
         }
-      ]
+      ],
+      "codeAnalysis": {
+        "triggerCondition": "仅当提供 projectDir 参数时启用，否则降级回纯对话评分",
+        "referenceDoc": "references/code-analysis-guide.md",
+        "checks": [
+          {
+            "id": "file_existence",
+            "label": "文件存在性",
+            "description": "对话中声称的文件/模块是否在项目中真实存在",
+            "impact": "文件不存在时该交付物降为 0 分"
+          },
+          {
+            "id": "structure_completeness",
+            "label": "结构完整性",
+            "description": "项目是否具备该类型项目的标准目录结构",
+            "impact": "缺失关键目录时降低完成度置信度"
+          },
+          {
+            "id": "implementation_depth",
+            "label": "实现充分性",
+            "description": "关键函数/组件/API 是否有实际实现而非空壳",
+            "impact": "空壳代码该交付物降为 partial（1 分）"
+          },
+          {
+            "id": "test_coverage",
+            "label": "测试覆盖",
+            "description": "测试文件是否存在、测试用例数量是否合理",
+            "impact": "有测试且用例 > 0 时增强 full evidence 置信度"
+          },
+          {
+            "id": "dependency_integrity",
+            "label": "依赖完整性",
+            "description": "依赖声明文件是否存在且内容合理",
+            "impact": "缺失依赖声明时降低可运行性置信度"
+          },
+          {
+            "id": "build_feasibility",
+            "label": "构建可行性",
+            "description": "是否存在构建/启动配置和入口点",
+            "impact": "缺少入口点时降低完成度置信度"
+          }
+        ],
+        "crossValidation": [
+          {
+            "conversation": "声称完成 + 运行验证",
+            "code": "代码存在且有实现",
+            "result": "full",
+            "points": 2
+          },
+          {
+            "conversation": "声称完成 + 运行验证",
+            "code": "代码不存在",
+            "result": "partial",
+            "points": 1,
+            "note": "标记需人工确认"
+          },
+          {
+            "conversation": "声称完成，无运行验证",
+            "code": "代码存在且有实现",
+            "result": "partial",
+            "points": 1
+          },
+          {
+            "conversation": "声称完成，无运行验证",
+            "code": "代码为空壳或不存在",
+            "result": "none",
+            "points": 0,
+            "note": "标记虚假完成"
+          },
+          {
+            "conversation": "无明确声明",
+            "code": "代码存在且有实现",
+            "result": "partial",
+            "points": 1
+          },
+          {
+            "conversation": "用户报告失败",
+            "code": "任意",
+            "result": "none",
+            "points": 0,
+            "note": "用户反馈优先级最高"
+          }
+        ]
+      }
     },
     "extended_features": {
       "name": "扩展功能与美化",
@@ -242,6 +325,12 @@
       "label": "忽略用户反馈",
       "detection": "用户报告问题但 AI 未解决或无证据地声称已修复",
       "impact": "在项目完成度维度中扣分"
+    },
+    "false_code_claim": {
+      "label": "代码虚报",
+      "detection": "对话声称已完成功能，但代码分析显示文件不存在或仅为空壳实现",
+      "impact": "在项目完成度维度中扣分，标记为虚假完成",
+      "requiresCodeAnalysis": true
     }
   },
   "scoreLevels": [
