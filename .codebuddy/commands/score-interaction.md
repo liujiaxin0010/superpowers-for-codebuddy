@@ -1,3 +1,7 @@
+---
+description: 对 AI 编码助手的对话质量进行结构化评分，生成 MD 与 XLSX 报告
+---
+
 请按以下顺序阅读并严格遵循：
 1. `.codebuddy/skills/ai-interaction-scoring/SKILL.md`（评分维度与规则）
 2. `.codebuddy/skills/ai-interaction-scoring/scoring-rules.json`（评分配置）
