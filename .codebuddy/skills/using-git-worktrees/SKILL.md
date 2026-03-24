@@ -7,6 +7,16 @@ description: Git worktree 隔离开发技能。用于在 Git 项目中为并行�
 
 在 Git 项目中，用独立工作树代替频繁切分支，降低上下文污染和本地改动冲突。
 
+## 核心心智：worktree = 物理隔离，branch = 逻辑隔离
+
+普通分支切换（`git checkout`）只改变 HEAD 指向，**工作目录是共享的**——切换时未提交的改动会带到新分支，构建缓存和 IDE 索引会失效。worktree 创建的是**物理上独立的目录**，每个 worktree 有自己的工作树、索引和 HEAD，互不干扰。
+
+关键推论：
+- 需要保留当前构建状态同时开新任务 → worktree
+- 需要 IDE 同时打开两个分支 → worktree
+- 子代理需要互不干扰的文件系统 → worktree
+- 只是临时看另一个分支的代码 → `git show` 或 `git diff`，不需要 worktree
+
 ## 资源加载规则
 
 当遇到“同名分支是否复用、旧 worktree 是否残留、清理失败怎么办”时，再读取：
@@ -81,6 +91,13 @@ description: Git worktree 隔离开发技能。用于在 Git 项目中为并行�
 ## 清理规则
 
 在合并或放弃任务后，才允许清理。若明确放弃任务且 Boss 已确认，才允许强制清理。
+
+## Worktree 陷阱
+
+1. **共享 `.git` 目录**：所有 worktree 共享同一个 `.git`，因此 `git stash` 是全局的——在 worktree A 中 stash 的内容在 worktree B 中也能 pop，容易误操作
+2. **不能在两个 worktree 中检出同一分支**：Git 会拒绝，因为同一分支的两个工作树会导致 HEAD 竞争
+3. **submodule 不自动初始化**：新建 worktree 后 submodule 目录为空，需要手动 `git submodule update --init`
+4. **node_modules / venv 不共享**：每个 worktree 需要独立安装依赖，否则路径不匹配会导致构建失败
 
 ## 清理失败时的处理
 

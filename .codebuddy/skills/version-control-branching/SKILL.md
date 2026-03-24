@@ -7,6 +7,24 @@ description: 版本控制分支管理技能。用于在设计或计划已批准�
 
 本技能回答的是：**当前任务该用什么隔离策略、从哪条基线切出、分支该怎么命名。**
 
+## 核心心智：基线决定上限
+
+分支的质量上限由它的基线决定。从一个测试已经失败的基线切出，后续所有开发都无法区分"新引入的问题"和"基线遗留的问题"。从错误的基线切出（如从旧 release 而非 main），会引入已修复的 bug 或缺少必要的上游依赖。
+
+因此：**先验证基线，再创建分支。**
+
+## 分支命名约定
+
+| 任务类型 | 命名模式 | 示例 |
+|---|---|---|
+| 新功能 | `feature/<简短描述>` | `feature/user-auth` |
+| Bug 修复 | `fix/<issue-id>-<描述>` | `fix/1234-login-crash` |
+| 重构 | `refactor/<描述>` | `refactor/extract-service` |
+| Hotfix | `hotfix/<version>-<描述>` | `hotfix/v2.1-payment-fix` |
+| 实验 | `experiment/<描述>` | `experiment/new-cache-strategy` |
+
+命名必须能让不知道上下文的人从名称推断出任务类型和目标。
+
 ## 资源加载规则
 
 当遇到 dirty worktree、并行任务、release/hotfix 维护、非默认基线或默认判断不够用时，再读取：

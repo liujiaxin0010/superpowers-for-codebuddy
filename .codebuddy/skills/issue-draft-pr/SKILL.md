@@ -30,18 +30,22 @@ description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR �
 5. PR 说明要求
 6. owner / handoff 负责人
 
+## 核心心智：先验证工单可执行性，再进入实现
+
+工单的质量决定了整条交付链路的上限。一个只有标题的工单进入实现，产出的代码大概率需要全部返工——因为没有验收标准就没有完成定义，开发者只能猜测目标。
+
 ## 执行流程
 
-1. 先校验工单是否真的写清目标与验收
+1. 先校验工单是否真的写清目标与验收——**若工单质量判断困难，此时读取 `references/draft-pr-checklist.md` 中的验收标准参考**
 2. 若未写清，先补 acceptance criteria，不进入实现
 3. 使用 `task-contracts` 生成 `issue-draft-pr` 合同
 4. 若缺少 spec，回退 `/spec-lite`
 5. 若缺少 plan，回退 `/write-plan`
 6. 若 `spec + plan` 齐备，进入 `/execute-plan`
 7. 收尾前必须执行 `/code-review`
-8. 输出 draft PR 草稿，至少包含：
-   - 工单目标映射
-   - 验收证据
+8. 输出 draft PR 草稿——**此时读取 `references/draft-pr-checklist.md` 中的 PR 描述质量标准**，至少包含：
+   - 工单目标映射（逐条对应 acceptance criteria）
+   - 验收证据（测试输出/截图/命令结果）
    - 风险声明
    - owner / handoff
 
@@ -80,6 +84,11 @@ PR 描述必须包含：
 5. 不要在 review 阶段补需求或改方向——review 的目的是验证实现质量，方向变更应回退到 spec 阶段
 6. 不要把工单的所有 label/tag 当作需求——label 是分类标签不是验收标准，以 acceptance criteria 为准
 
-## 参考
+## 常见失败模式
 
-- Draft PR 证据清单：`references/draft-pr-checklist.md`
+| 失败模式 | 表面症状 | 根因 |
+|---|---|---|
+| PR 描述复制粘贴 issue 原文 | reviewer 看不出哪些 AC 被满足 | 没有做逐条映射，只是搬运文字 |
+| "已完成所有功能"但 0 条证据 | reviewer 无法验证 | 开发者把自己跑过一次等同于已验证 |
+| PR 包含大量无关改动 | diff 噪声过大，关键变更被淹没 | 没有在合同中限定 `allowedPaths` |
+| draft PR 被直接合并 | 绕过质量门禁 | 团队没有强制 review 的分支保护规则 |

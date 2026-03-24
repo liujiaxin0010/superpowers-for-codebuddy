@@ -36,9 +36,19 @@ description: Featureflow 总控路由技能。用于把任意开发请求统一�
 
 1. 先识别用户真正要的产物，而不是先猜命令
 2. 再判断任务类型：new-feature / bugfix / refactor / test / research / review-pr / issue-draft-pr / parallel-delivery
-3. 再判断模糊度：`must-brainstorm | should-brainstorm | clear`
+3. 再判断模糊度（见下方判断标准）
 4. 再检查前置是否齐备：spec / plan / target / issueLink / owner
 5. 最后选择最短但不越界的链路
+
+## 模糊度判断标准
+
+| 等级 | 信号 | 示例 |
+|---|---|---|
+| `must-brainstorm` | 目标不清（"帮我做个系统"/"优化一下性能"）、多种实现方向均可行、涉及多模块且影响面未知 | "我想做一个文件管理系统" |
+| `should-brainstorm` | 目标大致清晰但验收标准未定义、技术方案未选定、存在已知风险但未评估 | "给用户列表加分页，不确定用游标还是偏移" |
+| `clear` | 目标、验收标准、技术方向都已明确，或已有 spec/plan | "修复 issue #123 的空指针异常" |
+
+**关键判断规则**：当不确定时，宁可升一级——`clear` 降级为 `should-brainstorm` 的成本是多花 10 分钟确认，而 `must-brainstorm` 被误判为 `clear` 的成本是方向错误后的全量返工。
 
 ## H 级统一口径
 
