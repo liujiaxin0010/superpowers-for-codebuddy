@@ -27,6 +27,7 @@ description: 多 lane 并行交付技能。用于将长任务拆分成低耦合�
    - 不共享核心文件
    - 不互相依赖输出
    - 测试可独立运行
+   - **若耦合判断不明确，必须先读取 `references/lane-checklist.md`，完成逐项检查后再继续**
 2. 使用 `task-contracts` 生成 `parallel-delivery` 合同
 3. 为每个 lane 写清：目标、边界、验证命令、依赖关系
 4. Git 项目优先使用 `using-git-worktrees`
@@ -78,6 +79,3 @@ description: 多 lane 并行交付技能。用于将长任务拆分成低耦合�
 3. 不要在合流时跳过集成测试——各 lane 独立通过不代表集成后通过
 4. 不要让多个 lane 共享同一个 worktree——文件覆盖会导致静默数据丢失
 
-## 参考
-
-- lane 清单：`references/lane-checklist.md`

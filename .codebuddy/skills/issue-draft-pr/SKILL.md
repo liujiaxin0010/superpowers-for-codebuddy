@@ -1,6 +1,6 @@
 ---
 name: issue-draft-pr
-description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR 交付链路。适用于目标相对清晰、验收可定义、需要异步交接和 owner 收口的任务。用户提到"issue 转 PR/工单到 PR/draft PR/从 issue 开始开发/Jira 工单实现/工单交付"时触发。
+description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR 交付链路。适用于目标相对清晰、验收可定义、需要异步交接和 owner 收口的任务。用户提到"issue 转 PR/工单到 PR/draft PR/从 issue 开始开发/Jira 工单实现/工单交付"时触发。不适用于无工单关联的直接提交、已有 PR 的 review 阶段或日常零散小改动。
 ---
 
 # 工单到 Draft PR

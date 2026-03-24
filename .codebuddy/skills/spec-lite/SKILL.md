@@ -98,58 +98,11 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 2. 新项目：必须在澄清/brainstorm 中确定日志框架与结构化字段
 3. 若日志策略未明确，禁止进入 `/write-plan`
 
-## GateContext 字段
+## 资源加载规则
 
-1. taskId
-2. taskType
-3. workflow
-4. recommendedTier
-5. finalTier
-6. overrideReason
-7. specPath
-8. planPath
-9. requiredChecks
-10. completedChecks
-11. gateStatus (`pass|blocked`)
+到达步骤 7（生成 GateContext/TaskContract）或步骤 11（写入规格文档）时，**必须先读取 `references/gate-context-fields.md`**，获取所有字段定义后再填写。
 
-## TaskContract 字段
-
-1. templatePath
-2. taskType
-3. objective
-4. background
-5. editablePaths
-6. forbiddenPaths
-7. relatedFiles
-8. verificationCommands
-9. deliverables
-10. evidence
-11. humanCheckpoints
-12. owner
-13. outOfScopeHandling
-
-## GateResult 字段
-
-1. status (`pass|blocked`)
-2. tier
-3. missing[]
-4. nextCommand
-5. message
-
-## 追踪链接扩展字段
-
-在 spec 文档“追踪链接”中补充以下兼容字段：
-
-1. `brainstormPath`
-2. `researchPath`
-3. `designPath`
-4. `testStrategyPath`
-5. `testcasePath`
-6. `testcaseAnalysisPath`
-7. `implementationProgressPath`
-8. `implementationSummaryPath`
-
-这些字段允许在 spec 阶段先占位，由后续 `/brainstorm`、`/research`、`/write-plan`、`/execute-plan`、`/testcase` 按阶段回填；不要求在 `/spec-lite` 阶段一次性生成所有 `spec/AI2AI/*` 实体文档。
+在此之前不要提前加载。
 
 ## 评分规则
 

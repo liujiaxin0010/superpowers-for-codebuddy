@@ -47,21 +47,9 @@ description: "通用单元测试主技能。用于为 `.vue` 或 `.go` 文件生
 
 ## 输入参数
 
-```typescript
-interface UnifiedTestInput {
-  targetFile: string;           // 被测文件路径（.vue 或 .go），必填
-  testFile?: string;            // 已有测试文件路径（可选）
-  mode?: string;                // full | generate | execute | coverage（默认 full）
-  options?: {
-    maxRetries?: number;        // 最大修复重试次数（默认 2）
-    coverageThreshold?: number; // 覆盖率阈值（默认 80）
-    maxIterations?: number;     // 最大覆盖率迭代次数（默认 5）
-    collectCoverage?: boolean;  // 是否收集覆盖率（默认 true）
-    enableModelSwitch?: boolean;// 是否启用模型切换建议（默认 true）
-    goProfile?: string;         // Go 项目风格: auto | go_kit | generic_go（默认 auto，仅 .go 生效）
-  };
-}
-```
+参数结构见 `references/type-definitions.md`（`UnifiedTestInput`）——**仅在需要确认字段含义或默认值时读取，不要提前加载**。
+
+核心参数：`targetFile`（必填）、`testFile`（可选）、`mode`（默认 `full`）、`options`（可选配置项）。
 
 ## Step 1: 语言识别 & 适配器选择
 
@@ -147,48 +135,7 @@ use_skill({
 
 编排器返回的 `UnifiedTestResult` 直接传递给 Agent，无需额外转换。
 
-```typescript
-interface UnifiedTestResult {
-  status: "completed" | "partial" | "failed" | "stalled" | "unsupported";
-  message: string;
-  summary: {
-    targetFile: string;
-    testFile: string;
-    language: "vue" | "go";
-    timestamp: string;
-  };
-  execution: {
-    total: number;
-    passed: number;
-    failed: number;
-    duration?: number;
-    success: boolean;
-  };
-  coverage?: {
-    statements?: string;
-    branches?: string;
-    functions?: string;
-    lines?: string;
-    meetsThreshold: boolean;
-    reportPath?: string;
-  };
-  fixAttempts: {
-    count: number;
-    details: Array<{
-      round: number;
-      failuresCount: number;
-      result: string;
-    }>;
-  };
-  iterations?: Array<{
-    round: number;
-    beforeCoverage: number;
-    afterCoverage: number;
-    improvement: number;
-    newTestsGenerated: number;
-  }>;
-}
-```
+结果结构见 `references/type-definitions.md`（`UnifiedTestResult`）——**仅在需要理解结果字段含义时读取**。
 
 ## 扩展新语言
 
