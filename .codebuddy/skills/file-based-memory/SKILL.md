@@ -27,6 +27,8 @@ description: 文件记忆与持久化工作流。用于复杂、多阶段、跨�
 若缺失，先按模板创建后再继续。
 若创建失败，返回 `BLOCKED`。
 
+**首次进入复杂任务时，必须读取 `references/memory-protocols.md`**，了解 2次操作规则、三次错误协议等核心更新协议后再开始工作。
+
 ## 文档职责边界
 
 ### `docs/findings.md`
@@ -119,11 +121,13 @@ sh .codebuddy/skills/file-based-memory/scripts/check-complete.sh
 
 ## 核心规则
 
+详细规则和 findings/progress 边界说明见 `references/memory-protocols.md`。
+
 1. **2 次操作规则**：每完成约 2 次重要搜索/阅读/决策后，更新一次持久化文档
 2. **先读后决策**：继续任务前，先读 `progress` 和相关 `findings`
 3. **三次错误协议**：同类失败达到 3 次，必须把失败模式写入 `findings`
 4. **失败不重复**：已排除的方案必须记录，防止下轮重复尝试
-5. **五问重启测试**：当上下文混乱时，用 `progress.md` 重新回答“现在在哪、做了什么、下一步是什么”
+5. **五问重启测试**：当上下文混乱时，用 `progress.md` 重新回答”现在在哪、做了什么、下一步是什么”
 
 ## 推荐更新时机
 

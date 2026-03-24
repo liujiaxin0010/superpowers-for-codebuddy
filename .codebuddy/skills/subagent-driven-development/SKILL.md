@@ -41,38 +41,14 @@ description: 子代理驱动开发技能。用于将 3 个以上、依赖清晰�
 3. 子代理只能在合同和计划边界内工作
 4. 所有任务状态都必须同步到 `docs/progress.md`
 
-## 模板加载规则
-
-### 分发实现任务前
-
-在创建 implementer 子代理前，**必须完整读取**：
-
-- `templates/implementer-prompt.md`
-
-### 进行第一阶段审查前
-
-在创建 spec-reviewer 子代理前，**必须完整读取**：
-
-- `templates/spec-reviewer-prompt.md`
-
-### 进行第二阶段审查前
-
-在创建 code-reviewer 子代理前，**必须完整读取**：
-
-- `templates/code-reviewer-prompt.md`
-
-### 不要怎么加载
-
-1. 不要在实现任务前把三个模板全部一起塞进上下文
-2. 不要口头描述模板意图却不真正读取模板文件
 
 ## 高层工作流
 
 1. 读取计划、合同和当前进度
-2. 为当前任务创建 implementer 子代理
+2. **读取 `templates/implementer-prompt.md`**，然后为当前任务创建 implementer 子代理
 3. implementer 完成任务并提交结果
-4. 创建 spec-reviewer 做第一阶段审查
-5. 通过后创建 code-reviewer 做第二阶段审查
+4. **读取 `templates/spec-reviewer-prompt.md`**，然后创建 spec-reviewer 做第一阶段审查
+5. **读取 `templates/code-reviewer-prompt.md`**，然后创建 code-reviewer 做第二阶段审查
 6. 审查通过则标记完成；否则退回 implementer 修复
 7. 所有任务完成后做一次全局代码审查
 
