@@ -55,15 +55,25 @@
 
 `/spec-lite -> /write-plan -> /execute-plan -> /test-gen|/unified-test -> /code-review -> /status`
 
-### H 级
+### H 级 / 复杂任务
 
-`/brainstorm -> /spec-lite -> /write-plan -> /execute-plan -> /test-gen|/unified-test -> /code-review -> /status`
+`/brainstorm -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /code-review -> /status`
 
 或（需求已清晰，但 `/spec-lite` 判定为 H）：
 
-`/spec-lite -> /brainstorm -> /write-plan -> /execute-plan -> /test-gen|/unified-test -> /code-review -> /status`
+`/spec-lite -> /brainstorm -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /code-review -> /status`
+
+### `/extend` 已有项目扩展（强制四步前置）
+
+`项目理解(三层→GitNexus→手动) -> historical-spec(Boss核实) -> /brainstorm -> requirement-analysis(Boss核实) -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /unified-test -> /code-review -> /status`
 
 门禁未通过时，必须 `BLOCKED` 并回退到正确上游步骤，不得硬推进。
+
+### 项目分析 / 代码解释（信息源优先级铁律）
+
+任何"分析项目 / 解释代码"请求统一按下列顺序选源，禁止跳级；详见 `.codebuddy/rules/project-reading.md`：
+
+`三层代码自文档(CONTEXT.md + 头部 INPUT/OUTPUT/POS) -> GitNexus(先做模式 G 基线对比/刷新) -> 手动阅读四步法`
 
 ## 5) 持久化记录（强制）
 
@@ -93,9 +103,10 @@
 - `/spec-lite`：规格与分级
 - `/write-plan`：计划编排
 - `/execute-plan`：批次执行
-- `/extend`：已有项目功能扩展
+- `/extend`：已有项目功能扩展（强制 historical-spec → brainstorm → requirement-analysis 四步前置）
 - `/fix-bug`：缺陷修复
 - `/test-gen` `/unified-test`：测试
+- `/requirement-coverage`：系统测试前的需求覆盖独立审查（H 级 / 复杂任务必跑）
 - `/code-review`：审查
 - `/status`：查看进度
 - `/doc-sync`：文档同步

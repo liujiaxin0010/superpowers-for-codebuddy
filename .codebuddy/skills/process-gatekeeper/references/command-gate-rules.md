@@ -49,6 +49,32 @@ H 级额外要求：
 3. 边界条件
 4. 验证命令
 
+H 级 / 复杂扩展任务额外要求：
+
+1. 必须存在由 `/requirement-coverage` 输出的通过态报告
+   （`docs/quality/requirement-coverage-report.md`，审查结论=通过）
+2. 报告生成时间晚于最近一次实现代码提交
+3. 若报告不通过或缺失 → 阻断，回退到 `/requirement-coverage`
+
+## `/requirement-coverage`
+
+必须具备：
+
+1. 需求分析文档（`docs/plans/*-需求预分析.md` 或 `docs/specs/*-requirement-analysis.md`）
+2. 覆盖矩阵（spec 或 plan 中的"需求覆盖矩阵"章节）
+3. 可定位到实现位置的代码
+4. 可执行的验证用例 / 命令
+5. 独立审查视角（不得由实现者本人在同一会话内自审自验）
+
+## `/extend`
+
+进入主体前必须确认：
+
+1. 已按 `project-reading.md` 的"三层文档→GitNexus→手动"优先级完成项目理解
+2. 已生成 `historical-spec.md` 且 Boss 核实通过
+3. 已生成 `requirement-analysis.md` 且包含追溯矩阵、Boss 核实通过
+4. 已明确 `finalTier` 并写入规格
+
 ## `/fix-bug`
 
 进入修改前必须具备：
