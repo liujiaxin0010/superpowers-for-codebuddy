@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://featureflow.local/schemas/progress.schema.json",
+  "title": "docs/progress.md 结构契约",
+  "description": "progress.md 必备段落清单；用 markdown 标题作为锚点校验。",
+  "type": "object",
+  "required": [
+    "sessionHeading",
+    "phaseBlocks",
+    "testResultsTable",
+    "errorLogTable",
+    "fiveQuestionsTable"
+  ],
+  "properties": {
+    "sessionHeading": {
+      "type": "string",
+      "pattern": "^## 会话：.+$",
+      "description": "必须以 `## 会话：YYYY-MM-DD` 开头"
+    },
+    "phaseBlocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["title", "status"],
+        "properties": {
+          "title": { "type": "string", "pattern": "^### 阶段" },
+          "status": { "enum": ["pending", "in_progress", "completed", "blocked"] }
+        }
+      }
+    },
+    "testResultsTable": {
+      "type": "string",
+      "pattern": "## 测试结果"
+    },
+    "errorLogTable": {
+      "type": "string",
+      "pattern": "## 错误日志"
+    },
+    "fiveQuestionsTable": {
+      "type": "string",
+      "pattern": "## 五问重启检查"
+    }
+  },
+  "additionalProperties": true
+}

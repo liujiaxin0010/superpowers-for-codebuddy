@@ -36,6 +36,7 @@ description: "问题单修改方法论。提供完整的缺陷修复工作流：
 1. 问题描述不足以定位代码范围，且用户无法补充——阻断并说明缺失信息
 2. 涉及的文件无法读取（权限、路径不存在）——阻断并报告
 3. 修改方案涉及高风险操作（数据库 schema 变更、核心接口签名变更）且用户未确认——阻断等待确认
+4. **M/H 级任务缺少失败回归测试三件套（`failingRegressionTestPath / Command / Evidence`）**——阻断并要求先按 `templates/regression-test-contract.md` 提交失败测试后再进入修改
 
 ## 前置依赖
 

@@ -7,6 +7,8 @@
 | 文件 | 用途 | 维护者 |
 |---|---|---|
 | `gitnexus-baseline.json` | GitNexus 索引基线 commit + 时间 + 范围；详见 `.codebuddy/rules/gitnexus-code-intelligence.md` 模式 G | `/extend` `/code-review` `/code-self-check` 等命令在进入主体前自动维护 |
+| `perf-baseline/<scope>.json` | 每个性能 scope 的权威基线；详见 `.codebuddy/skills/performance-baseline/SKILL.md` | `/perf-check` 建立 / 刷新 |
+| `session-handoff.json` | 会话交接快照，含最近任务类型、上次命令、待决门禁、关联 spec/plan | `/resume` 恢复，`/status` 刷新，会话结束时由 AI 显式写入 |
 
 ## 字段示例
 

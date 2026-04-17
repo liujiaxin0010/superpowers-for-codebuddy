@@ -32,8 +32,10 @@
 10. 计算 `recommendedTier`
 11. 若存在 `tierOverride` 但缺少 `overrideReason`，返回 `BLOCKED` 并停止
 12. 将 `GateContext` 与 `TaskContract` 写入规格文档
-13. 初始化并写入“追踪链接”字段（允许占位；`spec/AI2AI/*` 由后续阶段按需回填，不要求在 spec 阶段一次性创建完毕）：
-   - `brainstormPath`（若当前需求已先完成 `/brainstorm`，优先回填）
+13. 初始化并写入"追踪链接"字段（允许占位；各阶段产物由后续阶段回填）：
+   - `historicalSpecPath`（来自 `/extend` Step 0.2，非扩展场景允许为空）
+   - `requirementAnalysisPath`（来自 `/extend` Step 0.4 或复杂任务 `/brainstorm`）
+   - `brainstormPath`
    - `researchPath`
    - `designPath`
    - `testStrategyPath`
@@ -41,6 +43,12 @@
    - `testcaseAnalysisPath`
    - `implementationProgressPath`
    - `implementationSummaryPath`
+   - `coverageMatrixPath` / `coverageReportPath`
+   - `securityReviewReportPath`
+   - `perfBaselinePath` / `perfReportPath`
+   - `systemTestReportPath`
+   - `releaseNotesPath` / `rollbackPlaybookPath`
+13.5 若存在 `requirementAnalysisPath` 或 `brainstormPath`，必须在 §14 填写符合 `.codebuddy/skills/requirement-coverage-check/templates/coverage-matrix.schema.json` 的结构化覆盖矩阵；行数必须等于上游 REQ 条数，且每行的 `specSection / planTaskId / verificationTestId` 三个字段允许先占位但不得空字符串——缺失即视为 `unmatchedReqs`，直接阻断 `/write-plan`
 14. 返回 `GateResult` 与下一条推荐命令：
    - `L/M`：`/write-plan spec=<specPath> tier=<finalTier>`
    - `H`：`/brainstorm <需求描述> spec=<specPath> tier=H`（强制完整七阶段；若已先做过 brainstorm，则需确保 `brainstormPath` 已回填）

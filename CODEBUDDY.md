@@ -2,11 +2,12 @@
 
 面向每次会话启动的最小规则集。只保留必须立即生效的信息；详细说明统一放在 `README.md` 与 `docs/*`。
 
-## 1) 三条铁律（最高优先级）
+## 1) 四条铁律（最高优先级）
 
 1. 称呼规则：每次回复第一句话必须称呼 `Boss`。
 2. 决策确认：遇到不确定设计，先询问 `Boss`，不得擅自拍板。
 3. 兼容性禁令：未经 `Boss` 明确要求，不得编写兼容性代码。
+4. **数据铁律**：任何触达生产数据 / 共享存储 / 表结构的操作——包括但不限于数据迁移、批量 UPDATE / DELETE / TRUNCATE / DROP、`rm -rf`、`kubectl delete`、索引重建——必须先有 `data-safety` 合同（行数预估 + 备份快照 + dry-run 证据 + 回滚脚本），并由 `Boss` 显式签字；见 `.codebuddy/skills/data-safety/SKILL.md`。
 
 ## 2) 会话启动必做
 
@@ -57,17 +58,24 @@
 
 ### H 级 / 复杂任务
 
-`/brainstorm -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /code-review -> /status`
+`/brainstorm -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
 
 或（需求已清晰，但 `/spec-lite` 判定为 H）：
 
-`/spec-lite -> /brainstorm -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /code-review -> /status`
+`/spec-lite -> /brainstorm -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
 
 ### `/extend` 已有项目扩展（强制四步前置）
 
-`项目理解(三层→GitNexus→手动) -> historical-spec(Boss核实) -> /brainstorm -> requirement-analysis(Boss核实) -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /unified-test -> /code-review -> /status`
+`项目理解(三层→GitNexus→手动) -> historical-spec(Boss核实) -> /brainstorm -> requirement-analysis(Boss核实) -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
 
 门禁未通过时，必须 `BLOCKED` 并回退到正确上游步骤，不得硬推进。
+
+条件性门禁：
+- `/security-review`：命中安全触发条件（外部输入 / 鉴权 / 加密 / 敏感数据）时强制
+- `/perf-check`：命中性能触发条件（热路径 / 批量 / 并发 / DB / 关键接口）时强制
+- `/system-test`：H 级 / 复杂任务强制；L/M 可由 `/unified-test` 覆盖
+- `/data-safety-check`：命中数据触发条件时强制，`/execute-plan` 前置自动扫描
+- `/release` / `/rollback`：进入生产发布与回滚时强制
 
 ### 项目分析 / 代码解释（信息源优先级铁律）
 
@@ -112,6 +120,13 @@
 - `/doc-sync`：文档同步
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
+- `/security-review`：9 维度安全审查（含 STRIDE / OWASP / 依赖审计 / 秘密扫描）
+- `/data-safety-check`：数据安全四件套审查（行数预估 + 快照 + dry-run + 回滚）
+- `/perf-check`：性能基线建立与回归判定
+- `/system-test`：系统端到端测试（发布前硬门禁）
+- `/release`：发布三件套（changelog / release-notes / rollback-playbook）
+- `/rollback`：回滚准备 / dry-run / 真实执行（真实回滚需 Boss 签字）
+- `/resume`：基于 session-handoff 快照恢复上次会话
 
 ## 9) 详细文档位置（按需加载）
 

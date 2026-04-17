@@ -27,11 +27,18 @@
 
 ## 分阶段生成约定
 
-| 阶段命令 | 负责生成或回填的 AI2AI 文档 |
+| 阶段命令 | 负责生成或回填的 AI2AI 文档 / 追踪字段 |
 |---|---|
-| `/spec-lite` | 只初始化追踪链接占位；如已做过 brainstorm，应回填 `brainstormPath` |
-| `/brainstorm` | `Design.md`, `test.md`，并回填 `brainstormPath` |
-| `/research` | `research.md` |
-| `/write-plan` | `plan.md`, `summary.md` |
-| `/execute-plan` | `IMPLEMENTATION_PROGRESS.md`, `IMPLEMENTATION_SUMMARY.md`, `Architecture_Info.md`, `Protocol_and_Data.md` |
-| `/testcase` | `testcase.md`, `testcase_analysis.md` |
+| `/extend` Step 0.2 | `docs/specs/*-historical-spec.md`，回填 `historicalSpecPath` |
+| `/extend` Step 0.4 | `docs/specs/*-requirement-analysis.md`，回填 `requirementAnalysisPath` |
+| `/spec-lite` | 初始化追踪链接占位；若存在上游需求分析，必须生成覆盖矩阵（`coverageMatrixPath`） |
+| `/brainstorm` | `Design.md`, `test.md`，回填 `brainstormPath / designPath / testStrategyPath` |
+| `/research` | `research.md`，回填 `researchPath` |
+| `/write-plan` | `plan.md`, `summary.md`，回填 `planPath`；同步补齐覆盖矩阵中的 `planTaskId` |
+| `/execute-plan` | `IMPLEMENTATION_PROGRESS.md`, `IMPLEMENTATION_SUMMARY.md`, `Architecture_Info.md`, `Protocol_and_Data.md`；同步维护覆盖矩阵 `status / implementationRef` |
+| `/testcase` | `testcase.md`, `testcase_analysis.md`；同步补齐覆盖矩阵 `verificationTestId` |
+| `/requirement-coverage` | `docs/quality/requirement-coverage-report.md(.xlsx)`，回填 `coverageReportPath` |
+| `/security-review` | `docs/quality/security-review-report.md`，回填 `securityReviewReportPath` |
+| `/perf-check` | `docs/quality/perf-report.md` 与 `.codebuddy/state/perf-baseline/*.json`，回填 `perfBaselinePath / perfReportPath` |
+| `/system-test` | `docs/quality/system-test-report.md`，回填 `systemTestReportPath` |
+| `/release` | `CHANGELOG.md` 新增条目与 `docs/release/YYYY-MM-DD-release-notes.md`，回填 `releaseNotesPath / rollbackPlaybookPath` |

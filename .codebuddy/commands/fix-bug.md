@@ -33,6 +33,16 @@ description: 根据问题单（网址/截图/描述）定位并修复代码缺�
 2. 若缺少复现条件、期望/实际行为、允许修改范围或验证方式：调用 `process-gatekeeper`（`command=fix-bug`）并返回 `BLOCKED`
 3. 合同确认后再进入定位与修改
 
+### 第一步四：失败回归测试（强制门禁，M/H 级不可跳过）
+
+1. 按 `.codebuddy/skills/bug-fix/templates/regression-test-contract.md` 生成回归测试合同
+2. **在动任何业务代码之前**，先写一个能稳定复现 bug 的失败测试
+3. 独立执行该测试，记录完整失败输出（stdout+stderr+退出码），保存路径写入 bugfix contract 的 `failingRegressionTestEvidence`
+4. 连续运行 3 次确认稳定失败；若 flaky，必须解决稳定性后再进入下一步
+5. 缺少 `failingRegressionTestPath / failingRegressionTestCommand / failingRegressionTestEvidence` 三件套之一 → 返回 BLOCKED
+6. 仅当问题是 L 级 (<=2 文件单模块) 且 Boss 明确 OK 时，可以省略正式失败测试，但必须记录"省略理由 + 手动复现证据"到 `docs/progress.md`
+7. 线上紧急 hotfix 允许先修后补测试，但必须在 24 小时内补齐并登记 `docs/findings.md`
+
 ### 第二步：上下文读取与问题定位
 
 使用 `bug-fix` 技能的**上下文分层读取策略**：
@@ -67,6 +77,7 @@ description: 根据问题单（网址/截图/描述）定位并修复代码缺�
 2. 使用 `replace_in_file` 按修改点列表依次执行
 3. 执行 bug-fix 技能的**修改后验证流程**
 4. 异常处理：old_str不唯一→扩大范围；文件变更→重新读取；发现新问题→先询问用户
+5. **修复后必须重新运行第一步四中登记的失败测试**，展示完整通过输出与退出码 0；与修复前失败输出做前后对比，同步附到 `docs/quality/fix-bug-<bug-id>-evidence.md`
 
 ### 第五步：输出修改记录
 
