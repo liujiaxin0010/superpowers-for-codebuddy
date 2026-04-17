@@ -1,6 +1,6 @@
 ---
 name: code-self-check
-description: 代码自检技能。用于基于 Git/SVN diff 或现成 patch 对新增修改代码做结构化审查，并在低风险前提下选择性应用修复。用户提到“self check/自检/diff 审查/提交前检查/修复前预检”时触发。
+description: 代码自检技能。用于基于 Git/SVN diff 或现成 patch 对新增修改代码做结构化审查，并在低风险前提下选择性应用修复。用户提到”self check/自检/diff 审查/提交前检查/修复前预检”时触发。不适用于他人代码的正式 PR review（应使用 requesting-code-review 或 receiving-code-review）或需要运行测试的完整质量验证。
 ---
 
 # 代码自检

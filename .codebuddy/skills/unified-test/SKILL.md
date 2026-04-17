@@ -47,21 +47,9 @@ description: "通用单元测试主技能。用于为 `.vue` 或 `.go` 文件生
 
 ## 输入参数
 
-```typescript
-interface UnifiedTestInput {
-  targetFile: string;           // 被测文件路径（.vue 或 .go），必填
-  testFile?: string;            // 已有测试文件路径（可选）
-  mode?: string;                // full | generate | execute | coverage（默认 full）
-  options?: {
-    maxRetries?: number;        // 最大修复重试次数（默认 2）
-    coverageThreshold?: number; // 覆盖率阈值（默认 80）
-    maxIterations?: number;     // 最大覆盖率迭代次数（默认 5）
-    collectCoverage?: boolean;  // 是否收集覆盖率（默认 true）
-    enableModelSwitch?: boolean;// 是否启用模型切换建议（默认 true）
-    goProfile?: string;         // Go 项目风格: auto | go_kit | generic_go（默认 auto，仅 .go 生效）
-  };
-}
-```
+参数结构见 `references/type-definitions.md`（`UnifiedTestInput`）——**仅在需要确认字段含义或默认值时读取，不要提前加载**。
+
+核心参数：`targetFile`（必填）、`testFile`（可选）、`mode`（默认 `full`）、`options`（可选配置项）。
 
 ## Step 1: 语言识别 & 适配器选择
 
@@ -147,48 +135,7 @@ use_skill({
 
 编排器返回的 `UnifiedTestResult` 直接传递给 Agent，无需额外转换。
 
-```typescript
-interface UnifiedTestResult {
-  status: "completed" | "partial" | "failed" | "stalled" | "unsupported";
-  message: string;
-  summary: {
-    targetFile: string;
-    testFile: string;
-    language: "vue" | "go";
-    timestamp: string;
-  };
-  execution: {
-    total: number;
-    passed: number;
-    failed: number;
-    duration?: number;
-    success: boolean;
-  };
-  coverage?: {
-    statements?: string;
-    branches?: string;
-    functions?: string;
-    lines?: string;
-    meetsThreshold: boolean;
-    reportPath?: string;
-  };
-  fixAttempts: {
-    count: number;
-    details: Array<{
-      round: number;
-      failuresCount: number;
-      result: string;
-    }>;
-  };
-  iterations?: Array<{
-    round: number;
-    beforeCoverage: number;
-    afterCoverage: number;
-    improvement: number;
-    newTestsGenerated: number;
-  }>;
-}
-```
+结果结构见 `references/type-definitions.md`（`UnifiedTestResult`）——**仅在需要理解结果字段含义时读取**。
 
 ## 扩展新语言
 
@@ -216,7 +163,9 @@ interface UnifiedTestResult {
 
 ## 禁止事项
 
-1. 不要在不支持的文件类型上硬走统一测试流程
-2. 不要在未确认模式参数合法时继续进入编排器
-3. 不要一次性加载全部 adapter 和 reference 文件
-4. 不要把 `README.md` 这类辅助说明当成主执行依据
+1. 不要在不支持的文件类型上硬走统一测试流程——强行执行会产生无效测试代码且浪费上下文窗口
+2. 不要在未确认模式参数合法时继续进入编排器——参数不匹配会导致编排器在中途失败，已消耗的上下文无法回收
+3. 不要一次性加载全部 adapter 和 reference 文件——多语言适配器同时加载会占满上下文窗口，挤压实际测试生成空间
+4. 不要把 `README.md` 这类辅助说明当成主执行依据——README 是给人读的概述，不包含适配器接口和编排协议的可执行细节
+5. 不要在测试失败时直接修改被测源码来让测试通过——测试的目的是验证行为正确性，改源码适配测试是本末倒置
+6. 不要生成只断言"不抛异常"的空壳测试来凑覆盖率——这类测试无法检测回归，给出虚假的安全感

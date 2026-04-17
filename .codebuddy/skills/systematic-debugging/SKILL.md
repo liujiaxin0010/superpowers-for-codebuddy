@@ -11,19 +11,19 @@ description: 系统化调试专家。当遇到 bug、测试失败、意外行为
 
 当需要从症状回溯到源头时，再读取：
 
-- `root-cause-tracing.md`
+- `references/root-cause-tracing.md`
 
 当问题涉及异步时序、竞争条件或 eventual consistency 时，再读取：
 
-- `condition-based-waiting.md`
+- `references/condition-based-waiting.md`
 
-当已经有修复候选，需要验证“症状层、根因层、回归层、预防层”时，再读取：
+当已经有修复候选，需要验证”症状层、根因层、回归层、预防层”时，再读取：
 
-- `defense-in-depth.md`
+- `references/defense-in-depth.md`
 
 当同一个问题修了 3 次以上仍失败时，再读取：
 
-- `architecture-escalation.md`
+- `references/architecture-escalation.md`
 
 当需要输出结构化调试结论时，再读取：
 

@@ -1,11 +1,19 @@
 ---
 name: issue-draft-pr
-description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR 交付链路。适用于目标相对清晰、验收可定义、需要异步交接和 owner 收口的任务。
+description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR 交付链路。适用于目标相对清晰、验收可定义、需要异步交接和 owner 收口的任务。用户提到"issue 转 PR/工单到 PR/draft PR/从 issue 开始开发/Jira 工单实现/工单交付"时触发。不适用于无工单关联的直接提交、已有 PR 的 review 阶段或日常零散小改动。
 ---
 
 # 工单到 Draft PR
 
 把 issue / Jira 输入收敛成可执行合同、规格、计划、证据和 draft PR 说明。
+
+## 资源加载规则
+
+当工单质量判断需要参考标准证据格式、或准备输出最终 draft PR 描述时，再读取：
+
+- `references/draft-pr-checklist.md`
+
+当工单只有标题或描述模糊、需要帮助 owner 补齐 acceptance criteria 时，不要加载证据清单——先完成需求补齐。
 
 ## 何时使用
 
@@ -22,18 +30,22 @@ description: 以 issue 或 Jira 工单为起点，生成可审查的 draft PR �
 5. PR 说明要求
 6. owner / handoff 负责人
 
+## 核心心智：先验证工单可执行性，再进入实现
+
+工单的质量决定了整条交付链路的上限。一个只有标题的工单进入实现，产出的代码大概率需要全部返工——因为没有验收标准就没有完成定义，开发者只能猜测目标。
+
 ## 执行流程
 
-1. 先校验工单是否真的写清目标与验收
+1. 先校验工单是否真的写清目标与验收——**若工单质量判断困难，此时读取 `references/draft-pr-checklist.md` 中的验收标准参考**
 2. 若未写清，先补 acceptance criteria，不进入实现
 3. 使用 `task-contracts` 生成 `issue-draft-pr` 合同
 4. 若缺少 spec，回退 `/spec-lite`
 5. 若缺少 plan，回退 `/write-plan`
 6. 若 `spec + plan` 齐备，进入 `/execute-plan`
 7. 收尾前必须执行 `/code-review`
-8. 输出 draft PR 草稿，至少包含：
-   - 工单目标映射
-   - 验收证据
+8. 输出 draft PR 草稿——**此时读取 `references/draft-pr-checklist.md` 中的 PR 描述质量标准**，至少包含：
+   - 工单目标映射（逐条对应 acceptance criteria）
+   - 验收证据（测试输出/截图/命令结果）
    - 风险声明
    - owner / handoff
 
@@ -65,11 +77,18 @@ PR 描述必须包含：
 
 ## 禁止事项
 
-1. 不要在工单不清晰时就开始写代码——先补需求再实现
-2. 不要把 draft PR 当成最终 PR——draft 意味着仍需 review
-3. 不要在 PR 描述中写"已完成所有功能"却不给逐条证据
-4. 不要跳过 `/code-review` 直接标记为 ready for review
+1. 不要在工单不清晰时就开始写代码——模糊需求产出的代码大概率需要全部返工，浪费的上下文和时间不可回收
+2. 不要把 draft PR 当成最终 PR——draft 意味着仍需 review，直接合并会绕过质量门禁
+3. 不要在 PR 描述中写"已完成所有功能"却不给逐条证据——无证据的声明无法被 reviewer 验证，等同于未测试
+4. 不要跳过 `/code-review` 直接标记为 ready for review——未审查的代码可能包含安全漏洞或架构问题，合并后修复成本成倍增加
+5. 不要在 review 阶段补需求或改方向——review 的目的是验证实现质量，方向变更应回退到 spec 阶段
+6. 不要把工单的所有 label/tag 当作需求——label 是分类标签不是验收标准，以 acceptance criteria 为准
 
-## 参考
+## 常见失败模式
 
-- Draft PR 证据清单：`references/draft-pr-checklist.md`
+| 失败模式 | 表面症状 | 根因 |
+|---|---|---|
+| PR 描述复制粘贴 issue 原文 | reviewer 看不出哪些 AC 被满足 | 没有做逐条映射，只是搬运文字 |
+| "已完成所有功能"但 0 条证据 | reviewer 无法验证 | 开发者把自己跑过一次等同于已验证 |
+| PR 包含大量无关改动 | diff 噪声过大，关键变更被淹没 | 没有在合同中限定 `allowedPaths` |
+| draft PR 被直接合并 | 绕过质量门禁 | 团队没有强制 review 的分支保护规则 |
