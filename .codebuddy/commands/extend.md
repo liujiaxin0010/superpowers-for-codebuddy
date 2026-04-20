@@ -18,7 +18,11 @@
 2. 若缺少 `requirement`：直接输出 `BLOCKED`，要求补充扩展需求描述
 3. **Step 0.1 项目理解（强制）**：
    - 严格按 `project-reading.md` 的优先级：三层文档 → GitNexus（先做模式 G 基线对比/刷新） → 手动阅读
-   - 在 `docs/progress.md` 写入：信息源、降级原因、覆盖率
+   - **必读节**：目标模块 `CONTEXT.md` 的 § ⑥ 设计决策与踩坑、§ ⑧ 扩展点（若为 L1 核心模块）
+     - § ⑥ 告诉你"哪些不变量不能破"+ "历史踩过的坑"
+     - § ⑧ 告诉你"加新需求该挂哪" + "禁止修改的不动区"
+     - **如果变更目标命中 § ⑧ 的不动区**，必须先向 Boss 申请授权，未授权 → BLOCKED
+   - 在 `docs/progress.md` 写入：信息源、降级原因、覆盖率、§ ⑧ 扩展点匹配结果
    - 若 GitNexus 基线漂移 `riskLevel=high` 且未刷新 → BLOCKED
 4. **Step 0.2 生成历史实现规格 spec（强制）**：
    - 路径：`docs/specs/YYYY-MM-DD-<模块名>-historical-spec.md`
