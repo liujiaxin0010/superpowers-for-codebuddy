@@ -42,6 +42,7 @@
 | 🔁 **指南兼容流程层** | 保持 `docs/*` 主链路，同时兼容 `spec/Me2AI + spec/AI2AI` 与 `/research`、`/testcase`、`/code-self-check` 阶段命令 |
 | 🔥 **PUA 万能激励引擎** | 防止 AI 摆烂放弃。任务失败 2+ 次、被动等待、空口完成时自动触发大厂 PUA 话术，强制穷尽一切方案 |
 | 📊 **AI 交互质量评分** | `/score-interaction` 命令，4 维度 30 分制评估对话质量（Spec-Coding 规范、Skills 使用、项目完成度、扩展功能），输出 `{姓名}_{工号}_{需求名称}.md/.xlsx` 结构化报告 |
+| 🧘 **Karpathy 四准则接入** | 来自 [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)（MIT）的四条 LLM 编码行为准则——先思考后编码 / 简洁优先 / 外科手术式修改 / 目标驱动执行，作为常驻规则 `.codebuddy/rules/karpathy-guidelines.md` 注入每次会话 |
 
 <a id="new-docs"></a>
 ## 新增流程文档
@@ -141,9 +142,10 @@ your-project/
     │   └── xlsx/                                   # XLSX 生成能力
     │       ├── SKILL.md                            # 表格生成规范
     │       └── scripts/...                         # Office 文档处理脚本
-    ├── rules/                                      # 规则目录（6 个：核心 3 个常驻，其余按需加载）
+    ├── rules/                                      # 规则目录（7 个：核心 4 个常驻，其余按需加载）
     │   ├── code-documentation.md                   # 三层代码自文档
     │   ├── file-based-memory.md                    # 文件记忆规则
+    │   ├── karpathy-guidelines.md                  # Karpathy 四准则（常驻，源自 forrestchang/andrej-karpathy-skills）
     │   ├── logging-conventions.md                  # 日志规范（统一结构/英文日志/禁控制台）
     │   ├── project-reading.md                      # 项目阅读规则
     │   ├── test-driven-development.md              # TDD 规则
@@ -828,7 +830,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 
 | 类型 | YAML 配置 | 行为 | 本项目中的应用 |
 |---|---|---|---|
-| 始终生效 | `alwaysApply: true` | 每次会话自动注入 | 完成前验证、文件记忆、日志规范 |
+| 始终生效 | `alwaysApply: true` | 每次会话自动注入 | 完成前验证、文件记忆、日志规范、Karpathy 四准则 |
 | 条件触发 | `alwaysApply: false` + `paths` | 操作匹配文件时触发 | 头脑风暴、代码审查 |
 | 手动引用 | `alwaysApply: false` 无 paths | 通过 `@规则名` 或命令触发 | 项目阅读、TDD、代码自文档 |
 
@@ -881,6 +883,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 | *（新增）* | `.codebuddy/commands/fix-bug.md`（/fix-bug 命令） |
 | *（新增）* | `.codebuddy/agents/bug-fixer.md`（问题单修改专家代理） |
 | *（新增）* | `.codebuddy/skills/pua/SKILL.md`（PUA 万能激励引擎——防止 AI 摆烂、放弃、敷衍） |
+| *（外部接入）* | `.codebuddy/rules/karpathy-guidelines.md`（Karpathy 四准则，常驻，源自 [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)，MIT） |
 
 ---
 
