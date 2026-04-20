@@ -63,15 +63,43 @@ alwaysApply: false
 3. 使用 GitNexus `search` 定位具体代码位置（替代第四步依赖追踪中的 grep）
 4. **仅当 GitNexus 返回的信息不足时**，才进入下方的手动阅读四步法
 
+### Repo Wiki 模式（code-expose 调用链补偿，强制前置）
+
+**触发条件**：当任务满足以下任一场景且 `gitnexusAvailable=true` 时，**在执行上述快速路径前必须先走模式 W**（详见 `gitnexus-code-intelligence.md` 模式 W 节）：
+
+- CodeBuddy 的 `code-expose` 返回的代码片段无调用链信息，而当前任务需要判断影响面/调用者/下游依赖
+- `/extend` 进入项目理解阶段（Step 0.1）
+- `/fix-bug` 需要跨模块根因追踪
+- `/code-review` 涉及共享接口/热点函数变更
+- 用户显式问"调用链 / 扩展点 / 影响面"类问题
+
+**执行顺序**：
+
+```text
+模式 G（基线刷新） → 模式 W（生成/复用 docs/repo-wiki.md）
+    → 模式 E / B / A / D（基于 Wiki 做精确查询，不再重复扫描）
+    → 手动阅读（仅 Wiki 未覆盖处）
+```
+
+**复用策略**：进入触发场景先读 `docs/repo-wiki.md`：
+
+- 若 `baselineCommit` 与 `gitnexus-baseline.json.lastIndexedCommit` 一致且涉及模块未变 → **直接复用**，跳到模式 A/B/D 做点查询
+- 若仅单模块变化 → **增量补丁** Wiki 对应节
+- 若跨模块或 `riskLevel=high` → **全量重生成**
+
+**强制声明信息来源**：凡是基于模式 W 输出的结论，回答必须带上 `docs/repo-wiki.md` 的 `baselineCommit` 或 `generatedAt`，例如："基于 Repo Wiki（baselineCommit=abc1234）+ 源码 src/user/service.go，调用链为 …"。
+
 ### 降级条件
 
 以下情况自动降级到手动阅读四步法：
-- GitNexus MCP 不可用
-- GitNexus 索引不存在或已过期
+- GitNexus MCP 不可用（`gitnexusAvailable=false`）
+- GitNexus 索引不存在或已过期且无法刷新
 - 目标文件使用了 GitNexus 不支持的语言
 - GitNexus 返回的结果明显不完整（如关键依赖缺失）
+- 模式 W 执行失败且无可复用的 `docs/repo-wiki.md`
 
 降级时无需询问 Boss，直接切换，在 `docs/progress.md` 中记录降级原因。
+**但**：降级后若任务仍涉及调用链判断，必须在结论前标注"调用链基于手动追踪，精确度有限"，不得假装已全面覆盖。
 
 ---
 

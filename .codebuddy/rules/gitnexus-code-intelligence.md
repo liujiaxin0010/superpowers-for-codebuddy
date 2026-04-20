@@ -28,9 +28,9 @@ alwaysApply: false
 
 | GitNexus 自动安装 Skill | 原始用途 | CodeBuddy 中的承接方式 | 优先查询模式 |
 |---|---|---|---|
-| `Exploring` | 陌生代码库探索、模块理解、执行链路追踪 | `.codebuddy/rules/project-reading.md`、`/research`、`/doc-init`、`/extend` 前置理解阶段 | `E`、`B`、`A`、`F` |
-| `Debugging` | 沿调用链定位 bug | `/fix-bug`、`.codebuddy/skills/bug-fix/SKILL.md`、`.codebuddy/skills/systematic-debugging/SKILL.md` | `D`、`F`、`A` |
-| `Impact Analysis` | 变更前评估 blast radius | `/extend`、`/write-plan`、`/code-review`、`/code-self-check` 的影响面分析步骤 | `C`、`A` |
+| `Exploring` | 陌生代码库探索、模块理解、执行链路追踪 | `.codebuddy/rules/project-reading.md`、`/research`、`/doc-init`、`/extend` 前置理解阶段 | `W`（首次 / 调用链盲点）、`E`、`B`、`A`、`F` |
+| `Debugging` | 沿调用链定位 bug | `/fix-bug`、`.codebuddy/skills/bug-fix/SKILL.md`、`.codebuddy/skills/systematic-debugging/SKILL.md` | `W`（跨模块链路）、`D`、`F`、`A` |
+| `Impact Analysis` | 变更前评估 blast radius | `/extend`、`/write-plan`、`/code-review`、`/code-self-check` 的影响面分析步骤 | `W`（扩展点识别）、`C`、`A` |
 | `Refactoring` | 跨文件安全重构 | `/simplify`、`/write-plan`、`/execute-plan`、`.codebuddy/skills/code-simplifier/SKILL.md` | `C`、`D`、`A` |
 
 ---
@@ -189,6 +189,128 @@ delta:
 **返回数据**：匹配的文件/函数，按执行流分组
 
 **降级方案**：`search_content` / `grep` 关键词搜索
+
+### 模式 W：Repo Wiki 全量知识库（code-expose 调用链补偿）
+
+**立项动机**：CodeBuddy 自带的 `code-expose` 代码分析只能展示**静态代码文本**（单文件视角），无法跨文件追踪**函数调用链**。在 `/extend`、`/fix-bug`、`/code-review` 等需要"谁调用了谁、完整路径是什么"的场景，code-expose 结果不足以支撑安全决策。本模式以 GitNexus 知识图谱为数据源，借鉴阿里巴巴 GitNexus 的 Repo Wiki 能力，构建项目级调用链视图并持久化为可复用文档，填补 code-expose 的盲点。
+
+**触发条件（满足任一即触发）**：
+
+1. code-expose 返回的代码片段缺少调用链信息，而当前任务需要判断"影响面 / 调用者 / 下游依赖"
+2. `/extend` 进入 Step 0.1（项目理解）且 `gitnexusAvailable=true`
+3. `/fix-bug` 需要追踪跨模块调用链以定位根因
+4. `/code-review` 审阅涉及共享接口/热点函数的变更
+5. `docs/repo-wiki.md` 不存在，或其 `generatedAt` 落后于 `gitnexus-baseline.json` 的 `indexedAt`
+6. 用户显式发问："帮我画一下这个项目的调用链 / 扩展点在哪 / 哪些函数被最多地方调用"
+
+**前置条件**：
+- `gitnexusAvailable = true`（按"可用性检查"节验证通过）
+- 模式 G 基线未漂移（或已刷新至最新 commit）
+
+**执行流程**（必须按顺序，不可跳步）：
+
+```text
+Step 1：基线刷新（模式 G）
+  - 读取 .codebuddy/state/gitnexus-baseline.json
+  - 若 riskLevel=high → 先刷新，再进入 Step 2；不得基于过期图谱生成 Wiki
+
+Step 2：全局模块扫描（模式 E × 1）
+  - 调用 GitNexus query（不加文件过滤）
+  - 收集：顶层模块聚类 moduleClusters、模块间连接度、候选入口文件列表
+
+Step 3：逐模块调用关系（模式 B × N）
+  - 对 moduleClusters 中核心模块（按连接度降序，默认取 Top-5，超过时向 Boss 确认是否全量）
+  - 每个模块调用 GitNexus query（按目录过滤），获取：
+    · 模块内文件间调用关系
+    · 对外暴露的接口（exports）
+    · 外部依赖（outgoingRefs）
+
+Step 4：入口调用链追踪（模式 D × K）
+  - 对 Step 2 识别的每个核心入口文件调用 GitNexus context（聚焦 callers/callees）
+  - 深度限制 ≤ 3 层（避免图谱无限展开）
+  - 产出：入口 → 中间层 → 存储/外部服务 的完整调用路径
+
+Step 5：业务语言翻译 + 持久化
+  - 按"数据翻译规则"把技术名称转为业务语言
+  - 写入 docs/repo-wiki.md（格式见下方输出契约）
+  - 在 docs/progress.md 记录：生成耗时、模块覆盖率、input token 估算
+```
+
+**输出契约（写入 `docs/repo-wiki.md`）**：
+
+```markdown
+# Repo Wiki
+
+> 由 GitNexus 模式 W 生成
+> generatedAt: <ISO8601>
+> baselineCommit: <sha>
+> coverage: <已索引模块数> / <仓库总模块数>
+
+## 1. 模块地图
+
+| 模块 | 路径 | 职责（业务语言） | 对外接口 | 依赖模块 |
+|---|---|---|---|---|
+| {name} | {path} | {业务描述} | {exports} | {depends-on} |
+
+## 2. 核心调用链
+
+### 调用链 #1：{入口业务名}
+{入口文件}:{函数}
+  └─ {中间层函数}（{所属模块}）
+       └─ {存储/外部调用}（{目标}）
+
+### 调用链 #2：...
+
+## 3. 扩展点推荐
+
+| 扩展点 | 位置（file:line） | 合适原因 | 风险提示 |
+|---|---|---|---|
+| {name} | {file:line} | {why} | {blast-radius} |
+
+## 4. 高风险区域（修改传播面大）
+
+| 函数/文件 | 调用者数 | 涉及模块数 | 建议 |
+|---|---|---|---|
+| {symbol} | {N} | {M} | {modify via contract} |
+
+## 5. 信息来源
+
+- GitNexus baseline: {sha} @ {indexedAt}
+- 覆盖模式：E + B × {N} + D × {K}
+- 未覆盖范围：{说明}
+```
+
+**复用策略（避免重复全量生成）**：
+
+1. 进入触发场景时，先读 `docs/repo-wiki.md` 的 `baselineCommit` 字段
+2. 若与 `gitnexus-baseline.json.lastIndexedCommit` 一致且 `modulesTouched` 未涉及已记录模块 → **直接复用** Wiki，不重新生成
+3. 若仅单模块发生变化 → **增量补丁**（只对该模块重跑 Step 3 + Step 4 相关入口，原地更新 Wiki 对应节）
+4. 若跨模块 / 目录结构调整 / `riskLevel=high` → **全量重生成**
+
+**与 code-expose 的互补关系**：
+
+| 维度 | code-expose | 模式 W（Repo Wiki） |
+|---|---|---|
+| 视角 | 单文件 / 代码片段 | 跨文件 / 项目全局 |
+| 呈现 | 源码文本 | 调用图 + 模块关系 |
+| 更新 | 实时（文件变更立即反映） | 基线驱动（随 GitNexus 索引刷新） |
+| 适用问题 | "这段代码实现了什么" | "谁调用了它 / 改它影响哪些地方 / 最适合挂载在哪" |
+
+**最终行为约束**：不要用模式 W 的输出**替代** code-expose 的源码阅读；两者必须**同时作为证据**呈现给 Boss。回答任何涉及调用链的问题时，声明："基于 code-expose 源码 + docs/repo-wiki.md 模式 W 调用链（baselineCommit=<sha>）"。
+
+**降级方案（GitNexus 不可用 / 索引无法刷新）**：
+
+1. 在 `docs/findings.md` 记录"GitNexus 离线，模式 W 不可用，调用链基于手动追踪"
+2. 退回 `project-reading.md` 的手动四步法
+3. 在需要调用链的关键节点向 Boss 主动提示："当前无 GitNexus，调用链信息可能不完整，是否继续？"
+4. 禁止伪造调用链结论——不确定就写"未确认"
+
+**禁止事项**：
+
+1. 禁止在 `gitnexusAvailable=false` 时仍然报告"已生成 Repo Wiki"——必须显式降级声明
+2. 禁止跳过 Step 1 的基线刷新直接进入 Step 2——过期图谱生成的 Wiki 是**反向误导**
+3. 禁止把 Wiki 当成**唯一真相源**替代源码阅读——Wiki 是导航图，源码才是事实
+4. 禁止在 Wiki 未标注 `coverage` 和 `未覆盖范围` 的情况下声称"全量理解"
 
 ---
 

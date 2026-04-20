@@ -19,6 +19,38 @@ model: inherit
 
 ## 分析流程
 
+### 0. GitNexus 可用性判断（强制前置）
+
+CodeBuddy 自带的 `code-expose` 只能展示单文件源码，**无法追踪跨文件调用链**。本代理在进入手动扫描前必须先判断 GitNexus 是否可用，决定走 Wiki 路径还是手动路径：
+
+```text
+尝试调用 GitNexus MCP 轻量工具（如 search）
+  ├─ 成功 → gitnexusAvailable = true → 走 A 分支
+  └─ 失败 → gitnexusAvailable = false → 走 B 分支
+```
+
+#### A 分支：GitNexus 可用 → 使用 Repo Wiki 模式（推荐）
+
+参考 `.codebuddy/rules/gitnexus-code-intelligence.md` 模式 W 执行：
+
+1. **基线检查**：读 `.codebuddy/state/gitnexus-baseline.json`，触发模式 G 判定是否需要刷新
+2. **复用判断**：读 `docs/repo-wiki.md`
+   - 存在且 `baselineCommit` 与基线一致 → **直接复用**，跳到本节第 5 步
+   - 不存在或过期 → 继续执行生成流程
+3. **全量生成**：依次执行 模式 E（全局模块） → 模式 B × N（核心模块调用关系） → 模式 D × K（入口调用链）
+4. **持久化**：按模式 W 的输出契约写入 `docs/repo-wiki.md`
+5. **输出报告基于 Wiki**：下述第 5 步的"核心模块 / 模块依赖关系 / 适合的扩展点"直接引用 `docs/repo-wiki.md` 的 §1 §2 §3，并在报告末尾标注 `baselineCommit`
+
+**注意**：即便走 A 分支，本节第 1-4 步（结构扫描 / 关键元素 / 测试现状 / 编码风格）**仍然必须全量执行**——Wiki 提供结构图，但编码风格、测试现状只能从源码归纳。
+
+#### B 分支：GitNexus 不可用 → 走手动全量阅读
+
+- 直接进入下面第 1-5 步
+- 在第 5 步报告末尾显式标注："GitNexus 不可用，调用链基于手动追踪，精确度有限"
+- 在 `docs/findings.md` 记录降级原因
+
+---
+
 ### 1. 全局结构扫描
 ```bash
 # 目录结构
@@ -64,6 +96,7 @@ ls -la jest.config* vitest.config* pytest.ini setup.cfg tox.ini .mocharc* 2>/dev
 ```markdown
 ## 项目理解报告
 
+**信息来源**: [三层文档 / Repo Wiki (baselineCommit=<sha>) / 手动阅读，可组合]
 **项目类型**: [类型]
 **技术栈**: [语言 + 框架 + 关键依赖]
 **架构模式**: [模式描述]
@@ -78,10 +111,16 @@ ls -la jest.config* vitest.config* pytest.ini setup.cfg tox.ini .mocharc* 2>/dev
 | ... | ... | ... |
 
 ### 模块依赖关系
-[简要描述核心模块间的依赖]
+[简要描述核心模块间的依赖；若走 A 分支，引用 docs/repo-wiki.md §1 模块地图]
+
+### 核心调用链
+[若走 A 分支，引用 docs/repo-wiki.md §2；若走 B 分支，显式标注"基于手动追踪，可能不完整"]
 
 ### 适合的扩展点
-[基于架构分析，建议新功能最适合的接入方式]
+[若走 A 分支，引用 docs/repo-wiki.md §3 扩展点推荐；若走 B 分支，基于手动分析给出并标注精度限制]
+
+### 高风险区域
+[若走 A 分支，引用 docs/repo-wiki.md §4；若走 B 分支，给出手动评估结果并标注局限]
 ```
 
 等待 Boss 确认后，由主流程进入下一阶段。

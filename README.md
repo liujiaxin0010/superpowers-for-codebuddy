@@ -43,6 +43,7 @@
 | 🔥 **PUA 万能激励引擎** | 防止 AI 摆烂放弃。任务失败 2+ 次、被动等待、空口完成时自动触发大厂 PUA 话术，强制穷尽一切方案 |
 | 📊 **AI 交互质量评分** | `/score-interaction` 命令，4 维度 30 分制评估对话质量（Spec-Coding 规范、Skills 使用、项目完成度、扩展功能），输出 `{姓名}_{工号}_{需求名称}.md/.xlsx` 结构化报告 |
 | 🧘 **Karpathy 四准则接入** | 来自 [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)（MIT）的四条 LLM 编码行为准则——先思考后编码 / 简洁优先 / 外科手术式修改 / 目标驱动执行，作为常驻规则 `.codebuddy/rules/karpathy-guidelines.md` 注入每次会话 |
+| 🕸️ **GitNexus Repo Wiki 模式（Mode W）** | 补偿 CodeBuddy 自带 `code-expose` 无法展示函数调用链的盲点。当 `gitnexusAvailable=true` 时，`/extend`、`/fix-bug`、`project-analyzer` 自动通过 GitNexus 模式 G→E→B→D 生成项目级调用链视图，持久化为 `docs/repo-wiki.md`（模块地图 / 核心调用链 / 扩展点 / 高风险区域）供后续流程复用 |
 
 <a id="new-docs"></a>
 ## 新增流程文档
@@ -304,12 +305,14 @@ cp -r .codebuddy/commands/* ~/.codebuddy/commands/
 - 不能把 `.claude/skills/*` 当成 CodeBuddy 的第二套技能目录来维护
 - 如果 `.claude/*` 与 `.codebuddy/*` 有冲突，以 `.codebuddy/*` 为准
 
-| GitNexus Skill | 典型用途 | CodeBuddy 承接入口 |
-|---|---|---|
-| `Exploring` | 新项目理解、模块全貌、调用链摸底 | `.codebuddy/rules/project-reading.md`、`/research`、`/doc-init`、`/extend` 前置分析 |
-| `Debugging` | Bug 追踪、异常入口回溯、跨文件定位 | `/fix-bug`、`.codebuddy/skills/bug-fix/SKILL.md`、`.codebuddy/skills/systematic-debugging/SKILL.md` |
-| `Impact Analysis` | 变更 blast radius、重构前风险评估 | `/extend`、`/write-plan`、`/code-review`、`/code-self-check` |
-| `Refactoring` | 跨文件重构、重命名、模块拆分 | `/simplify`、`/write-plan`、`/execute-plan`、`.codebuddy/skills/code-simplifier/SKILL.md` |
+| GitNexus Skill | 典型用途 | CodeBuddy 承接入口 | 优先查询模式 |
+|---|---|---|---|
+| `Exploring` | 新项目理解、模块全貌、调用链摸底 | `.codebuddy/rules/project-reading.md`、`/research`、`/doc-init`、`/extend` 前置分析 | `W`（首次/调用链盲点）、`E`、`B`、`A`、`F` |
+| `Debugging` | Bug 追踪、异常入口回溯、跨文件定位 | `/fix-bug`、`.codebuddy/skills/bug-fix/SKILL.md`、`.codebuddy/skills/systematic-debugging/SKILL.md` | `W`（跨模块链路）、`D`、`F`、`A` |
+| `Impact Analysis` | 变更 blast radius、重构前风险评估 | `/extend`、`/write-plan`、`/code-review`、`/code-self-check` | `W`（扩展点识别）、`C`、`A` |
+| `Refactoring` | 跨文件重构、重命名、模块拆分 | `/simplify`、`/write-plan`、`/execute-plan`、`.codebuddy/skills/code-simplifier/SKILL.md` | `C`、`D`、`A` |
+
+> **Repo Wiki 模式（Mode W）** 是 `code-expose` 调用链盲点的专用补偿层：当 CodeBuddy 自带代码分析只展示静态代码片段、缺失"谁调用谁/完整路径"信息时，自动以 GitNexus 知识图谱为数据源，生成 `docs/repo-wiki.md`（模块地图 / 核心调用链 / 扩展点推荐 / 高风险区域）并供 `/extend` 等下游流程复用。详见 `.codebuddy/rules/gitnexus-code-intelligence.md` 模式 W 节。
 
 推荐在 `.gitnexusignore` 中排除这些 GitNexus 提示产物，避免它们进入项目代码索引：
 
@@ -884,6 +887,7 @@ AI 会在会话开始时自动检测项目使用的版本控制系统。
 | *（新增）* | `.codebuddy/agents/bug-fixer.md`（问题单修改专家代理） |
 | *（新增）* | `.codebuddy/skills/pua/SKILL.md`（PUA 万能激励引擎——防止 AI 摆烂、放弃、敷衍） |
 | *（外部接入）* | `.codebuddy/rules/karpathy-guidelines.md`（Karpathy 四准则，常驻，源自 [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)，MIT） |
+| *（新增）* | `.codebuddy/rules/gitnexus-code-intelligence.md` 模式 W（Repo Wiki 全量知识库，补偿 `code-expose` 调用链盲点；输出 `docs/repo-wiki.md`） |
 
 ---
 

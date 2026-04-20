@@ -18,8 +18,14 @@
 2. 若缺少 `requirement`：直接输出 `BLOCKED`，要求补充扩展需求描述
 3. **Step 0.1 项目理解（强制）**：
    - 严格按 `project-reading.md` 的优先级：三层文档 → GitNexus（先做模式 G 基线对比/刷新） → 手动阅读
-   - 在 `docs/progress.md` 写入：信息源、降级原因、覆盖率
+   - **Step 0.1.1 Repo Wiki 调用链补偿（gitnexusAvailable=true 时强制）**：
+     - CodeBuddy 自带的 `code-expose` 无法展示函数调用链，因此 `/extend` 必须在理解阶段主动执行 GitNexus 模式 W，补齐调用链视图
+     - 先读 `docs/repo-wiki.md`：若 `baselineCommit` 与 `gitnexus-baseline.json.lastIndexedCommit` 一致 → 直接复用；否则按模式 W 执行流程（G → E → B × N → D × K → 翻译 → 写回）
+     - 扩展点识别、高风险区域、核心调用链**必须**来自 `docs/repo-wiki.md`，不得仅凭 code-expose 的片段推断
+     - 若模式 W 执行失败且无可用 Wiki → 降级到手动四步法，但在后续 Step 0.2/0.3/0.4 产出物中显式标注"调用链信息不完整"
+   - 在 `docs/progress.md` 写入：信息源（是否含 Repo Wiki + baselineCommit）、降级原因、覆盖率
    - 若 GitNexus 基线漂移 `riskLevel=high` 且未刷新 → BLOCKED
+   - 若 `gitnexusAvailable=false` 且扩展需求涉及已有调用链改造 → 向 Boss 提示"当前无 GitNexus，调用链精度有限，是否继续"
 4. **Step 0.2 生成历史实现规格 spec（强制）**：
    - 路径：`docs/specs/YYYY-MM-DD-<模块名>-historical-spec.md`
    - 模板：`.codebuddy/skills/extending-project/templates/historical-spec-template.md`
