@@ -134,8 +134,10 @@ TaskContract:
 
 ## 13. 追踪链接
 
-说明：以下字段允许在 spec 阶段先占位；`spec/AI2AI/*` 由后续阶段按需生成并回填。
+说明：以下字段允许在 spec 阶段先占位；各阶段产物按需生成并回填。
 
+- historicalSpecPath: <`/extend` Step 0.2 生成；非扩展场景允许为空>
+- requirementAnalysisPath: <`/extend` Step 0.4 或 `/brainstorm` 复杂任务生成>
 - brainstormPath: <若本需求已完成 brainstorm，或 H 级进入 write-plan 前，必须回填>
 - researchPath: <research 阶段回填>
 - designPath: <brainstorm 阶段回填>
@@ -146,3 +148,40 @@ TaskContract:
 - implementationProgressPath: <execute-plan 阶段回填>
 - implementationSummaryPath: <execute-plan 阶段回填>
 - reviewReportPath: <审查后回填>
+- coverageMatrixPath: <§14 覆盖矩阵的 anchor，例如 `#section-14`>
+- coverageReportPath: <`/requirement-coverage` 执行后回填>
+- securityReviewReportPath: <`/security-review` 执行后回填>
+- perfBaselinePath: <`/perf-check` baseline 数据路径>
+- perfReportPath: <`/perf-check` 对比报告路径>
+- systemTestReportPath: <`/system-test` 执行后回填>
+- releaseNotesPath: <`/release` 执行后回填>
+- rollbackPlaybookPath: <`/release` 或 `/rollback` 执行后回填>
+
+## 14. 需求覆盖矩阵（结构化，必填于存在上游需求分析文档时）
+
+> 必须与 `.codebuddy/skills/requirement-coverage-check/templates/coverage-matrix.schema.json` 对齐。
+> 若存在 `requirementAnalysisPath` 或 `brainstormPath`，本节为强制；缺失或行数不等于 REQ 数 → BLOCKED。
+
+```yaml
+coverageMatrix:
+  version: "1.0"
+  sourceRequirementDoc: "docs/specs/...-requirement-analysis.md"
+  specPath: "<本 spec 相对路径>"
+  planPath: ""
+  generatedAt: ""
+  rows:
+    - reqId: "REQ-01"
+      reqDescription: ""
+      specSection: "§4.2"
+      planTaskId: ""
+      implementationRef: ""
+      verificationTestId: ""
+      status: "pending"   # pending|in_progress|implemented|verified|waived
+      notes: ""
+```
+
+同时保留 Markdown 表便于人类审阅：
+
+| REQ ID | 需求描述 | spec 章节 | 计划任务 ID | 验证用例 ID | 状态 |
+|---|---|---|---|---|---|
+| REQ-01 |  |  |  |  | pending |

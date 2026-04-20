@@ -119,6 +119,29 @@ sh .codebuddy/skills/file-based-memory/scripts/check-complete.sh
 2. 准备收尾
 3. 准备切换阶段
 
+## 结构契约校验（新增）
+
+`progress.md` 与 `findings.md` 不再只依赖"名字叫对"，必须满足 JSON Schema 描述的段落清单：
+
+- `schemas/progress.schema.json`
+- `schemas/findings.schema.json`
+
+运行校验：
+
+```bash
+bash .codebuddy/skills/file-based-memory/scripts/lint-memory.sh
+```
+
+- 退出码 0：通过
+- 退出码 1：结构缺段落 → 必须按模板补齐
+- 退出码 2：文件缺失 → BLOCKED，先创建
+
+接入位置：
+
+1. `/status` 会显式提示"记忆 lint 是否通过"
+2. `check-gates.sh` 默认调用一次，失败即 BLOCKED
+3. 阶段切换 / handoff 前必须手动跑一次
+
 ## 核心规则
 
 详细规则和 findings/progress 边界说明见 `references/memory-protocols.md`。

@@ -9,7 +9,20 @@ description: 项目功能扩展技能。用于在已有项目上新增功能、�
 
 ## 资源加载规则
 
-当需要细化“影响评估 / 扩展模式 / 日志与观测接入 / 停手信号”时，再读取：
+当需要按"项目阅读优先级"读取原实现时，再读取：
+
+- `.codebuddy/rules/project-reading.md`（强制优先三层文档 + GitNexus）
+- `.codebuddy/rules/gitnexus-code-intelligence.md`（含模式 G 基线刷新）
+
+当生成"历史实现规格 spec"时，再读取：
+
+- `templates/historical-spec-template.md`
+
+当生成"扩展需求分析规格 spec"时，再读取：
+
+- `templates/requirement-analysis-template.md`
+
+当需要细化"影响评估 / 扩展模式 / 日志与观测接入 / 停手信号"时，再读取：
 
 - `references/extension-phase-guide.md`
 
@@ -17,7 +30,7 @@ description: 项目功能扩展技能。用于在已有项目上新增功能、�
 
 - `templates/impact-assessment-template.md`
 
-不要一开始就加载模板；先搞清架构与边界，再按需套用。
+不要一开始就把模板全部加载；先搞清架构与边界，再按需套用。
 
 ## 何时使用
 
@@ -40,10 +53,45 @@ description: 项目功能扩展技能。用于在已有项目上新增功能、�
 1. 需求目标、范围或入口不明确
 2. 无法确定当前项目的核心架构和日志约束
 3. 需要大范围改共享契约，但 spec/plan 尚未明确
+4. **未生成 `historical-spec.md` 或 Boss 未确认核实**（Issue 1 强约束）
+5. **未生成 `requirement-analysis.md` 或未包含追溯矩阵 / Boss 未确认**（Issue 2 强约束）
+6. **未按 project-reading.md 的"三层文档→GitNexus→手动"优先级执行，且未在 progress.md 声明降级原因**（Issue 3 强约束）
 
 ## 扩展协议
 
-### 1. 先理解项目
+### 0. 强制四步前置（顺序不可逆，缺一阻断）
+
+```text
+[Step 0.1] 项目理解
+  → 严格按 project-reading.md 的优先级：
+    三层文档 → GitNexus（先做基线对比/刷新） → 手动阅读
+  → 在 docs/progress.md 记录信息源与降级原因
+
+[Step 0.2] 历史实现规格 spec（new！）
+  → 把"原实现已经做了什么"反向沉淀成 spec
+  → 路径：docs/specs/YYYY-MM-DD-<模块名>-historical-spec.md
+  → 模板：templates/historical-spec-template.md
+  → 内容必须详细到：业务目标、用例清单、对外接口、数据模型、
+    关键流程（含 Mermaid）、跨模块依赖、当前缺陷与债务、
+    日志/观测约束、隐含约束（注释/测试反推）
+  → 强制提交给 Boss 核实是否有偏差，未确认前不得进入 Step 0.3
+
+[Step 0.3] 头脑风暴（结合历史 spec + 扩展需求）
+  → 触发 brainstorming/SKILL.md 完整七阶段
+  → 必须把 historical-spec.md 作为输入，发散时显式列出
+    "复用 / 扩展 / 替换 / 废弃" 四类决策
+
+[Step 0.4] 扩展需求分析规格 spec（new！）
+  → 路径：docs/specs/YYYY-MM-DD-<需求名称>-requirement-analysis.md
+  → 模板：templates/requirement-analysis-template.md
+  → 必须从 historical-spec.md 中逐条引用受影响项
+  → 必须包含"需求 → 设计 → 实现 → 验证"四列追溯矩阵
+  → 强制提交给 Boss 核实，未确认前不得进入 Step 1
+```
+
+**Step 0.2 与 Step 0.4 都要让 Boss 显式打勾确认；只要还有"待补充/TBD"就阻断。**
+
+### 1. 先理解项目（Step 0 输出已覆盖此项）
 
 至少确认：
 

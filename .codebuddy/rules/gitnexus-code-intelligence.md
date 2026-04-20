@@ -103,6 +103,69 @@ GitNexus 索引**必须排除**以下依赖/生成目录，不为它们建立图
 
 **降级方案**：`git diff --name-only` + 手动 grep 引用点
 
+### 模式 G：增量索引刷新与差异检测（基线漂移）
+
+**用途**：当 GitNexus 上一次 `analyze` 之后又新增/修改了大量代码，知识图谱会与代码不同步。**进入任何代码理解、扩展、审查任务前**必须先执行差异检测，并按需做增量刷新；否则后续模式 A-F 的查询都会基于过期图谱，产出不可靠。
+
+**触发条件（任一满足即触发）**：
+
+1. 距上次 `analyze` 超过 24 小时
+2. 当前 HEAD 与 `.codebuddy/state/gitnexus-baseline.json` 中记录的 `lastIndexedCommit` 不一致
+3. `git diff --stat <lastIndexedCommit>..HEAD` 中新增/修改源文件 ≥ 20 个
+4. 新增了 GitNexus 覆盖范围内的整目录 / 整模块
+5. `extend / write-plan / code-review / code-self-check / 项目分析 / 代码解释` 命令进入主体前
+
+**对应工具与流程**：
+
+```text
+1. 读取基线: .codebuddy/state/gitnexus-baseline.json
+   { "lastIndexedCommit": "<sha>", "indexedAt": "<iso>", "scope": "<paths>" }
+2. 调用 GitNexus delta 工具：
+   - 优先 `detect_changes since=<lastIndexedCommit>`
+   - 若不支持，退回 `query` 比对节点哈希
+3. 对比当前工作区：
+   git diff --name-status <lastIndexedCommit>..HEAD -- <scope>
+4. 判定刷新范围：
+   - 增量刷新（<200 文件 / 单模块）：`npx gitnexus analyze --paths <changed-dirs>`
+   - 全量刷新（跨模块、目录结构调整、删除文件 >50）：`npx gitnexus analyze`
+5. 刷新成功后写回基线：
+   { "lastIndexedCommit": "<HEAD>", "indexedAt": "<now>", "scope": "<paths>" }
+6. 在 docs/progress.md 记录：
+   - 触发条件
+   - 差异统计（新增/修改/删除/重命名）
+   - 选择的刷新策略与耗时
+   - 刷新后被影响最大的 Top-N 模块
+```
+
+**差异输出契约（供下游消费）**：
+
+```yaml
+delta:
+  baselineCommit: <sha>
+  headCommit: <sha>
+  files:
+    added: [...]
+    modified: [...]
+    deleted: [...]
+    renamed: [{from, to}]
+  modulesTouched: [...]
+  newSymbolsExposed: [...]   # 新增的对外 export
+  brokenReferences: [...]    # 旧调用点指向已删除/重命名的目标
+  riskLevel: low|medium|high
+```
+
+**降级方案（GitNexus 不可用 / 索引彻底失效）**：
+
+1. `git log --since="<lastIndexedAt>" --name-status` 收集变更面
+2. 按目录手动复检三层文档（`CONTEXT.md`、文件头部 INPUT/OUTPUT/POS）的同步度
+3. 在 `docs/findings.md` 记录“GitNexus 离线 + 变更面 N 文件”，提示下游降级到全量 `project-reading` 流程
+
+**禁止事项**：
+
+1. 禁止跳过基线对比直接使用 GitNexus 查询 —— 过期图谱比无图谱更危险，因为 AI 会以高置信度给出错误调用链
+2. 禁止只做局部刷新却隐瞒全局影响 —— 跨模块改动若仅刷新单目录会留下幽灵节点
+3. 禁止在 `riskLevel=high` 时不通知 Boss 自动继续 —— 必须先报告差异和刷新计划再确认
+
 ### 模式 D：调用链追踪（问题定位）
 
 **用途**：从一个函数/方法出发，追踪完整的调用链
@@ -142,6 +205,27 @@ GitNexus 返回的是技术结构数据，需要 AI 翻译为业务语言：
 
 **结构关系以 GitNexus 为准（Tree-sitter 确定性解析 > AI 阅读理解）。
 业务语义由 AI 翻译（GitNexus 返回技术名称，AI 转为业务比喻）。**
+
+---
+
+## 基线状态文件位置
+
+GitNexus 索引基线统一保存在：
+
+- `.codebuddy/state/gitnexus-baseline.json`（每个仓库一个）
+
+字段：
+
+| 字段 | 含义 |
+|---|---|
+| `lastIndexedCommit` | 上次 `analyze` 时的 HEAD commit sha |
+| `indexedAt` | 上次 `analyze` 完成时间（ISO8601） |
+| `scope` | 索引覆盖的路径白名单 |
+| `excludedDirs` | 实际生效的排除目录列表 |
+| `gitnexusVersion` | 上次使用的 gitnexus CLI 版本 |
+| `lastDelta` | 最近一次差异检测摘要（统计数 + riskLevel） |
+
+如果文件不存在，第一次进入受影响命令时由 AI 创建空模板并立即触发一次全量 `analyze`。**该文件必须纳入版本控制**，避免协作者重复全量索引。
 
 ---
 

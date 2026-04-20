@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://featureflow/coverage-matrix.schema.json",
+  "title": "Requirement Coverage Matrix",
+  "description": "需求覆盖矩阵结构化定义。spec / plan / brainstorm 末尾除了 Markdown 表格外，必须同步输出一份符合本 schema 的 YAML 或 JSON 块，便于脚本校验与下游消费。",
+  "type": "object",
+  "required": ["version", "sourceRequirementDoc", "rows"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "enum": ["1.0"]
+    },
+    "sourceRequirementDoc": {
+      "type": "string",
+      "description": "需求来源文档相对路径，如 docs/plans/2026-04-17-xxx-需求预分析.md 或 docs/specs/...-requirement-analysis.md"
+    },
+    "specPath": {
+      "type": "string"
+    },
+    "planPath": {
+      "type": "string"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "reqId",
+          "reqDescription",
+          "specSection",
+          "planTaskId",
+          "verificationTestId",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "reqId": {
+            "type": "string",
+            "pattern": "^REQ-[A-Za-z0-9_-]+$"
+          },
+          "reqDescription": {
+            "type": "string",
+            "minLength": 5
+          },
+          "specSection": {
+            "type": "string",
+            "description": "spec 文档中的章节号或锚点，如 §4.2 或 requirement-analysis.md#uc-new-01"
+          },
+          "planTaskId": {
+            "type": "string",
+            "description": "/write-plan 中对应的任务 ID，允许多个以逗号分隔"
+          },
+          "implementationRef": {
+            "type": "string",
+            "description": "可选。指向计划内实现位置（path:line 或 symbol）"
+          },
+          "verificationTestId": {
+            "type": "string",
+            "description": "测试用例 ID，单测 / 集成 / E2E 均可；允许多个以逗号分隔"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "implemented", "verified", "waived"]
+          },
+          "waiverReason": {
+            "type": "string",
+            "description": "当 status=waived 时必填，需 Boss 确认"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "waived" } } },
+            "then": { "required": ["waiverReason"] }
+          }
+        ]
+      }
+    }
+  }
+}

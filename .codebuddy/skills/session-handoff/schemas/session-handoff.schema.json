@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://featureflow.local/schemas/session-handoff.schema.json",
+  "title": "Session Handoff Snapshot",
+  "type": "object",
+  "required": [
+    "sessionId",
+    "lastUpdatedAt",
+    "taskType",
+    "lastCommand",
+    "pendingGates",
+    "nextAction"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "pattern": "^sess-\\d{4}-\\d{2}-\\d{2}-\\d{3}$"
+    },
+    "lastUpdatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "branch": { "type": "string" },
+    "taskType": {
+      "enum": [
+        "new-feature",
+        "bugfix",
+        "refactor",
+        "test",
+        "research",
+        "review-pr",
+        "release",
+        "rollback",
+        "extend",
+        "other"
+      ]
+    },
+    "taskTier": { "enum": ["L", "M", "H"] },
+    "lastCommand": {
+      "type": "string",
+      "pattern": "^/[a-z][a-z0-9-]*$"
+    },
+    "specPath": { "type": "string" },
+    "planPath": { "type": "string" },
+    "pendingGates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["command", "reason", "blocker"],
+        "properties": {
+          "command": { "type": "string", "pattern": "^/[a-z][a-z0-9-]*$" },
+          "reason": { "type": "string", "minLength": 1 },
+          "blocker": { "type": "boolean" }
+        }
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "recentEvidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "nextAction": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}
