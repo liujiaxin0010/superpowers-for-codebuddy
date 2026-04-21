@@ -22,8 +22,13 @@
    - `.codebuddy/rules/project-reading.md`：读项目/改代码前
    - `.codebuddy/rules/test-driven-development.md`：测试生成与实现阶段
    - `.codebuddy/rules/code-documentation.md`：`/doc-init`、`/doc-sync`、文档同步阶段
-4. 复杂任务（>=3 步或 >5 次工具调用）强制启用 file-based-memory。
-5. 检测 GitNexus MCP 可用性（可选但推荐）：
+   - `.codebuddy/rules/cross-platform-shell.md`：`isWindows=true` 时自动加载
+4. 平台检测（每次会话启动必做）：
+   - 执行 `uname -s 2>/dev/null || ver` 判定 `isWindows=true/false`
+   - 记录到会话上下文；`isWindows=true` 时自动加载 `.codebuddy/rules/cross-platform-shell.md`
+   - Windows 下命令失败必须按该规则的"失败自愈流程"处理，禁止低级重试（命令失败 ≥ 2 次相同命令即违规）
+5. 复杂任务（>=3 步或 >5 次工具调用）强制启用 file-based-memory。
+6. 检测 GitNexus MCP 可用性（可选但推荐）：
    - 尝试调用 GitNexus 工具，记录 `gitnexusAvailable` 状态
    - 可用时按需加载：`.codebuddy/rules/gitnexus-code-intelligence.md`
    - `npx gitnexus analyze` 若自动生成 `AGENT.md`、`CLAUDE.md`、`.claude/skills/*`，将其视为 GitNexus 参考提示层，不作为活跃技能注册目录

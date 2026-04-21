@@ -156,8 +156,10 @@ alwaysApply: false
 
 ### 第一步：全局扫描（10 秒定位项目类型）
 
+> **跨平台提示**：优先使用 Claude Code 的 `Glob` 工具替代 `find`；Windows 下若没有 Git Bash，按 `.codebuddy/rules/cross-platform-shell.md` 的 pwsh 等价命令执行。
+
 ```bash
-# 1. 检查项目配置文件确定技术栈
+# 1. 检查项目配置文件确定技术栈（推荐用 Glob 工具）
 ls -la package.json go.mod Cargo.toml pom.xml build.gradle CMakeLists.txt \
      Makefile requirements.txt pyproject.toml composer.json Gemfile 2>/dev/null
 
@@ -170,9 +172,23 @@ find . -maxdepth 2 -type d \
 # 3. 检查版本控制
 ls -la .git .svn 2>/dev/null
 
-# 4. 检查是否有 CONTEXT.md 文档体系
+# 4. 检查是否有 CONTEXT.md 文档体系（推荐用 Glob 工具：**/CONTEXT.md）
 find . -name "CONTEXT.md" -maxdepth 3 2>/dev/null
 ```
+
+**Windows 下（pwsh 等价）**：
+
+```powershell
+# 2. 目录结构
+Get-ChildItem -Directory -Recurse -Depth 2 |
+  Where-Object { $_.FullName -notmatch '(node_modules|\.git|vendor|target|build|__pycache__|dist|\.next)' } |
+  Sort-Object FullName
+
+# 4. 查找 CONTEXT.md
+Get-ChildItem -Recurse -Filter CONTEXT.md -Depth 3
+```
+
+**最优**：直接使用 Claude Code 的 `Glob` 和 `Grep` 工具（跨平台、无需 shell）。
 
 ### 第二步：阅读文档体系（如果存在）
 

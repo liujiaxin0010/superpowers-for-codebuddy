@@ -20,9 +20,11 @@
    - 命中但缺少已签字的 `docs/plans/*-data-safety.md` → BLOCKED，回退到 `/data-safety-check`
    - 命中且已签字 → 在执行日志中记录报告路径与签字时间戳
 5. 若通过：加载计划中的合同摘要，按批次执行，并展示测试证据
-6. 执行质量门禁脚本：
-   - PowerShell: `powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`
-   - Shell: `bash .codebuddy/skills/process-gatekeeper/scripts/check-quality.sh`
+6. 执行质量门禁脚本（按平台分流，**不得双执行**）：
+   - 先读取会话上下文的 `isWindows` 标记（由 CODEBUDDY.md §2 第 4 步启动时写入）
+   - `isWindows=true`：`powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`
+   - `isWindows=false`：`bash .codebuddy/skills/process-gatekeeper/scripts/check-quality.sh`
+   - 脚本失败时按 `.codebuddy/rules/cross-platform-shell.md §失败自愈流程` 处理，禁止同一命令重试 ≥ 2 次
 7. 执行过程中同步兼容产物：
    - `spec/AI2AI/IMPLEMENTATION_PROGRESS.md`
    - `spec/AI2AI/IMPLEMENTATION_SUMMARY.md`
