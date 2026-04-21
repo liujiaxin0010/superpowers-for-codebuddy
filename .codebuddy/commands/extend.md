@@ -22,7 +22,10 @@
      - § ⑥ 告诉你"哪些不变量不能破"+ "历史踩过的坑"
      - § ⑧ 告诉你"加新需求该挂哪" + "禁止修改的不动区"
      - **如果变更目标命中 § ⑧ 的不动区**，必须先向 Boss 申请授权，未授权 → BLOCKED
-   - 在 `docs/progress.md` 写入：信息源、降级原因、覆盖率、§ ⑧ 扩展点匹配结果
+   - **GitNexus 强制三阶段**（见 `gitnexus-code-intelligence.md §查询流程契约`）：
+     - 阶段 1 模糊定位（模式 F）→ 阶段 2 Boss 核实候选 → 阶段 3 精确分析（模式 A/D/C）
+     - 阶段 2 跳过时必须在 `docs/progress.md` 声明原因（候选唯一 / Boss 已提供精确目标）
+   - 在 `docs/progress.md` 写入：信息源、降级原因、覆盖率、§ ⑧ 扩展点匹配结果、三阶段候选清单与确认目标
    - 若 GitNexus 基线漂移 `riskLevel=high` 且未刷新 → BLOCKED
 4. **Step 0.2 生成历史实现规格 spec（强制）**：
    - 路径：`docs/specs/YYYY-MM-DD-<模块名>-historical-spec.md`
