@@ -16,7 +16,13 @@ alwaysApply: false
 
 ## 核心设计理念
 
-AI 加载文件是**从头部开始**的。如果关键业务信息放在文件顶部，AI 每次读取文件时第一时间就能理解这个文件的角色和上下文，不需要读完整个文件才能定位。
+AI 读懂模块有两种路径：（1）读每个文件的头部三行注释；（2）读目录级 `CONTEXT.md`。本体系以 **`CONTEXT.md` 为主力**，文件头部三行注释仅作为"一次性初始化标签"，不参与 `/doc-sync` 增量更新流程。
+
+**为什么这样划分？**
+
+- ✅ **PR 噪音归零**：`/doc-sync` 只改 `CONTEXT.md`，源码文件在"职责实质变化"之外永不被自动改写，保持外科手术式修改
+- ✅ **文档内容可深化**：`CONTEXT.md` 支持 L0/L1/L2 分层节（见下方第二层），能承载调用关系图、设计决策、故障模式等源码注释装不下的信息
+- ✅ **与 Repo Wiki / GitNexus 互补**：GitNexus 给跨模块调用链（重），`CONTEXT.md` 给模块内业务文档（轻）
 
 ### 🚫 准确性铁律（强制约束）
 
@@ -25,16 +31,18 @@ AI 加载文件是**从头部开始**的。如果关键业务信息放在文件�
 - ❌ 没有读完文件就写 INPUT/OUTPUT/POS 注释
 - ❌ 根据文件名或类名猜测文件职责（如看到 `UserService` 就写"用户管理"而不读代码）
 - ❌ 从旧注释复制内容而不验证是否与当前代码一致
-- ❌ CONTEXT.md 中的"逻辑"和"约束"描述未经代码验证
+- ❌ `CONTEXT.md` 中的"逻辑"和"约束"描述未经代码验证
 - ❌ 业务域清单中的"职责简述"与文件实际内容不符
+- ❌ 设计决策节（Decisions & Gotchas）凭空编造历史——无来源的条目必须删除或询问 Boss
 
 **正确做法**：
 
-1. **先读后写**：必须完整阅读文件源码后，才能编写该文件的三行注释
+1. **先读后写**：必须完整阅读文件源码后，才能编写该文件的相关文档
 2. **逐条验证 INPUT**：检查文件的 import/require/include 语句，确认实际依赖了什么
 3. **逐条验证 OUTPUT**：检查文件的 export/public 方法/对外接口，确认实际提供了什么
 4. **逐条验证 POS**：根据目录结构和调用关系确认文件在系统中的实际位置
-5. **CONTEXT.md 必须基于子文件的实际内容汇总**，不得凭目录名推测模块职责
+5. **`CONTEXT.md` 必须基于子文件的实际内容汇总**，不得凭目录名推测模块职责
+6. **所有结论必须带代码锚点**：`file.java:123` 或 `functionName()`；没有锚点等于空话
 
 三层文档形成一棵**自下而上的知识树**：
 
@@ -59,11 +67,20 @@ AI 加载文件是**从头部开始**的。如果关键业务信息放在文件�
 
 ---
 
-## 第一层：源码文件头部三行注释
+## 第一层：源码文件头部三行注释（一次性初始化标签）
+
+### 定位与生命周期
+
+- ✅ 仅在 `/doc-init` 首次初始化时**可选**写入，作为文件级"轻标签"辅助 AI 冷启动
+- ❌ `/doc-sync` **不再更新**源码文件头部注释——源码文件只在业务实质变化时由开发者主动修改
+- ❌ `/extend`、`/fix-bug`、`/code-review` 等常规流程**不得**以"文档同步"为由修改源码文件头部注释
+- ⚠️ 如果头部注释与代码出现偏差：**优先修正 `CONTEXT.md`**，头部注释等下次 `/doc-init --rebuild` 时整体刷新
+
+**目标**：让 PR diff 中**零源码噪音**——源码文件的变更永远只反映业务/功能改动，文档同步全部落在 `CONTEXT.md`。
 
 ### 规则
 
-**每个源码文件**的头部必须包含三行注释（位于 package/import 声明之前，或文件最顶部）：
+如果 Boss 在 `/doc-init` 时选择写入头部注释，**每个源码文件**的头部可包含三行注释（位于 package/import 声明之前，或文件最顶部）：
 
 ```
 // INPUT:  依赖什么（被谁驱动、消费什么数据、调用什么外部服务）
@@ -129,18 +146,19 @@ from user.repository import UserRepository
 
 ### 幂等性：禁止重复写入
 
-**在添加头部注释前，必须先检查文件是否已包含 `// INPUT:` / `# INPUT:` / `<!-- INPUT:` 注释。** 如果已存在，则**更新现有注释内容**，不得重复添加新的注释块。
+**在添加头部注释前，必须先检查文件是否已包含 `// INPUT:` / `# INPUT:` / `<!-- INPUT:` 注释。** 如果已存在，则**跳过**（不再更新）；`/doc-sync` 禁止修改源码头部。
 
 检测逻辑（伪代码）：
 ```
 读取文件前 10 行
 如果匹配到 "INPUT:" 或 "OUTPUT:" 或 "POS:" 关键字：
-  → 更新已有的三行注释（原地替换）
-否则：
+  → 跳过（头部已有标签，属于既有初始化产物）
+否则（仅在 /doc-init 首次初始化且 Boss 授权写入时）：
   → 在正确位置插入新的三行注释
+/doc-sync 不在此分支，永不写入源码文件
 ```
 
-**这是强制约束**——多次运行 `/doc-init` 或 `/doc-sync` 不得产生重复注释。
+**这是强制约束**——`/doc-sync` 多次运行**不得修改任何源码文件**；仅 `/doc-init --rebuild` 可整体刷新（需 Boss 显式确认）。
 
 ### 什么文件需要加
 
@@ -224,71 +242,229 @@ wire_gen/         ent/migrate/   ent/schema/    prisma/client/
 
 ---
 
-## 第二层：模块目录 CONTEXT.md
+## 第二层：模块目录 CONTEXT.md（文档主力）
 
 ### 规则
 
-**每个业务模块目录**下必须放置一个 `CONTEXT.md` 文件，记录该模块的全貌信息。
+**每个业务模块目录**下必须放置一个 `CONTEXT.md`。本层是三层自文档体系的**唯一信息承载主力**，源码文件头部注释不参与同步。
 
-### 模板
+### 节结构分层：L0 必备 / L1 核心模块追加 / L2 按需
+
+> **设计原则**（反对"平铺 12 节堆砌"，按模块特征动态选择）：
+> - **L0 六节**是所有 `CONTEXT.md` 必备，工具类/配置目录/边缘模块止步于此
+> - **L1 三节**仅在"核心业务模块"（Controller/Service/领域核心）追加
+> - **L2 三节**按模块特性按需追加（独立监控面板、测试复杂度、高频演进）
+> - 单个 `CONTEXT.md` **总行数 ≤ 300 行**，超了说明模块该拆或信息该外链
+
+#### 核心模块判定规则
+
+自动判为 L1（由 `/doc-init` 与 `/doc-sync` 结合 GitNexus 模式 C 的 blast radius 判定）：
+
+- 被调用次数 ≥ 10（GitNexus 图谱统计）
+- 目录内存在 `*Service.*` / `*Controller.*` / `*Handler.*` / 领域核心文件
+- 或 Boss 在 `/doc-init` 时显式标注为 `level=L1`
+
+其他情形默认 L0。模块是否升级到 L1 / 追加哪些 L2 节，由 AI 提案 + Boss 确认决定，不得自动追加。
+
+---
+
+### L0 必备六节（所有 CONTEXT.md）
 
 ```markdown
 # [模块名称]
 
-## 地位（Position）
-[这个模块在整个系统中负责什么？属于哪个业务领域？处于架构的哪一层？]
+## ① 地位（Position）
+[1-3 句话：这个模块在系统中扮演什么角色？属于哪个业务领域？处于架构哪一层？被谁依赖？]
 
-## 逻辑（Logic）
-[这个模块具体做什么？核心业务流程是什么？关键算法或处理逻辑？]
+## ② 逻辑（Logic）
+[核心业务流程，步骤式描述，不超过 7 步；每步可带代码锚点]
+1. [步骤 1]（锚点：`file.java:NNN`）
+2. [步骤 2]
+...
 
-## 约束（Constraints）
-[使用此模块的规则和限制。包括：]
-- 调用约束：谁可以调用、调用顺序、前置条件
-- 数据约束：数据格式、校验规则、边界条件
-- 性能约束：超时限制、并发要求、数据量上限
-- 安全约束：鉴权要求、数据脱敏、访问控制
+## ③ 约束（Constraints）
+> 每条必须带代码锚点或配置来源，禁止凭经验臆造
+- 调用约束：[例] 禁止绕过 `UserService` 直连 `UserMapper`（见 `UserMapper.java:10` 的 @Internal 注解）
+- 数据约束：[例] 用户名 3-32 字符（`UserValidator.java:42`）
+- 性能约束：[例] 登录响应 P99 < 200ms（监控面板 `OpsDashboard §P99`）
+- 安全约束：[例] 密码 BCrypt 存储（`UserService.java:88`），token 有效期 2h（`JwtConfig.java:18`）
 
-## 业务域清单（Inventory）
+## ④ 业务域清单（Inventory）
+> 完整文件档案：名 / 类型 / 职责 / INPUT / OUTPUT / 调用者 / 注意事项
+> 由 GitNexus 模式 A + B 自动生成，AI 补业务语义
 
-| 子模块/文件 | 类型 | 职责简述 |
-|---|---|---|
-| `XxxService.java` | 核心服务 | [一句话描述] |
-| `XxxController.java` | 接口层 | [一句话描述] |
-| `dto/` | 子目录 | [数据传输对象定义] |
-| ... | ... | ... |
+| 文件/子模块 | 类型 | 职责 | INPUT | OUTPUT | 调用者 | 注意 |
+|---|---|---|---|---|---|---|
+| `XxxService.java` | 核心服务 | 一句话职责 | [依赖的组件/服务] | [暴露的能力] | [主要调用者] | [不动区 / N+1 风险 / 锚点] |
+| `dto/` | 子目录 | 数据传输对象 | — | — | — | — |
+
+## ⑤ 调用关系（Dependencies）
+> 由 GitNexus 模式 A/C 自动生成；展开深度 ≤ 2，深层调用链交给 Repo Wiki / GitNexus 查询
+
+```mermaid
+graph LR
+  XxxController --> XxxService
+  XxxService --> XxxMapper
+  XxxService --> ExternalAPI
 ```
 
-### 示例
+| 维度 | 值 |
+|---|---|
+| 被调用次数 | [N] 处（blast radius: low/medium/high） |
+| 外部服务依赖 | [MySQL / Redis / Kafka / ...] |
+| 最高风险依赖 | [例：Kafka 同步阻塞点] |
+
+## ⑥ 设计决策与踩坑（Decisions & Gotchas）⭐核心价值
+> 本节是 AI **无法替代**的手写节——记录"为什么这样设计"和"历史踩过的坑"。
+> 首次可为空；每次重大设计变更后由 Boss 追加一条，防止成为 TODO 坟场。
+
+- **不变量**：[例] 密码必须 BCrypt，不得改 MD5（历史漏洞 `SEC-2023-07`）
+- **设计原因**：[例] 同步发 Kafka 而非异步 —— 需强一致用户事件（见 `docs/adr/0012-user-event-sync.md`）
+- **已知坑**：[例] `listUsers()` 存在 N+1 查询，超过 100 条必须改用 `listUsersBatch()`（`UserService.java:156`）
+```
+
+### L1 核心模块追加三节（Controller / Service / 领域核心）
+
+```markdown
+## ⑦ 数据流（Data Flow）
+> 关键数据结构 + 流转路径
+
+[例]
+```
+HTTP Request → UserRegisterDTO → UserDomain(脱敏) → UserEntity → MySQL
+                                                  ↓
+                                              UserEvent → Kafka
+```
+
+## ⑧ 扩展点（Extension Points）⭐ /extend 流程前置读取
+> 明确"加新需求最佳位置"和"禁止修改的核心不动区"，对接 `/extend` 的 Karpathy §3 外科手术原则
+
+- ✅ **可扩展位置**：
+  - 加新业务字段：修改 `UserDomain.java` + 对应 DTO（非不动区）
+  - 加新登录方式：实现 `LoginStrategy` 接口（`strategy/` 目录）
+- ❌ **不动区**（改动必须 Boss 评审）：
+  - `UserService.register()` 的幂等性逻辑
+  - `UserMapper.xml` 的核心 SQL 模板
+
+## ⑨ 故障模式（Failure Modes）
+> 常见故障场景 + 降级策略
+
+| 故障 | 征兆 | 降级方案 |
+|---|---|---|
+| DB 不可用 | 注册/登录超时 | 写入失败队列，告警，返回友好错误 |
+| Redis 不可用 | token 校验失败 | 回源 DB 校验 + 限流 |
+| Kafka 不可用 | 用户事件发送失败 | 落库重试，不阻塞主链路 |
+```
+
+### L2 按需追加三节
+
+```markdown
+## ⑩ 可观测性（Observability）
+> 有独立监控面板 / 告警的模块
+
+- 关键日志锚点：`UserService.java:88` 登录日志 / `UserService.java:156` 密码错误日志
+- 监控指标：P99 延迟、登录成功率、token 生成速率
+- 告警面板：[链接或面板名]
+
+## ⑪ 测试策略（Testing Strategy）
+> 测试复杂的模块（Mock 多 / 异步多 / 依赖外部服务）
+
+- 框架：JUnit 5 + Mockito
+- 运行命令：`mvn test -Dtest=UserServiceTest`
+- 关键用例：
+  - 并发注册幂等性：`UserServiceTest.java:120`
+  - token 过期边界：`UserServiceTest.java:240`
+
+## ⑫ 变更锚点（Change History）
+> 频繁演进的模块
+
+最近 5 次重要变更（由 `git log --oneline -5 -- <dir>` 自动刷新）：
+- `abc1234` 2026-04-15 feat: 支持 OAuth2 登录（PR #1234）
+- ...
+```
+
+---
+
+### 完整示例（L1 核心模块）
 
 ```markdown
 # 用户模块（user）
 
-## 地位（Position）
-系统核心业务模块之一，负责用户全生命周期管理。为其他所有需要用户身份的模块（订单、权限、消息）提供用户数据和认证能力。属于业务逻辑层。
+## ① 地位
+系统核心业务模块，负责用户全生命周期。被订单、权限、消息模块依赖（共 47 处调用）。业务逻辑层。
 
-## 逻辑（Logic）
-- 用户注册：接收注册信息 → 校验 → 密码加密 → 入库 → 返回用户信息
-- 用户登录：接收凭证 → 验证 → 生成token → 记录登录日志
-- 信息管理：查询/修改用户基本信息，头像上传
-- 密码管理：修改密码、忘记密码、密码重置
+## ② 逻辑
+1. 注册：校验 → 加密 → 入库 → 发 UserEvent（`UserService.java:42`）
+2. 登录：验证 → 生成 token → 记录日志（`UserService.java:78`）
+3. 信息管理：查询/修改/头像上传（`UserController.java:120`）
 
-## 约束（Constraints）
-- 调用约束：所有用户数据访问必须通过 UserService，禁止直接操作 UserMapper
-- 数据约束：用户名 3-32 字符，密码最少 8 字符含大小写和数字
-- 性能约束：登录接口响应 < 200ms，用户查询支持万级并发
-- 安全约束：密码必须 BCrypt 加密存储，token 有效期 2 小时
+## ③ 约束
+- 密码 BCrypt 存储（`UserService.java:88`）
+- token 有效期 2 小时（`JwtConfig.java:18`）
+- 登录接口 P99 < 200ms（监控面板 `OpsDashboard §P99`）
+- 禁止绕过 UserService 直连 UserMapper（架构约束）
 
-## 业务域清单（Inventory）
+## ④ 业务域清单
 
-| 子模块/文件 | 类型 | 职责简述 |
-|---|---|---|
-| `UserController.java` | 接口层 | 用户相关 REST API 端点 |
-| `UserService.java` | 核心服务 | 用户业务逻辑（注册/登录/信息管理） |
-| `UserMapper.java` | 数据层 | 用户数据库操作接口 |
-| `UserMapper.xml` | 数据层 | MyBatis SQL 映射 |
-| `dto/` | 子目录 | 请求/响应数据传输对象 |
-| `vo/` | 子目录 | 视图展示对象 |
+| 文件 | 类型 | 职责 | INPUT | OUTPUT | 调用者 | 注意 |
+|---|---|---|---|---|---|---|
+| `UserController.java` | 接口层 | REST API 端点 | UserService, 校验注解 | REST JSON | 前端、第三方 | — |
+| `UserService.java` | 核心服务 | 用户业务逻辑 | UserMapper, PasswordEncoder, KafkaProducer | 注册/登录/token 能力 | UserController, AuthFilter | 禁止绕过 Service 直连 Mapper |
+| `UserMapper.java` | 数据层 | 用户 DB 操作 | MyBatis | CRUD 接口 | UserService | 所有 SQL 见 UserMapper.xml |
+| `dto/` | 子目录 | DTO 定义 | — | — | — | — |
+
+## ⑤ 调用关系
+
+```mermaid
+graph LR
+  UserController --> UserService
+  AuthFilter --> UserService
+  UserService --> UserMapper
+  UserService --> PasswordEncoder
+  UserService --> KafkaProducer
 ```
+
+| 维度 | 值 |
+|---|---|
+| 被调用次数 | 47 处（blast radius: medium） |
+| 外部服务依赖 | MySQL / Redis / Kafka |
+| 最高风险依赖 | KafkaProducer（同步阻塞点） |
+
+## ⑥ 设计决策与踩坑
+- **不变量**：密码必须 BCrypt，不得改 MD5（历史漏洞 SEC-2023-07）
+- **同步发 Kafka 而非异步**：需强一致用户事件（见 `docs/adr/0012-user-event-sync.md`，2024-03 讨论）
+- **已知坑**：`listUsers()` N+1 查询，超过 100 条必须改用 `listUsersBatch()`（`UserService.java:156`）
+
+## ⑦ 数据流
+```
+HTTP Request → UserRegisterDTO → UserDomain(脱敏) → UserEntity → MySQL
+                                                  ↓
+                                              UserEvent → Kafka
+```
+
+## ⑧ 扩展点
+- ✅ 加新业务字段：`UserDomain.java` + 对应 DTO
+- ✅ 加新登录方式：实现 `LoginStrategy` 接口（`strategy/` 目录）
+- ❌ 不动区：`UserService.register()` 的幂等性逻辑，改动必须 Boss 评审
+
+## ⑨ 故障模式
+| 故障 | 征兆 | 降级方案 |
+|---|---|---|
+| DB 不可用 | register 超时 | 写入失败队列，告警 |
+| Redis 不可用 | token 校验降级 | 回源 DB 校验 + 限流 |
+| Kafka 不可用 | 事件失败 | 落库重试，不阻塞主链路 |
+```
+
+### 反面约束（不要写进 CONTEXT.md）
+
+| ❌ 不加 | 原因 |
+|---|---|
+| 完整 API 文档 | 重复且易过期，交给 OpenAPI / Javadoc |
+| 字段级数据模型 | 重复 Schema/Entity 定义，用链接代替 |
+| 详细使用示例 | 重复 README / 单测，保留 1 个最小 snippet 即可 |
+| 依赖版本号 | 重复 `package.json` / `pom.xml`，信息会漂移 |
+| 团队 / Owner 信息 | 放 `CODEOWNERS` 而非 `CONTEXT.md`，人员流动快 |
+| 待办事项 / TODO | 进工单系统，不污染文档 |
 
 ### 嵌套目录的 CONTEXT.md
 
@@ -415,48 +591,56 @@ project-root/
 
 ---
 
-## 第三层：自动级联更新
+## 第三层：级联更新规则（只改 CONTEXT.md，不碰源码）
 
 ### 核心规则
 
-**每次源码发生变动时，必须自动逐级更新文档**。这不是可选的，是强制行为。
+**每次源码发生变动时，自动逐级更新 `CONTEXT.md`**；但严格禁止在文档同步中修改源码文件。
+
+### 🚫 禁止条款（硬门禁）
+
+1. `/doc-sync` **不得修改任何源码文件**（含头部三行注释）
+2. 级联更新只在**变更文件的直接父目录**触发；上层 `CONTEXT.md` 仅在"子模块一句话描述变了"时才动，不做盲目传播
+3. "间接影响"的文件**不更新其头部注释**——间接影响只在目标目录的 `CONTEXT.md §⑤ 调用关系`中体现
 
 ### 更新触发条件
 
-| 变动类型 | 需要更新 |
+| 变动类型 | 更新范围 |
 |---|---|
-| 新增源码文件 | ① 新文件的头部三行注释 ② 所在目录的 CONTEXT.md ③ 上层目录的 CONTEXT.md |
-| 修改源码文件（接口/职责变化） | ① 该文件的头部三行注释 ② 所在目录的 CONTEXT.md（如果职责描述变了） |
-| 删除源码文件 | ① 所在目录的 CONTEXT.md ② 上层目录的 CONTEXT.md |
-| 新增目录/模块 | ① 新目录的 CONTEXT.md ② 上层目录的 CONTEXT.md |
-| 移动/重命名文件 | 等同于 删除 + 新增 |
-| 纯内部逻辑修改（接口不变） | 通常不需要更新文档，除非逻辑描述过时了 |
+| 新增源码文件 | ① 所在目录 `CONTEXT.md` ④ 的 Inventory 表新增一行；② 如新文件改变模块对外能力，更新 ② 逻辑 / ⑤ 调用关系 |
+| 修改源码文件（接口/职责变化） | ① 所在目录 `CONTEXT.md` Inventory 行更新 INPUT/OUTPUT/调用者；② 如果职责描述变了，更新 ① 地位 / ② 逻辑 |
+| 删除源码文件 | ① 所在目录 `CONTEXT.md` Inventory 删行；② 如对外 API 缩减，更新 ② 逻辑 |
+| 新增目录/模块 | ① 新目录 `CONTEXT.md`（按 L0/L1 模板生成）；② **仅更新上一层** `CONTEXT.md` 的子模块概述 |
+| 移动/重命名文件 | 等同于 删除 + 新增（两端 `CONTEXT.md` 都改；源码文件头部不动） |
+| 纯内部逻辑修改（接口不变） | **不更新文档**；除非 ⑥ 设计决策节需追加踩坑条目（仅 Boss 可加） |
+| 调用关系变化（如新增外部服务调用） | 更新 `CONTEXT.md §⑤` 的 Mermaid 图（由 GitNexus 模式 A/C 刷新） |
+| 重大设计变更 | 追加 `CONTEXT.md §⑥ 设计决策与踩坑` 条目（Boss 追加） |
 
 ### 更新流程
 
 ```
-源码变更
+源码变更（由开发者本次修改产生）
   ↓
-① 更新该文件的头部三行注释（INPUT / OUTPUT / POS）
+① GitNexus 模式 C 检测变更文件 + 直接影响面
   ↓
-② 更新所在目录的 CONTEXT.md
-   - 业务域清单是否需要增/删/改条目？
-   - 逻辑描述是否需要调整？
+② 对每个变更文件的直接父目录：更新 CONTEXT.md 的 Inventory 行 + 逻辑/约束/调用关系节
   ↓
-③ 更新上一层目录的 CONTEXT.md
-   - 该子模块的一句话概述是否还准确？
+③ 仅当子模块"一句话概述"发生变化时，更新上一层 CONTEXT.md 的对应行
   ↓
-④ 如有必要，继续向上更新到项目根目录的 CONTEXT.md
+④ 绝不再向更上层传播（避免级联放大）
+  ↓
+⑤ 源码文件在本流程中一行都不改（Karpathy §3 外科手术原则）
 ```
 
 ### 更新粒度控制
 
 **不要过度更新**。判断标准：
 
-- 文件内部的 bug 修复、性能优化 → **通常不更新**（接口和职责没变）
-- 新增了一个公共方法 / 对外接口变化 → **更新该文件注释 + CONTEXT.md**
-- 新增了一个文件 → **更新该文件注释 + 所在目录和上层目录的 CONTEXT.md**
-- 重构了模块结构 → **全面更新涉及目录的 CONTEXT.md**
+- 文件内部 bug 修复、性能优化 → **通常不更新 CONTEXT.md**（接口和职责没变）
+- 新增公共方法 / 对外接口变化 → 更新所在目录 `CONTEXT.md §④ Inventory` 的 OUTPUT 列
+- 新增文件 → 更新所在目录 `CONTEXT.md`；**仅在**子模块概述需改时再动上层
+- 重构模块结构 → 全面更新涉及目录的 `CONTEXT.md`
+- 出现"血泪踩坑"→ 必须追加到 `CONTEXT.md §⑥`（由 Boss 拍板内容）
 
 **如果不确定是否需要更新，问 Boss。**
 
@@ -468,20 +652,21 @@ project-root/
 
 1. 扫描项目目录结构
 2. 识别所有业务模块目录
-3. 分析每个源码文件的依赖、输出和定位
-4. 为每个源码文件生成头部三行注释
-5. 为每个业务模块目录生成 CONTEXT.md
-6. 自底向上逐级汇总，生成上层目录的 CONTEXT.md
+3. 分析每个源码文件的依赖、输出、定位
+4. **询问 Boss**：是否写入头部三行注释（可选，作为一次性初始化标签）
+5. 为每个业务模块目录生成 `CONTEXT.md`（按 L0/L1/L2 动态决定节数量）
+6. 自底向上逐级汇总——但**仅汇总到直接父目录**，不盲目全量贯穿
 7. 向 Boss 展示文档结构，确认无误后批量写入
+8. 写入后将 `level=L0/L1` 记录到 `.codebuddy/state/doc-level.json`，供 `/doc-sync` 参考
 
 ## 手动触发全量同步
 
 当文档与代码出现较大偏差时，使用 `/doc-sync` 命令：
 
-1. 对比现有文档与实际代码
+1. 对比现有 `CONTEXT.md` 与实际代码（使用 GitNexus 模式 C）
 2. 找出不一致的地方
-3. 向 Boss 报告差异
-4. 确认后批量更新
+3. 向 Boss 报告差异（表格形式）
+4. 确认后批量更新 `CONTEXT.md`——**源码文件不动**
 
 ---
 
@@ -490,10 +675,15 @@ project-root/
 当你需要理解一个陌生模块时，按以下顺序阅读：
 
 ```
-1. 项目根目录 CONTEXT.md    → 了解项目全貌和模块划分
-2. 目标模块的 CONTEXT.md     → 了解模块的地位、逻辑、约束、文件清单
-3. 具体文件的头部三行注释      → 了解文件的输入/输出/定位
+1. 项目根目录 CONTEXT.md     → 了解项目全貌和模块划分
+2. 目标模块的 CONTEXT.md      → 重点看：
+     ① 地位、② 逻辑、③ 约束、④ Inventory（找到目标文件）
+     ⑤ 调用关系、⑥ 设计决策与踩坑（理解不变量和历史经验）
+     如果是 L1 核心模块：⑦ 数据流、⑧ 扩展点、⑨ 故障模式
+3. 头部三行注释（如已初始化）  → 辅助性快速标签，不作为权威信息源
 4. 只有在需要时才阅读文件正文   → 带着明确问题去看代码
 ```
 
-这样，即使面对一个数万行的大型项目，你也能在**几秒钟内**建立对任意模块的基本理解。
+**给 `/extend` 流程的特别提示**：在修改任何已有代码前，必须先读 `CONTEXT.md §⑧ 扩展点`，确认目标变更点不在"不动区"。
+
+这样，即使面对一个数万行的大型项目，你也能在**几秒钟内**建立对任意模块的基本理解，并且 PR diff 只包含真正的业务修改。

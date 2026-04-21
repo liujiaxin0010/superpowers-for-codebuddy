@@ -56,12 +56,38 @@ alwaysApply: false
 
 这条快速路径等价于 GitNexus 自动安装的 `Exploring` skill 在 CodeBuddy 里的承接实现。即使仓库中存在 `.claude/skills/*`，项目阅读阶段的**实际执行规范仍以本规则为准**；`.claude/skills/*` 只作为 GitNexus 查询思路参考，不作为 CodeBuddy 的活跃 skill 源。
 
-### 快速路径流程
+### 三阶段递进查询（模糊 → Boss 确认 → 精确）
 
-1. 使用 GitNexus `query` 获取项目模块全貌（替代第一步全局扫描）
-2. 使用 GitNexus `context` 获取目标模块的依赖/导出/调用关系（替代第三步技术栈入口定位）
-3. 使用 GitNexus `search` 定位具体代码位置（替代第四步依赖追踪中的 grep）
-4. **仅当 GitNexus 返回的信息不足时**，才进入下方的手动阅读四步法
+> **设计原则**：GitNexus 的精确分析（模式 A/D）对"目标函数的精度"敏感——如果目标猜错，后续调用链追踪都基于错误起点。
+> 必须先用模糊匹配（模式 F）锁定候选，Boss 核实后，再做深度精确分析。
+
+```
+阶段 1  模糊定位（code-explorer ≈ GitNexus 模式 F）
+        → 语义搜索 + BM25 + 图扩展，返回 Top 3-5 候选业务函数/文件
+        → 按"业务关键词匹配度 × 代码相似度"排序
+        → 对每个候选简述：file:line、函数名、一句话职责
+        
+        ↓ [硬门禁]
+        
+阶段 2  Boss 核实（候选 > 1 个时强制）
+        → 向 Boss 展示候选清单，请求打勾选定目标
+        → 候选 = 1 个且置信度高时可跳过（仍需在 progress.md 记录）
+        → Boss 确认后，在 docs/progress.md 写入：候选列表、确认目标、排除原因
+        
+        ↓
+        
+阶段 3  精确分析（GitNexus 模式 A + D + C）
+        → 模式 A：目标文件的 INPUT / OUTPUT / POS / Community
+        → 模式 D：目标函数的上下游调用链（callers / callees）
+        → 模式 C：本次变更的 blast radius（用于 /write-plan 估算）
+        → 模式 B：如需扩展到整个模块全景则追加
+```
+
+### 阶段跳过规则
+
+- 阶段 1 可跳过的情形：用户已明确提供**精确的文件路径 + 函数名**（此时直接进阶段 3）
+- 阶段 2 可跳过的情形：阶段 1 仅返回 1 个强匹配候选（置信度 ≥ 0.9），但必须在 `docs/progress.md` 声明跳过原因
+- 阶段 3 不可跳过：即使目标精确，也必须做模式 A/D 获取上下游影响面
 
 ### 降级条件
 
@@ -71,7 +97,7 @@ alwaysApply: false
 - 目标文件使用了 GitNexus 不支持的语言
 - GitNexus 返回的结果明显不完整（如关键依赖缺失）
 
-降级时无需询问 Boss，直接切换，在 `docs/progress.md` 中记录降级原因。
+降级时无需询问 Boss，直接切换，在 `docs/progress.md` 中记录降级原因。降级后的手动四步法也应保持"模糊匹配（grep 语义搜索）→ Boss 核实候选 → 精确阅读"的三段式节奏。
 
 ---
 
@@ -130,8 +156,10 @@ alwaysApply: false
 
 ### 第一步：全局扫描（10 秒定位项目类型）
 
+> **跨平台提示**：优先使用 Claude Code 的 `Glob` 工具替代 `find`；Windows 下若没有 Git Bash，按 `.codebuddy/rules/cross-platform-shell.md` 的 pwsh 等价命令执行。
+
 ```bash
-# 1. 检查项目配置文件确定技术栈
+# 1. 检查项目配置文件确定技术栈（推荐用 Glob 工具）
 ls -la package.json go.mod Cargo.toml pom.xml build.gradle CMakeLists.txt \
      Makefile requirements.txt pyproject.toml composer.json Gemfile 2>/dev/null
 
@@ -144,9 +172,23 @@ find . -maxdepth 2 -type d \
 # 3. 检查版本控制
 ls -la .git .svn 2>/dev/null
 
-# 4. 检查是否有 CONTEXT.md 文档体系
+# 4. 检查是否有 CONTEXT.md 文档体系（推荐用 Glob 工具：**/CONTEXT.md）
 find . -name "CONTEXT.md" -maxdepth 3 2>/dev/null
 ```
+
+**Windows 下（pwsh 等价）**：
+
+```powershell
+# 2. 目录结构
+Get-ChildItem -Directory -Recurse -Depth 2 |
+  Where-Object { $_.FullName -notmatch '(node_modules|\.git|vendor|target|build|__pycache__|dist|\.next)' } |
+  Sort-Object FullName
+
+# 4. 查找 CONTEXT.md
+Get-ChildItem -Recurse -Filter CONTEXT.md -Depth 3
+```
+
+**最优**：直接使用 Claude Code 的 `Glob` 和 `Grep` 工具（跨平台、无需 shell）。
 
 ### 第二步：阅读文档体系（如果存在）
 
