@@ -17,6 +17,7 @@
    - `.codebuddy/rules/file-based-memory.md`
    - `.codebuddy/rules/logging-conventions.md`
    - `.codebuddy/rules/karpathy-guidelines.md`（Karpathy 四准则：先思考后编码 / 简洁优先 / 外科手术式修改 / 目标驱动执行）
+   - `.codebuddy/rules/code-comment-conventions.md`（代码注释：中文 + 6 类必要覆盖，硬门禁 L1 核心模块）
 3. 重型规则按需加载（不在会话启动全量加载）：
    - `.codebuddy/rules/project-reading.md`：读项目/改代码前
    - `.codebuddy/rules/test-driven-development.md`：测试生成与实现阶段

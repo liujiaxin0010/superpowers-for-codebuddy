@@ -18,12 +18,22 @@
    - 是否沿用项目日志结构与字段
    - 是否存在中文日志内容
    - 是否残留控制台输出（console/print/System.out/fmt.Print）
-8. 输出时额外声明：
+8. 强制检查代码注释规范（依据 `.codebuddy/rules/code-comment-conventions.md`）：
+   - **硬门禁**（BLOCKED）：
+     - L1 核心模块新增 > 5 行的函数缺中文函数头注释
+     - TODO / FIXME 不带工单号
+     - 出现英文的非技术术语注释
+     - 过时注释（与代码语义不符）
+   - **软门禁**（WARNING）：
+     - 工具类/样板代码缺注释
+     - 非 L1 模块函数缺函数头
+     - 注释密度低于建议值
+9. 输出时额外声明：
    - 证据是否完整
    - 是否存在越界修改
    - 未声明风险
    - merge / handoff owner
-9. 输出 `code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
+10. 输出 `code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
 
 补充约束：
 - `/code-review` 默认不承担自动修复职责
