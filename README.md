@@ -106,6 +106,7 @@ your-project/
 | `/doc-init` / `/doc-sync` | 三层代码自文档体系 |
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
+| `/requirement-review` | 需求评审模拟器（四角色模拟评审 PRD，上会前自检） |
 
 完整命令列表见 [CODEBUDDY.md](./CODEBUDDY.md#8-常用命令速查)。
 

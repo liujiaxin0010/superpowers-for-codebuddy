@@ -127,6 +127,7 @@
 - `/doc-sync`：文档同步
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
+- `/requirement-review`：需求评审模拟器（四角色模拟评审 PRD，上会前自检）
 - `/security-review`：9 维度安全审查（含 STRIDE / OWASP / 依赖审计 / 秘密扫描）
 - `/data-safety-check`：数据安全四件套审查（行数预估 + 快照 + dry-run + 回滚）
 - `/perf-check`：性能基线建立与回归判定
