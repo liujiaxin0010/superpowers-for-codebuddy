@@ -25,7 +25,8 @@
 7. 强制检查代码注释规范（依据 `.codebuddy/rules/code-comment-conventions.md`）：
    - **硬门禁**（BLOCKED）：L1 核心模块新增 > 5 行函数缺中文函数头；TODO/FIXME 无工单号；英文非技术术语注释；过时注释
    - **软门禁**（WARNING）：工具类/样板缺注释；非 L1 模块函数缺头；注释密度低
-8. 若 `applyFix=true`，按确认项修复并给出验证证据
-9. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
+8. 若 `cppQtProductVariant ∈ {station, tools}`（由 `.codebuddy/rules/cpp-qt-ez-style.md` 写入），加载 `.codebuddy/skills/code-review-standards/standards/cpp-qt-ez-common.md` + `cpp-qt-ez-logging-{variant}.md` 并按其审查清单扫描 diff；否则跳过本节
+9. 若 `applyFix=true`，按确认项修复并给出验证证据
+10. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS

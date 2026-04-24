@@ -73,6 +73,7 @@ description: 根据问题单（网址/截图/描述）定位并修复代码缺�
 
 ### 第四步：精准执行修改
 
+0. 若 `cppQtProductVariant ∈ {station, tools}`（由 `.codebuddy/rules/cpp-qt-ez-style.md` 写入），动代码前加载 `.codebuddy/skills/code-review-standards/standards/cpp-qt-ez-common.md` + `cpp-qt-ez-logging-{variant}.md`，修改时按其规范；否则跳过本步
 1. 执行 bug-fix 技能的**修改前验证流程**
 2. 使用 `replace_in_file` 按修改点列表依次执行
 3. 执行 bug-fix 技能的**修改后验证流程**

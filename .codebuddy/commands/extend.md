@@ -50,7 +50,8 @@
     - `L/M`：进入 `/write-plan spec=<requirementAnalysisPath> tier=<finalTier>`
     - `H`：直接进入 `/write-plan spec=<requirementAnalysisPath> tier=H`（头脑风暴已在 Step 0.3 完成）
 11. 同步更新 `docs/progress.md`：记录 finalTier、分流结果、下一条命令
-12. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
+12. 在 Step 0.1 项目理解阶段，一并执行 `.codebuddy/rules/cpp-qt-ez-style.md` 的触发探测并把 `cppQtProductVariant` 写入 file-based-memory（两指纹皆未命中则静默，不做记录）
+13. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 补充约束：
 

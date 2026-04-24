@@ -28,12 +28,13 @@
      - 工具类/样板代码缺注释
      - 非 L1 模块函数缺函数头
      - 注释密度低于建议值
-9. 输出时额外声明：
+9. 若 `cppQtProductVariant ∈ {station, tools}`（由 `.codebuddy/rules/cpp-qt-ez-style.md` 写入），加载 `.codebuddy/skills/code-review-standards/standards/cpp-qt-ez-common.md` + `cpp-qt-ez-logging-{variant}.md` 并按其审查清单出具结果；否则跳过本节
+10. 输出时额外声明：
    - 证据是否完整
    - 是否存在越界修改
    - 未声明风险
    - merge / handoff owner
-10. 输出 `code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
+11. 输出 `code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
 
 补充约束：
 - `/code-review` 默认不承担自动修复职责

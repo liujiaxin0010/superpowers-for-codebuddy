@@ -35,6 +35,7 @@
    - `implementationSummaryPath`
 9. 输出时必须包含：验证证据、剩余风险、owner / handoff 建议
 10. 若质量门禁 `BLOCKED`：停止收尾并返回修复项；通过后才允许宣告完成
-11. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
+11. 若 `cppQtProductVariant ∈ {station, tools}`（由 `.codebuddy/rules/cpp-qt-ez-style.md` 写入），在动 C++/Qt 代码前加载 `.codebuddy/skills/code-review-standards/standards/cpp-qt-ez-common.md` + `cpp-qt-ez-logging-{variant}.md`，全程遵守并在自检时按其清单复核；否则跳过本节
+12. 新增/更新的 Markdown 文档内容默认使用中文（代码、命令、路径、字段名可保留英文）
 
 $ARGUMENTS
