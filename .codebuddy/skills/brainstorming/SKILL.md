@@ -80,8 +80,21 @@ description: 需求头脑风暴与需求预分析文档技能。用于在编码�
 1. 从 `references/stage-guide.md` 读取当前阶段要求
 2. 用 1 个短问题推进当前阶段
 3. 收到信息后给出阶段小结
-4. 明确“已确认 / 待补充 / 不适用”
+4. 明确"已确认 / 待补充 / 不适用"
 5. 只有在 Boss 确认后，才进入下一阶段
+
+## 待决策项持久化（强制）
+
+brainstorm 阶段经常一次涉及多个设计岔路、合规取舍、方案对比。任何一次回复出现 ≥ 2 个待决策项，
+或 Boss 上一轮回复只覆盖了部分项时，**必须**按 `.codebuddy/skills/pending-decisions/SKILL.md` 落盘到
+`docs/pending-decisions.md`，禁止把待决策项只留在对话上下文里。
+
+具体协议：
+
+1. 抛问前自检：本轮要向 Boss 抛出的问题数量 N，N ≥ 2 → 先写 pending-decisions.md 再发问
+2. 回复合并：每收到 Boss 回复，更新 `status=answered/partial/deferred/dropped`
+3. 阶段切换前：跑 `/pending sweep`；存在 pending/partial 项时禁止进入下一阶段（spec-lite/write-plan）
+4. 文档输出前：把所有 `status=answered` 的结论同步回需求预分析文档对应章节
 
 ## 输出契约
 

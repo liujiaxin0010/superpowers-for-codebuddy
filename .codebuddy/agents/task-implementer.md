@@ -1,7 +1,7 @@
 ---
 name: task-implementer
 description: 任务实施专家。在子代理驱动开发中，作为全新子代理（干净上下文）接收单个任务规格并独立实现。严格遵循 TDD，完成后接受两阶段对抗审查。
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 model: inherit
 ---
 

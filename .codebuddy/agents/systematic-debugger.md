@@ -1,7 +1,7 @@
 ---
 name: systematic-debugger
 description: 系统化调试专家。当遇到 bug、测试失败、意外行为或错误时主动使用。遵循四阶段根因分析流程，而非随意尝试修复。包含 Phase 4.5 架构反思机制。
-tools: Read, Edit, Bash, Grep, Glob, Write
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 model: inherit
 ---
 

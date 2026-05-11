@@ -1,7 +1,7 @@
 ---
 name: code-simplifier
 description: 代码简化专家。在长时间编码后、PR前、或历史代码重构时调用。只改实现方式不改功能行为。自主分析代码冗余、嵌套过深、命名不当等问题并修复。
-tools: Read, Edit, Bash, Grep, Glob
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 model: inherit
 ---
 

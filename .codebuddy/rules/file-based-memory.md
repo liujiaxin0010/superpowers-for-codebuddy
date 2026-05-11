@@ -22,6 +22,7 @@ alwaysApply: true
 - `docs/findings.md`
 - `docs/progress.md`
 - `docs/specs/`
+- `docs/pending-decisions.md`（按需创建：当前会话已有 ≥ 1 个待决策项时必建；首次抛 ≥ 2 项问题前必须就绪）
 
 若缺失，先按模板创建。
 若引导失败，停止并返回 `BLOCKED`。
@@ -30,8 +31,10 @@ alwaysApply: true
 
 - `docs/findings.md`：每 2 次搜索/读取后更新
 - `docs/progress.md`：每个阶段与每次错误后更新
+- `docs/pending-decisions.md`：一次回复出现 ≥ 2 个待决策项时**立即**落盘；Boss 部分回复时同步更新 status；详见 `.codebuddy/skills/pending-decisions/SKILL.md`
 - `/extend` 特殊要求：每次执行结束（`BLOCKED`/门禁阻断/分流通过）必须更新 `docs/progress.md`
 - `/extend` 特殊要求：若形成新的分流判断、风险结论或阻断经验，必须同步更新 `docs/findings.md`
+- 阶段切换 / handoff 前必须跑 `/pending sweep`，存在 pending/partial 项时禁止推进
 
 ## 违规处理
 

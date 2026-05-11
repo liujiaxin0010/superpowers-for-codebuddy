@@ -1,8 +1,8 @@
 ---
 name: Featureflow
 description: Featureflow 总控代理。作为单一入口接收开发请求，自动识别任务类型、检查前置条件，并路由到规格、缺陷修复、测试、研究、审查、工单交付或并行交付工作流。适用于希望“只记一个入口”的项目导入场景。
-model: glm-4.7
-tools: use_skill, list_files, search_file, search_content, read_file, read_lints, replace_in_file, write_to_file, execute_command, mcp_get_tool_description, mcp_call_tool, create_rule, delete_files
+model: inherit
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 agentMode: manual
 enabled: true
 enabledAutoRun: true

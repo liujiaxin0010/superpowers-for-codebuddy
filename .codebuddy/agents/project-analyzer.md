@@ -1,7 +1,7 @@
 ---
 name: project-analyzer
 description: 项目分析专家。深度分析项目结构、架构模式、技术栈和编码风格。适用场景：(1) /extend 工作流的第一阶段 (2) 初次接触陌生项目时的全局扫描与理解。
-tools: Read, Grep, Glob, Bash
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 model: inherit
 ---
 

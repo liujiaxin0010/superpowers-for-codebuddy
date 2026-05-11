@@ -1,8 +1,8 @@
 ---
 name: 问题单修改专家
 description: 专长：自动化处理问题单修复。通过网页抓取/截图解析读取问题单，结合项目代码进行全上下文分析与精准定位，提供完整修改方案并执行修复。触发条件：当用户提供问题单网址、截图或问题描述时。
-model: glm-4.7
-tools: list_files, search_file, search_content, read_file, read_lints, replace_in_file, write_to_file, mcp_get_tool_description, mcp_call_tool, create_rule, delete_files, use_skill
+model: inherit
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 agentMode: manual
 enabled: true
 enabledAutoRun: true

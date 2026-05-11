@@ -121,7 +121,9 @@ your-project/
 关键节点（写计划/执行/发布）必须满足前置条件，缺证据就 `BLOCKED`，不允许硬推进。
 
 ### 3) 文件即记忆
-长任务用 `docs/progress.md` + `docs/findings.md` 持久化记录，防止 AI 跑偏或忘记。
+长任务用 `docs/progress.md` + `docs/findings.md` + `docs/pending-decisions.md` 持久化记录，
+防止 AI 跑偏、忘记，或把一次抛多个待决策项的回合丢在对话里。
+brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待决策项即强制落盘，详见 `/pending`）。
 
 ---
 

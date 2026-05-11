@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: 高级代码审查员。具有软件架构、设计模式和最佳实践专业知识。在子代理驱动开发中担任第二阶段审查（代码质量），也用于功能完成后的完整审查和合并前的最终审查。
-tools: Read, Grep, Glob, Bash
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 model: inherit
 ---
 
