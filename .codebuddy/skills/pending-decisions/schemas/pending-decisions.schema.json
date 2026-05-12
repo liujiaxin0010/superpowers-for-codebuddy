@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://featureflow.local/schemas/pending-decisions.schema.json",
+  "title": "docs/pending-decisions.md 结构契约",
+  "description": "待决策项持久化文件的结构约束；每条记录必须满足下列字段集合。",
+  "type": "object",
+  "required": ["sessionHeading", "itemsHeading", "items"],
+  "properties": {
+    "sessionHeading": {
+      "type": "string",
+      "pattern": "^## 当前会话$",
+      "description": "必须存在 `## 当前会话` 段落，包含会话开始时间与关联主文档。"
+    },
+    "itemsHeading": {
+      "type": "string",
+      "pattern": "^## 待决策项列表$"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "phase",
+          "raisedAt",
+          "question",
+          "options",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^PD-\\d{8}-\\d{3}$",
+            "description": "形如 PD-20260511-001"
+          },
+          "phase": {
+            "enum": [
+              "brainstorm",
+              "spec-lite",
+              "write-plan",
+              "execute-plan",
+              "code-review",
+              "release",
+              "other"
+            ]
+          },
+          "raisedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "options": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["label"],
+              "properties": {
+                "label": { "type": "string", "minLength": 1 },
+                "pros": { "type": "string" },
+                "cons": { "type": "string" },
+                "prerequisite": { "type": "string" }
+              }
+            }
+          },
+          "recommendation": { "type": "string" },
+          "status": {
+            "enum": ["pending", "partial", "answered", "deferred", "dropped"]
+          },
+          "answer": { "type": "string" },
+          "answeredAt": { "type": "string", "format": "date-time" },
+          "linkedDocs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "notes": { "type": "string" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "answered" } } },
+            "then": { "required": ["answer", "answeredAt"] }
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

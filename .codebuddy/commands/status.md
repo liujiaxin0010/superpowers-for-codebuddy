@@ -16,7 +16,8 @@
    - `spec/AI2AI/research.md`
    - `spec/AI2AI/Design.md`
    - `spec/AI2AI/plan.md`
-6. 输出 `PASS/BLOCKED`、任务类型、当前等级、合同完整性、质量门禁与下一步命令
+5.5 检查 `docs/pending-decisions.md`：统计 `status=pending` 与 `status=partial` 项数量；存在未收敛项时在输出中给出明显警示
+6. 输出 `PASS/BLOCKED`、任务类型、当前等级、合同完整性、质量门禁、待决策项数与下一步命令
 
 输出格式：
 
@@ -38,8 +39,9 @@
 Owner/Handoff: {owner|unknown} | {handoff|unknown}
 剩余风险: {list|none}
 AI2AI 状态: {pending|partial|ready|n/a}
+待决策项: pending {n} | partial {n}（>0 时阻断 /write-plan、/execute-plan）
 
-文件: findings {Y|N} | progress {Y|N} | spec {Y|N} | plan {Y|N} | ai2ai {pending|partial|ready|n/a}
+文件: findings {Y|N} | progress {Y|N} | spec {Y|N} | plan {Y|N} | pending-decisions {Y|N} | ai2ai {pending|partial|ready|n/a}
 错误记录数: {count}
 ```
 

@@ -14,6 +14,7 @@
 执行步骤：
 1. 解析参数：`planPath`，可选 `spec=<path>`、`tier=<L|M|H>`
 2. 调用 `process-gatekeeper`（`command=execute-plan`）
+2.5 跑 `/pending sweep`：若 `docs/pending-decisions.md` 存在 `status in (pending, partial)` 项 → 直接 `BLOCKED`，并提示需先 `/pending answer|defer|drop` 收敛
 3. 若阻断：输出阻断报告并停止
 4. **数据安全前置检查**：扫描计划中是否存在命中 `data-safety/SKILL.md#触发条件` 的步骤
    （DDL / 批量 DML / `rm -rf` / `kubectl delete` / 对象存储批量 / MQ purge / 迁移脚本 / 脱敏回灌）

@@ -160,6 +160,18 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 4. 任何需求项未填齐"spec 章节 + 计划任务 ID + 验证用例 ID" → 阻断进入 `/write-plan`
 5. 矩阵保存在 spec 文档末尾"## 需求覆盖矩阵"章节，并写入 `GateContext.coverageMatrixPath`
 
+## 待决策项持久化（强制）
+
+spec-lite 的"通用需求澄清 + 2~3 个方向比较"天然会产生多个待决策项。任何一次回复抛出 ≥ 2 个澄清问题
+或方向对比选项，或 Boss 只回答了部分项时，**必须**按 `.codebuddy/skills/pending-decisions/SKILL.md` 落盘到
+`docs/pending-decisions.md`，禁止把待决策项只留在对话上下文里。
+
+具体协议：
+
+1. 抛问前自检：本轮抛给 Boss 的问题/选项数量 N，N ≥ 2 → 先写 pending-decisions.md，并把 `linkedDocs` 指向当前 specPath
+2. 回复合并：每收到 Boss 回复，更新对应项 `status`；`answered` 的结论同步回 spec 的"澄清结论 / 方向确认"章节
+3. 进入下游门禁（`/write-plan`）前：跑 `/pending sweep`；存在 pending/partial 项视为澄清未完成，返回 `BLOCKED`
+
 ## 禁止事项
 
 1. 不要在澄清项存在 `TBD/待定/未确认` 时放行进入下游——因为未澄清的规格会导致计划和实现全部返工
@@ -168,3 +180,4 @@ AI 必须给出 2-3 个实现方向供用户确认，每个方向至少包含：
 4. 不要手动硬编码 `finalTier` 绕过评分规则——因为等级决定下游门禁深度，错误等级会导致流程缺失或过度
 5. 不要把 spec 文档当作最终设计文档使用——spec-lite 只提供轻量规格，详细设计应在 brainstorm 或 plan 阶段补充
 6. 不要在已有上游需求分析文档时跳过覆盖矩阵——下游审查与系统测试都依赖这张矩阵做断言
+7. 不要在一次回复抛出 ≥ 2 个澄清问题却跳过 `docs/pending-decisions.md` 持久化——待决策项在多轮对话中极易丢失

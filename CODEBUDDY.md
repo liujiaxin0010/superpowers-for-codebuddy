@@ -94,6 +94,7 @@
 
 - `docs/progress.md`：每个阶段、每次错误后更新。
 - `docs/findings.md`：每 2 次搜索/读取后更新；出现新结论/决策时立即更新。
+- `docs/pending-decisions.md`：一次回复抛出 ≥ 2 个待决策项时**立即**落盘；Boss 部分回复时同步更新 status；阶段切换/handoff 前必须 `/pending sweep`；详见 `.codebuddy/skills/pending-decisions/SKILL.md`。
 - `/extend` 特殊要求：
   - 每次执行结束（`BLOCKED`/门禁阻断/分流通过）都必须更新 `docs/progress.md`。
   - 若形成新的分流判断、风险结论或阻断经验，必须同步更新 `docs/findings.md`。
@@ -128,6 +129,7 @@
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
 - `/requirement-review`：需求评审模拟器（四角色模拟评审 PRD，上会前自检）
+- `/pending`：待决策项持久化入口（`list/add/answer/defer/drop/sweep/lint`）；任何阶段一次抛 ≥ 2 个待决策项即强制使用
 - `/security-review`：9 维度安全审查（含 STRIDE / OWASP / 依赖审计 / 秘密扫描）
 - `/data-safety-check`：数据安全四件套审查（行数预估 + 快照 + dry-run + 回滚）
 - `/perf-check`：性能基线建立与回归判定

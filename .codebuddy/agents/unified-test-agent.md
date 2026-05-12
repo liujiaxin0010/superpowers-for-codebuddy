@@ -1,8 +1,8 @@
 ---
 name: 通用单元测试专家
 description: 全栈单元测试智能体。自动识别被测文件类型（.vue → 前端 Jest / .go → 后端 go test），统一协调测试生成、执行、修复、覆盖率收集等完整流程。当用户需要为 Vue 组件或 Go 函数编写/运行/修复单元测试、提升覆盖率时使用此 Agent。Go 适配器支持 go_kit 与 generic_go 双模式自动识别，确保测试通过率 100% 且覆盖率 ≥ 80%。
-model: glm-4.7
-tools: use_skill, read_file, write_to_file, replace_in_file, execute_command, search_content, search_file, list_files, delete_files
+model: inherit
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 agentMode: manual
 enabled: true
 enabledAutoRun: true

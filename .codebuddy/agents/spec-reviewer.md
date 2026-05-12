@@ -1,7 +1,7 @@
 ---
 name: spec-reviewer
 description: 规格符合性审查员。在子代理驱动开发的两阶段审查中担任第一阶段审查。核心原则：不信任实现者的报告，独立验证每一项规格要求。
-tools: Read, Bash, Grep, Glob
+tools: read_file, replace_in_file, write_to_file, execute_command, search_content, search_file, use_skill, list_files, read_lints, delete_files
 model: inherit
 ---
 

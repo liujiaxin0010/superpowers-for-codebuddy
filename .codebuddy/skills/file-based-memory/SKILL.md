@@ -23,6 +23,7 @@ description: 文件记忆与持久化工作流。用于复杂、多阶段、跨�
 1. `docs/findings.md`
 2. `docs/progress.md`
 3. `docs/specs/`
+4. `docs/pending-decisions.md`（按需创建：本会话首次抛 ≥ 2 个待决策项前必须就绪；详见 `.codebuddy/skills/pending-decisions/SKILL.md`）
 
 若缺失，先按模板创建后再继续。
 若创建失败，返回 `BLOCKED`。
@@ -30,6 +31,19 @@ description: 文件记忆与持久化工作流。用于复杂、多阶段、跨�
 **首次进入复杂任务时，必须读取 `references/memory-protocols.md`**，了解 2次操作规则、三次错误协议等核心更新协议后再开始工作。
 
 ## 文档职责边界
+
+### `docs/pending-decisions.md`
+
+只记录**未收敛的待决策/待讨论项**：
+
+1. AI 一次抛出 ≥ 2 个选项题、设计岔路、合规取舍时的原始问题与选项
+2. Boss 部分回复时的剩余项与已答项
+3. status 流转（pending / partial / answered / deferred / dropped）
+
+`status=answered` 后必须把结论同步回主文档（spec/brainstorm/plan），但**保留**本文件作为审计轨迹。
+不要把已收敛的可复用决策原样塞进本文件——那属于 `findings.md`。
+
+详细协议：`.codebuddy/skills/pending-decisions/SKILL.md`。
 
 ### `docs/findings.md`
 
@@ -178,6 +192,7 @@ bash .codebuddy/skills/file-based-memory/scripts/lint-memory.sh
 - `docs/plans/`
 - `docs/findings.md`
 - `docs/progress.md`
+- `docs/pending-decisions.md`
 
 ## 禁止事项
 
