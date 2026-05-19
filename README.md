@@ -102,7 +102,8 @@ your-project/
 | `/extend` | 在已有代码上安全加功能 |
 | `/fix-bug` | 修 Bug 全流程 |
 | `/test-gen` / `/unified-test` | 生成单元测试（自动按语言路由） |
-| `/code-review` | 代码审查（输出 MD + Excel 报告） |
+| `/code-review` | 代码审查（通用五维 + Web 前端专项 + EZStation/EZTools Qt 专项智能路由，输出 MD/Excel 报告） |
+| `/cpp-code-review` | EZStation/EZTools 项目 C++/Qt 专项审查（XLSX 报告输出到 `D:/Review/`） |
 | `/doc-init` / `/doc-sync` | 三层代码自文档体系 |
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
@@ -157,7 +158,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 🧩 **`/extend` 命令**：已有项目安全扩展
 - 📖 **三层代码自文档**：项目地图 → 模块 CONTEXT → 文件头注释
 - 🧪 **统一前后端测试**：`.vue/.go` 自动生成 + 执行 + 修复 + 覆盖率
-- 📋 **代码审查升级**：11 种语言规范 + Web 前端专项 + Excel 报告
+- 📋 **代码审查升级**：11 种语言规范 + Web 前端专项 + C++/Qt 专项（EZStation/EZTools 智能路由，按项目变体自动切换日志规范）+ Excel 报告
 - 🐛 **`/fix-bug` 全流程**：问题单 → 上下文 → 定位 → 修复 → 验证
 - 🔥 **PUA 防摆烂引擎**：AI 卡住或敷衍时自动激活
 - 📊 **AI 交互质量评分**：4 维度 30 分制评估对话质量
