@@ -95,7 +95,8 @@ your-project/
 | 命令 | 用途 |
 |---|---|
 | `/Featureflow` | **推荐入口**，自动识别任务类型并路由 |
-| `/brainstorm` | 头脑风暴，需求澄清和方案发散 |
+| `/brainstorm` | 头脑风暴，需求澄清和方案发散（接口设计涉及平台 OpenAPI 时联动 openapi-creator 规范） |
+| `/openapi` | 宇视平台 OpenAPI 接口设计（五阶段：需求澄清 → 生成 → 校验 → 审查 → YAML 导出） |
 | `/spec-lite` | 写轻量规格（自动判定 L/M/H 难度） |
 | `/write-plan` | 写实施计划 |
 | `/execute-plan` | 按批次执行计划，每批暂停等你确认 |
@@ -159,6 +160,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 📖 **三层代码自文档**：项目地图 → 模块 CONTEXT → 文件头注释
 - 🧪 **统一前后端测试**：`.vue/.go` 自动生成 + 执行 + 修复 + 覆盖率
 - 📋 **代码审查升级**：11 种语言规范 + Web 前端专项 + C++/Qt 专项（EZStation/EZTools 智能路由，按项目变体自动切换日志规范）+ Excel 报告
+- 🔌 **OpenAPI 接口设计**：宇视《平台类 OpenAPI 接口定义规范》五阶段工作流，自动规范校验 + 公司标准字段库核对 + OpenAPI YAML 导出；头脑风暴接口设计阶段自动联动
 - 🐛 **`/fix-bug` 全流程**：问题单 → 上下文 → 定位 → 修复 → 验证
 - 🔥 **PUA 防摆烂引擎**：AI 卡住或敷衍时自动激活
 - 📊 **AI 交互质量评分**：4 维度 30 分制评估对话质量

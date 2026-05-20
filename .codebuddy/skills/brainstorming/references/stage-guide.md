@@ -103,11 +103,23 @@ Boss 已明确选择方案，或明确要求保留多个备选方向。
 7. 产品化设计
 8. 全局配置开关
 
+### 子阶段 1「接口设计」—— 平台类 OpenAPI 接口联动协议
+
+判断本次设计的接口是否属于**平台类 OpenAPI 接口**（对外 RESTful 接口、URL 形如 `/openAPI/{serviceURI}/v1/...`）：
+
+- **是平台类 OpenAPI 接口**：接口设计必须遵循 `openapi-creator` 技能的规范，不得随意设计。
+  1. 读取 `.codebuddy/skills/openapi-creator/references/openapi-spec.md` 与 `.codebuddy/skills/openapi-creator/SKILL.md` 的「生成规则」
+  2. 头脑风暴阶段只确认「接口清单 + 关键业务字段」草案，并按生成规则约束草案：命名 lowerCamelCase、数据类型仅 integer/number/string/array/object、URL 格式、HTTP 方法 POST、分页 pageNo/pageSize/total、批量 successList/failureList、数组 List 后缀、字段标准引用等
+  3. 头脑风暴阶段**不**展开 openapi-creator 的完整五阶段流程
+  4. 在阶段小结中标注：正式的接口定义文档生成、规范校验、YAML 导出，在头脑风暴结束后通过 `/openapi` 命令完成
+- **非平台类 OpenAPI 接口**（内部模块接口、SDK 接口等）：按常规接口设计确认，无需联动 openapi-creator
+
 ### 关键提醒
 
 1. 每个子阶段展示后都要确认
 2. 业务流程统一用 Mermaid
 3. 日志方案必须说明框架、字段、级别、traceId、英文日志、控制台输出边界
+4. 接口设计子阶段若涉及平台类 OpenAPI 接口，必须执行上方「OpenAPI 接口联动协议」
 
 ### 阶段结束条件
 

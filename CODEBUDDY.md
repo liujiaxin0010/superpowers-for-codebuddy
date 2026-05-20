@@ -117,6 +117,7 @@
 
 - `/Featureflow`：单入口总控
 - `/spec-lite`：规格与分级
+- `/openapi`：宇视平台 OpenAPI 接口设计（五阶段：需求澄清 → 生成 → 校验 → 审查 → YAML 导出）；`/brainstorm` 阶段四接口设计涉及平台 OpenAPI 时自动联动
 - `/write-plan`：计划编排
 - `/execute-plan`：批次执行
 - `/extend`：已有项目功能扩展（强制 historical-spec → brainstorm → requirement-analysis 四步前置）
