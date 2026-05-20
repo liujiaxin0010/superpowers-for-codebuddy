@@ -4,21 +4,30 @@
 # 设计依据：CE 无 Push Rules / Approval Rules（EE 功能），所有强门禁收口到本流水线。
 # 任一 job 失败 → 流水线红 → 项目设置「Pipelines must succeed」→ MR 无法合并。
 #
+# 五个阶段：
+#   gate    流程门禁：门禁资产与命令接线完整
+#   build   编译检查：真实执行项目构建
+#   test    单元测试：真实运行测试，产出 docs/quality/test-summary.json
+#   quality 质量门禁：消费 test-summary.json 判断通过率/覆盖率/文档同步
+#   verify  commit message 规范
+#
 # 前置：
 #   1. 项目根目录已含 .codebuddy/（Featureflow 引擎）
 #   2. GitLab 项目设置已按 docs/gitlab-setup-checklist.md 配置
-#   3. <PLACEHOLDER:INTERNAL_REGISTRY_IMAGE> 已替换为内网 registry 镜像
+#   3. 全部 <PLACEHOLDER:...> 已替换
 #
 # Runner 说明：默认 Linux runner + bash。若用 Windows runner，
 #   把各 job 的 `bash xxx.sh` 改为 `pwsh -File xxx.ps1`。
 
 stages:
   - gate
+  - build
+  - test
   - quality
   - verify
 
 default:
-  # 内网 registry 镜像，需含 bash 与 git
+  # 内网 registry 镜像，需含 bash、git，以及项目构建/测试所需的工具链
   image: <PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>
 
 variables:
@@ -36,10 +45,31 @@ gate:process:
   script:
     - bash .codebuddy/skills/process-gatekeeper/scripts/check-gates.sh
 
-# 阶段二：质量门禁 —— 校验测试通过率 / 覆盖率 / 文档同步
-# 依赖证据文件：docs/quality/test-summary.json、docs/quality/doc-sync-report.json
-# 若项目测试产物管线尚未就绪，可临时设 allow_failure: true 渐进接入，
-# 待产物稳定后改回强制（删除 allow_failure 或设 false）。
+# 阶段二：编译检查 —— 真实执行项目构建，编译失败即阻断
+# BUILD_COMMAND 由 /ci-setup 按项目技术栈填入（mvn/gradle/npm/cmake/qmake/go build 等）。
+# 多步构建可在此扩展为多个 script 条目。
+build:compile:
+  stage: build
+  script:
+    - <PLACEHOLDER:BUILD_COMMAND>
+
+# 阶段三：单元测试 —— 真实运行测试。测试不通过 job 直接红（靠命令退出码，不依赖 JSON）。
+# TEST_COMMAND 须产出 docs/quality/test-summary.json 供 quality:check 消费；
+# 若测试框架不直接产出该格式，在 TEST_COMMAND 后追加一步「测试报告 → test-summary.json」转换。
+test:unit:
+  stage: test
+  script:
+    - <PLACEHOLDER:TEST_COMMAND>
+  artifacts:
+    when: always
+    paths:
+      - docs/quality/test-summary.json
+    expire_in: 30 days
+
+# 阶段四：质量门禁 —— 消费 test-summary.json，校验通过率 / 覆盖率 / 文档同步
+# 依赖 test 阶段产出的 docs/quality/test-summary.json 与 docs/quality/doc-sync-report.json。
+# 若测试产物管线尚未就绪（test 阶段未产出 test-summary.json），可临时给本 job 设
+# allow_failure: true 渐进接入，待产物稳定后改回强制。
 quality:check:
   stage: quality
   script:
@@ -50,7 +80,8 @@ quality:check:
       - docs/quality/last-quality-gate.json
     expire_in: 30 days
 
-# 阶段三：commit message 规范 —— 替代 CE 缺失的 Push Rules
+# 阶段五：commit message 规范 —— 替代 CE 缺失的 Push Rules
+# 接受「AC<数字>: 描述」工单号格式 或「<type>: 描述」Conventional 格式
 verify:commit-msg:
   stage: verify
   script:

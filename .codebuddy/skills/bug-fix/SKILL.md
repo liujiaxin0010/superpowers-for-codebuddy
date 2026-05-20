@@ -51,6 +51,10 @@ description: "问题单修改方法论。提供完整的缺陷修复工作流：
 
 简单的单文件单方法修复不要预加载清单。
 
+准备上库提交、撰写 commit message 时，再读取：
+
+- `templates/bugfix-commit-message.md`
+
 ## GitNexus 加速上下文读取（优先路径）
 
 如果 GitNexus MCP 可用（见 `.codebuddy/rules/gitnexus-code-intelligence.md` 的可用性检查），
@@ -143,6 +147,17 @@ GitNexus 不可用时，直接使用下方的手动"上下文分层读取策略"
 【统计】: 修改X个文件，X行代码
 【建议】: [测试建议]
 ```
+
+## 上库 commit message 规范
+
+修复完成、准备上库时，commit message 必须遵循缺陷单工单号格式：
+
+- 首行：`AC<工单号>: <一句话修改说明>`
+- 空一行后，body 包含 `Bug Id` / `Description` / `Root Cause` / `Solution` / `Impact` / `Verification` / `Risk`
+
+完整格式、字段说明与示例见 `templates/bugfix-commit-message.md`，按模板填写后再提交。
+
+首行格式会被 CI `verify:commit-msg` 校验（见 `ci-integration` 技能），不符即流水线阻断、MR 无法合并。
 
 ## 常见错误（必须规避）
 

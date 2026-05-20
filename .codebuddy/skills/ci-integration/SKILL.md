@@ -40,13 +40,17 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 
 ## 门禁流水线设计
 
-三个 stage，对应 Featureflow 三类门禁：
+五个 stage：
 
 | stage / job | 跑什么 | 对应门禁 |
 |---|---|---|
 | `gate:process` | `check-gates.sh` | 流程门禁：门禁资产与命令接线完整 |
-| `quality:check` | `check-quality.sh` | 质量门禁：通过率 / 覆盖率 / 文档同步 |
+| `build:compile` | 项目构建命令 | 编译检查：真实执行构建，编译失败即阻断 |
+| `test:unit` | 项目测试命令 | 单元测试：真实运行测试，产出 `test-summary.json` |
+| `quality:check` | `check-quality.sh` | 质量门禁：消费 `test-summary.json` 判通过率/覆盖率/文档同步 |
 | `verify:commit-msg` | `commit-msg-lint.sh` | commit 规范（替代 CE 缺失的 Push Rules）|
+
+`build` / `test` 阶段真实编译并运行单测——这是「质量门禁」的证据来源。若 CI 只消费一个外部生成的 `test-summary.json`，门禁就建立在可能过时或造假的文件上。`build:compile` / `test:unit` 的命令由 `/ci-setup` 按项目技术栈填入。
 
 流水线仅在 MR event 触发。任一 job 失败 → 流水线红 → MR 阻断。
 
@@ -62,19 +66,19 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 
 在业务项目运行 `/ci-setup` 后产出：
 
-1. `.gitlab-ci.yml` —— 由模板实例化，`<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>` 替换为内网 registry 镜像
+1. `.gitlab-ci.yml` —— 由模板实例化，替换全部占位符（内网 registry 镜像、`BUILD_COMMAND`、`TEST_COMMAND`）
 2. `.gitlab/merge_request_templates/featureflow.md` —— MR 模板
 3. `scripts/commit-msg-lint.sh`（及 `.ps1`，Windows runner 用）
 4. `docs/gitlab-setup-checklist.md` —— 由模板实例化，交 Maintainer 人工执行
 
 ## 渐进接入
 
-`quality:check` 依赖 `docs/quality/test-summary.json` 等测试产物。项目测试产物管线尚未就绪时，允许临时给该 job 设 `allow_failure: true` 渐进接入，待产物稳定后改回强制。`gate:process` 与 `verify:commit-msg` 应一开始就强制。
+`test:unit` 须产出 `docs/quality/test-summary.json` 供 `quality:check` 消费。若项目测试框架不直接产出该格式、转换步骤尚未配好，`quality:check` 会因缺文件阻断——此时可临时给 `quality:check` 设 `allow_failure: true` 渐进接入，待 `test:unit` 稳定产出 JSON 后改回强制。`gate:process`、`build:compile`、`test:unit`、`verify:commit-msg` 应一开始就强制。
 
 ## 禁止事项
 
 1. 不要只生成 `.gitlab-ci.yml` 而不交付设置清单——没有「Pipelines must succeed」，流水线红了也合得了，门禁形同虚设
-2. 不要把 `<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>` 留在产物里——占位符未替换，CI 第一步就拉不到镜像
+2. 不要把任何 `<PLACEHOLDER:...>` 留在产物里——占位符未替换，CI 会拉不到镜像或执行空命令
 3. 不要在引擎仓库根目录放成品 `.gitlab-ci.yml`——引擎在 GitHub，且应保持平台无关，只提供模板
 4. 不要默认让全部 job `allow_failure`——那等于没有门禁；渐进接入只针对 `quality:check` 且需明示
 5. 不要假设 Runner 是 Windows——默认 Linux + bash；Windows runner 需显式切到 `.ps1`

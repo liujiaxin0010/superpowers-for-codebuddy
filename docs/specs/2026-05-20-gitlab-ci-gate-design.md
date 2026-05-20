@@ -169,3 +169,28 @@ job 仅在 MR event 触发（`rules: if $CI_PIPELINE_SOURCE == "merge_request_ev
 | 内网拉不到公网 npm/镜像 | 自建内网镜像，版本锁 2.1.12 |
 | CE 14.8.2 部分 MCP 工具不可用 | `bridge.probe` 探测确定可用子集，方案只依赖 REST v4 老牌端点 |
 | MCP server 实际工具名与本设计假设有出入 | capability-map 标注为「预期映射」，首次 `bridge.probe` 后据实修正 |
+
+## 14. 实施补充（2026-05-20）
+
+首轮实施后基于评审增补两项：
+
+### 14.1 bug 修复上库 commit message 规范
+
+- 新增 `.codebuddy/skills/bug-fix/templates/bugfix-commit-message.md`：首行
+  `AC<工单号>: <说明>`，body 含 `Bug Id / Description / Root Cause / Solution /
+  Impact / Verification / Risk`——把上库 log 升级为可审计的修复证据。
+- `bug-fix` SKILL.md 增「上库 commit message 规范」节并接线该模板。
+- `commit-msg-lint` 扩展为双格式：`AC<数字>:` 工单号格式 或 `<type>:` Conventional
+  格式任一通过；`REQUIRE_TICKET=1` 时只收工单号格式；`TICKET_PATTERN` 可改前缀。
+
+### 14.2 CI 流水线增加 build / test 阶段（真实编译与单测）
+
+原流水线 `quality:check` 仅消费 `test-summary.json`，不实际编译/跑测试——质量门禁
+建立在外部 JSON 上。增补：
+
+- 流水线由 3 阶段扩为 5 阶段：`gate → build → test → quality → verify`
+- `build:compile` 真实执行项目构建；`test:unit` 真实运行测试并产出
+  `test-summary.json`，再由 `quality:check` 消费。
+- 构建/测试命令与项目技术栈相关，`/ci-setup` 探测特征文件（`pom.xml` /
+  `package.json` / `CMakeLists.txt` / `*.pro` / `go.mod` 等）后询问确认，
+  模板以 `<PLACEHOLDER:BUILD_COMMAND>` / `<PLACEHOLDER:TEST_COMMAND>` 承载。

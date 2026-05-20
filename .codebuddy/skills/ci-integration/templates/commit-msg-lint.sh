@@ -1,25 +1,30 @@
 #!/usr/bin/env bash
-# commit-msg-lint.sh - validate commit messages against Conventional Commits.
+# commit-msg-lint.sh - validate commit messages against the accepted formats.
 #
 # Purpose: GitLab CE has no Push Rules (an EE feature). The CI "verify" stage
 #          runs this script instead; a failed job turns the pipeline red, and
 #          with "Pipelines must succeed" the MR cannot be merged.
 #
 # Scope: all commits the MR source branch adds on top of the target branch.
-# Rule:  each commit subject line must match <type>: <subject>
-#        type in feat|fix|docs|refactor|test|chore|perf|build|ci|revert
-#        subject must be non-empty.
+#
+# Accepted subject formats (either one passes by default):
+#   1. Ticket format       : AC<digits>: <subject>   e.g. AC44753: fix title
+#   2. Conventional format : <type>: <subject>       e.g. fix: correct title
+#      type in feat|fix|docs|refactor|test|chore|perf|build|ci|revert
 #
 # Exit code: 0 = all pass; 1 = at least one non-compliant commit.
 #
-# Optional: to require an issue reference (e.g. [PROJ-123]), set REQUIRE_ISSUE_REF=1
-#           and adjust ISSUE_REF_PATTERN to your team's convention.
+# Options (environment variables):
+#   REQUIRE_TICKET=1  accept only the ticket format, reject conventional
+#                     (use when every commit must carry a ticket id)
+#   TICKET_PATTERN    override the ticket regex; default matches AC<digits>.
+#                     For other prefixes set e.g. '^(AC|DTS)[0-9]+: .+'
 
 set -euo pipefail
 
 TYPE_PATTERN='^(feat|fix|docs|refactor|test|chore|perf|build|ci|revert)(\([^)]+\))?: .+'
-REQUIRE_ISSUE_REF="${REQUIRE_ISSUE_REF:-0}"
-ISSUE_REF_PATTERN='\[[A-Z]+-[0-9]+\]'
+TICKET_PATTERN="${TICKET_PATTERN:-^AC[0-9]+: .+}"
+REQUIRE_TICKET="${REQUIRE_TICKET:-0}"
 
 # Determine the commit range: prefer GitLab MR predefined variables,
 # fall back to the last 20 commits (safe on shallow history).
@@ -42,14 +47,19 @@ while IFS= read -r sha; do
   subject=$(git log -1 --format=%s "$sha")
   short=$(git log -1 --format=%h "$sha")
 
-  if ! printf '%s' "$subject" | grep -Eq "$TYPE_PATTERN"; then
-    echo "  FAIL ${short}  not <type>: <subject> -> ${subject}"
-    fail=1
-    continue
+  ok=0
+  if printf '%s' "$subject" | grep -Eq "$TICKET_PATTERN"; then
+    ok=1
+  elif [ "$REQUIRE_TICKET" != "1" ] && printf '%s' "$subject" | grep -Eq "$TYPE_PATTERN"; then
+    ok=1
   fi
 
-  if [ "$REQUIRE_ISSUE_REF" = "1" ] && ! printf '%s' "$subject" | grep -Eq "$ISSUE_REF_PATTERN"; then
-    echo "  FAIL ${short}  missing issue reference -> ${subject}"
+  if [ "$ok" -ne 1 ]; then
+    if [ "$REQUIRE_TICKET" = "1" ]; then
+      echo "  FAIL ${short}  expected 'AC<digits>: <subject>' -> ${subject}"
+    else
+      echo "  FAIL ${short}  expected 'AC<digits>:' or '<type>:' subject -> ${subject}"
+    fi
     fail=1
     continue
   fi
@@ -64,7 +74,12 @@ fi
 
 if [ "$fail" -ne 0 ]; then
   echo "commit-msg-lint: non-compliant commit message(s) found, pipeline blocked."
-  echo "rule: <type>: <subject>, type in feat|fix|docs|refactor|test|chore|perf|build|ci|revert"
+  if [ "$REQUIRE_TICKET" = "1" ]; then
+    echo "accepted (REQUIRE_TICKET=1): 'AC<digits>: <subject>'"
+  else
+    echo "accepted: 'AC<digits>: <subject>'  or  '<type>: <subject>'"
+    echo "  type in feat|fix|docs|refactor|test|chore|perf|build|ci|revert"
+  fi
   exit 1
 fi
 
