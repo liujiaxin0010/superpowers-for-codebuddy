@@ -74,6 +74,51 @@ AI：Boss，扫描项目并生成三层文档（项目地图 → 模块说明 �
 
 ---
 
+## 接入 GitLab CI 强门禁（可选）
+
+项目托管在 GitLab 时，可用 `/ci-setup` 把流程/质量门禁接入 CI 流水线，让门禁从「AI 自觉」升级为「MR 合并阻断」。这一步需要先装好 GitLab MCP server。
+
+### 1. 部署 GitLab MCP server
+
+AI 经 [`@zereight/mcp-gitlab`](https://github.com/zereight/gitlab-mcp) 访问 GitLab。内网环境无法直连公网，需先把它搬进内网（二选一）：
+
+```bash
+# 方式 A：自建 Docker 镜像（推荐）
+docker pull zereight050/gitlab-mcp:<2.1.12 对应 tag>
+docker tag  zereight050/gitlab-mcp:<tag> <内网registry>/gitlab-mcp:2.1.12
+docker push <内网registry>/gitlab-mcp:2.1.12
+
+# 方式 B：把 @zereight/mcp-gitlab@2.1.12 发布到内网 npm registry
+```
+
+> 版本锁定 `2.1.12`，不要用 `latest`——版本漂移会导致工具集变化。
+
+### 2. 配置 MCP server
+
+在 CodeBuddy 的 MCP 配置中接入，关键环境变量：
+
+```bash
+GITLAB_API_URL=https://<内网GitLab域名>/api/v4   # 填到 /api/v4 为止
+GITLAB_PERSONAL_ACCESS_TOKEN=<PAT，scope 勾 api>
+USE_PIPELINE=true            # CI 门禁强依赖
+USE_GITLAB_WIKI=true         # 知识库能力需要
+GITLAB_READ_ONLY_MODE=true   # 初期只读，验证无误后再放开写
+```
+
+> PAT 获取：GitLab 头像 → Preferences → Access Tokens，scope 勾 `api`。
+
+### 3. 跑 /ci-setup
+
+```
+你：/ci-setup
+AI：Boss，探测到项目技术栈为 Maven……
+   （生成 .gitlab-ci.yml、MR 模板、commit 校验脚本、GitLab 设置清单）
+```
+
+完整部署、功能开关与排障见 [.codebuddy/skills/gitlab-bridge/references/mcp-setup.md](./.codebuddy/skills/gitlab-bridge/references/mcp-setup.md)。
+
+---
+
 ## 项目结构
 
 ```
