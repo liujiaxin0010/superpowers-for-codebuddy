@@ -1,0 +1,57 @@
+# .gitlab-ci.yml — Featureflow 门禁流水线
+# 由 /ci-setup 生成。目标平台：GitLab Community Edition 14.8.2。
+#
+# 设计依据：CE 无 Push Rules / Approval Rules（EE 功能），所有强门禁收口到本流水线。
+# 任一 job 失败 → 流水线红 → 项目设置「Pipelines must succeed」→ MR 无法合并。
+#
+# 前置：
+#   1. 项目根目录已含 .codebuddy/（Featureflow 引擎）
+#   2. GitLab 项目设置已按 docs/gitlab-setup-checklist.md 配置
+#   3. <PLACEHOLDER:INTERNAL_REGISTRY_IMAGE> 已替换为内网 registry 镜像
+#
+# Runner 说明：默认 Linux runner + bash。若用 Windows runner，
+#   把各 job 的 `bash xxx.sh` 改为 `pwsh -File xxx.ps1`。
+
+stages:
+  - gate
+  - quality
+  - verify
+
+default:
+  # 内网 registry 镜像，需含 bash 与 git
+  image: <PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>
+
+variables:
+  # 拉全量历史：verify:commit-msg 需要遍历 MR 的全部新增 commit
+  GIT_DEPTH: "0"
+
+# 仅在 Merge Request 流水线运行（CE 14.8.2 支持 merge_request_event）
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# 阶段一：流程门禁 —— 校验门禁资产与命令接线完整
+gate:process:
+  stage: gate
+  script:
+    - bash .codebuddy/skills/process-gatekeeper/scripts/check-gates.sh
+
+# 阶段二：质量门禁 —— 校验测试通过率 / 覆盖率 / 文档同步
+# 依赖证据文件：docs/quality/test-summary.json、docs/quality/doc-sync-report.json
+# 若项目测试产物管线尚未就绪，可临时设 allow_failure: true 渐进接入，
+# 待产物稳定后改回强制（删除 allow_failure 或设 false）。
+quality:check:
+  stage: quality
+  script:
+    - bash .codebuddy/skills/process-gatekeeper/scripts/check-quality.sh
+  artifacts:
+    when: always
+    paths:
+      - docs/quality/last-quality-gate.json
+    expire_in: 30 days
+
+# 阶段三：commit message 规范 —— 替代 CE 缺失的 Push Rules
+verify:commit-msg:
+  stage: verify
+  script:
+    - bash scripts/commit-msg-lint.sh

@@ -127,6 +127,7 @@
 - `/code-review`：审查
 - `/status`：查看进度
 - `/doc-sync`：文档同步
+- `/ci-setup`：把流程/质量门禁接入 GitLab CI/CD 流水线（GitLab CE 14.8.2，软门禁升级为 MR 合并阻断；经 `gitlab-bridge` 对接 MCP）
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
 - `/requirement-review`：需求评审模拟器（四角色模拟评审 PRD，上会前自检）

@@ -106,6 +106,7 @@ your-project/
 | `/code-review` | 代码审查（通用五维 + Web 前端专项 + EZStation/EZTools Qt 专项智能路由，输出 MD/Excel 报告） |
 | `/cpp-code-review` | EZStation/EZTools 项目 C++/Qt 专项审查（XLSX 报告输出到 `D:/Review/`） |
 | `/doc-init` / `/doc-sync` | 三层代码自文档体系 |
+| `/ci-setup` | 把流程/质量门禁接入 GitLab CI 流水线（GitLab CE 14.8.2，软门禁升级为合并阻断）|
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
 | `/requirement-review` | 需求评审模拟器（四角色模拟评审 PRD，上会前自检） |
@@ -161,6 +162,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 🧪 **统一前后端测试**：`.vue/.go` 自动生成 + 执行 + 修复 + 覆盖率
 - 📋 **代码审查升级**：11 种语言规范 + Web 前端专项 + C++/Qt 专项（EZStation/EZTools 智能路由，按项目变体自动切换日志规范）+ Excel 报告
 - 🔌 **OpenAPI 接口设计**：宇视《平台类 OpenAPI 接口定义规范》五阶段工作流，自动规范校验 + 公司标准字段库核对 + OpenAPI YAML 导出；头脑风暴接口设计阶段自动联动
+- 🚦 **CI 强门禁**：经 `gitlab-bridge` 对接层接入内网 GitLab，把流程/质量门禁做成 CI 流水线 job，软门禁升级为 MR 合并阻断（GitLab CE 适配）
 - 🐛 **`/fix-bug` 全流程**：问题单 → 上下文 → 定位 → 修复 → 验证
 - 🔥 **PUA 防摆烂引擎**：AI 卡住或敷衍时自动激活
 - 📊 **AI 交互质量评分**：4 维度 30 分制评估对话质量
