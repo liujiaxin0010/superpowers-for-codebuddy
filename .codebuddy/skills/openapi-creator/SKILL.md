@@ -123,7 +123,7 @@ http://igcode.uniview.com/RD-UNIVIEW/public/module_guidelines/-/raw/main/%E6%9C%
 
 **方式 A：docx 技能解包 + `parse_field_library.py`（推荐，不依赖 python-docx）**
 
-> ⚠️ **依赖说明**：方式 A 依赖 `.codebuddy/skills/docx` 技能（用于调用其 `scripts/office/unpack.py` 解包 .docx）。**当前项目未提供 docx 技能**。若 docx 技能不存在，跳过方式 A，直接使用方式 B（python-docx）。后续若 Boss 引入了 docx 技能，方式 A 即自动可用。
+> ⚠️ **依赖说明**：方式 A 依赖 `.codebuddy/skills/docx` 技能（用于调用其 `scripts/office/unpack.py` 解包 .docx）。本项目已提供 docx 技能，方式 A 可直接使用。若该技能被移除，跳过方式 A，回退到方式 B（python-docx）。
 
 1. 用 `use_skill` 调用 `"docx"` 技能激活 docx 技能
 2. 解包 .docx 提取 XML：
@@ -538,7 +538,7 @@ Remove-Item '{workspace}\run_validate.py' -Force -ErrorAction SilentlyContinue
 若 `fetch_field_library.py` 报 `KeyError: "no relationship of type ..."`：
 
 1. 这是部分 .docx 文件与某些 python-docx 版本的已知问题
-2. 改用方式 A（docx 技能解包 + `parse_field_library.py`，见阶段二步骤 2）；若当前项目无 docx 技能，提醒 Boss 手动解包或引入 docx 技能
+2. 改用方式 A（docx 技能解包 + `parse_field_library.py`，见阶段二步骤 2）；本项目已提供 `.codebuddy/skills/docx` 技能，方式 A 可直接使用
 3. **XML 解析器的关键点**：命名空间必须是 `http://purl.oclc.org/ooxml/wordprocessingml/main`（**不是** `schemas.openxmlformats.org`）
 4. 解析后转换格式：`python scripts/convert_field_lib.py --input {resource}_field_library_parsed.json --output {resource}_field_library.json`
 
