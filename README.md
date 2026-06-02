@@ -184,6 +184,7 @@ your-project/
 | `/ci-setup` | 把流程/质量门禁接入 GitLab CI 流水线（GitLab CE 14.8.2，软门禁升级为合并阻断）|
 | `/schedule-setup` | 接入 7 类定时任务，让交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）|
 | `/event-setup` | 事件驱动触发：GitLab Webhook 把 MR/评论/label/pipeline 实时映射成命令（取代轮询）；支持 MR 评论 `/code-review`、打 `ai:review` 标签召唤 AI（对标 GitHub `@claude`）|
+| `/runner-deploy` | 给服务器地址，经 SSH MCP 远程把它部署成 GitLab Runner（探测系统→选 executor→取令牌→装/注册/配→验证），只需提供地址 |
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
 | `/requirement-review` | 需求评审模拟器（四角色模拟评审 PRD，上会前自检） |

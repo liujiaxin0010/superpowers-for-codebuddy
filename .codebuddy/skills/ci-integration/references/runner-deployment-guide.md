@@ -223,3 +223,67 @@ sudo gitlab-runner list          # 已注册 runner
 
 - **只要门禁（编译+单测+规范）**：1 台 Windows 或 Linux 机器，shell executor，主机装工具链，最快。
 - **要 e2e 真集成（services:）/ AI 审查 job**：Linux + docker executor + 内网 registry，按 B 章部署。
+
+---
+
+## E. 远程自动化部署（SSH MCP，只给服务器地址）
+
+把 A/B 章的手动步骤交给 AI：**你只提供服务器地址**，AI 经 SSH MCP 探测系统 → 选 executor → 取注册令牌 → 装/注册/配 Runner → 验证。命令仍是本指南 A/B 章那套，只是由 AI 远程执行。入口命令：`/runner-deploy <服务器地址>`。
+
+### E.1 心智（同 gitlab-bridge）
+- **唯一对接层**：所有远程命令只经 SSH MCP 的抽象动作（`ssh.exec` / `ssh.upload`），凭据集中在 MCP 配置，工作流不内联密码。
+- **探测优先**：动手前先 `ssh.probe` 连通 + 读系统状态，不假设环境。
+- **幂等**：每步先查后装（已装 / 已注册就跳过），可安全重跑。
+- **预演 + 确认**：写动作（安装 / 注册 / 改配置 / `sudo`）先输出**命令清单**给 Boss 确认，再执行。
+- **优雅降级**：SSH MCP 不可用 → 输出 A/B 章对应命令清单，你手动跑（不阻断交付，只是不自动）。
+
+### E.2 配置 SSH MCP
+用一个提供"远程执行 + 上传"能力的 SSH MCP server（社区有多个实现，按你选用的为准）。在 CodeBuddy 的 `mcp.json` 接入（凭据走 SSH key / 环境变量，不落配置）：
+
+```json
+{
+  "mcpServers": {
+    "ssh": {
+      "command": "npx",
+      "args": ["-y", "<你选用的 ssh-mcp 包>@<锁定版本>"],
+      "env": {
+        "SSH_CONFIG": "<主机清单/凭据来源，如 ~/.ssh/config 或该 MCP 自有格式>"
+      }
+    }
+  }
+}
+```
+
+- 凭据建议用 **SSH key**（免密、可吊销）或专用部署账号；**不要**把口令写进 `mcp.json`。
+- 主机以**地址**为键登记（含 user、port、key、是否可 `sudo`）——这样后续"只给地址"即可。
+- 接入后 `ssh.probe` 实测该 MCP 暴露的工具名，对齐下表（同 capability-map「预期映射，实测修正」）。
+
+### E.3 抽象动作（预期，probe 后修正）
+| 抽象动作 | 用途 | 降级 |
+|---|---|---|
+| `ssh.probe` | 测试连通 + 读 OS / sudo / 已装状态 | 输出手动命令清单 |
+| `ssh.exec` | 远程执行命令（探测 / 安装 / 注册 / 验证）| 同上 |
+| `ssh.upload` | 上传二进制 / 配置（gitlab-runner、config.toml）| 提示人工拷贝 |
+
+### E.4 自动流程（你只给地址）
+```text
+/runner-deploy <服务器地址>
+  ① ssh.probe 连通 → ssh.exec 探测：OS(uname/ver)、arch、sudo、是否已装 docker/gitlab-runner
+  ② 选 executor：Linux→docker、Windows→shell（可 executor= 覆盖）
+  ③ 经 gitlab-bridge 取 URL + registration token（取不到则一次性向 Boss 索取，不落盘）
+  ④ 按 A 章(Windows)/B 章(Linux) 生成命令计划（含幂等守卫）
+  ⑤ 输出计划 → Boss 确认（写动作硬门禁）
+  ⑥ ssh.exec / ssh.upload 远程执行；逐步回显；首错即停
+  ⑦ 验证：远程 gitlab-runner verify + 经 gitlab-bridge 确认 runner online
+  ⑧ 报告：执行了什么、runner 状态、下一步（回 /ci-setup 按 executor 适配 .gitlab-ci.yml）
+```
+
+### E.5 安全（远程特权执行，必守）
+1. **预演确认**：安装 / `sudo` / 改配置前必给命令清单 + Boss 确认；绝不静默执行特权命令。
+2. **幂等守卫**：`command -v gitlab-runner`、服务是否存在、runner 是否已注册——已具备就跳过，不重复装。
+3. **令牌不落盘**：registration token 经 gitlab-bridge 取或一次性注入，仅用于 `register`，不写进远程文件 / 日志 / 仓库。
+4. **最小权限**：SSH 用专用部署账号 + 受限 `sudo`；用 key 不用口令；密码 / key 不进 `mcp.json` 与 git。
+5. **不碰业务数据**：只装 / 配 Runner；卸载 / 删容器等破坏性操作需显式二次确认（数据铁律）。
+6. **内网离线**：二进制 / 镜像仍从内网镜像站 / registry 取（同 A/B 章）。
+
+> 命令入口见 [`/runner-deploy`](../../../commands/runner-deploy.md)。
