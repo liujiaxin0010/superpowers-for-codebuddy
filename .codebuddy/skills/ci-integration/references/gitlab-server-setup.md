@@ -22,6 +22,8 @@ GitLab CE 14.8.2 **自带 CI/CD 引擎，默认启用**。确认项：
 - [ ] 至少一个 Runner `enabled` 且对本项目可用（项目 → Settings → CI/CD → Runners 可见）
 - [ ] 选定 executor —— **这一步决定要不要 Docker**（见三）
 
+> 🔧 **分步安装 / 注册 / 配置**（Windows shell runner + Linux Docker runner，含命令与 config.toml）见 [runner-deployment-guide.md](./runner-deployment-guide.md)。
+
 ## 三、executor 选择 → 是否需要 Docker（核心决策）
 
 | executor | 需要 Docker | job 运行环境 | 配套要求 | 与本模板契合度 |

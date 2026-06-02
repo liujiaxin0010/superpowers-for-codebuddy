@@ -102,7 +102,7 @@ AI：Boss，扫描项目并生成三层文档（项目地图 → 模块说明 �
   - **docker executor（推荐，模板默认）**：✅ 需要 Docker（Runner 主机装 Docker）+ 内网 Docker registry 提供 `image:` 基础镜像；e2e 真实中间件（`services:`）也只在此模式可用。
   - **shell executor**：❌ 不需要 Docker，但要在 Runner 主机预装构建/测试工具链，并从 `.gitlab-ci.yml` 删掉 `image:` / `services:`。
 - MCP server（AI 访问 GitLab，与 Runner 无关）推荐也用 Docker 跑（或 npx + 内网 npm）。
-- 服务器/Runner/Docker 完整说明见 [.codebuddy/skills/ci-integration/references/gitlab-server-setup.md](./.codebuddy/skills/ci-integration/references/gitlab-server-setup.md)。
+- 服务器/Runner/Docker 完整说明见 [.codebuddy/skills/ci-integration/references/gitlab-server-setup.md](./.codebuddy/skills/ci-integration/references/gitlab-server-setup.md)；**Runner 分步部署**（Windows / Linux Docker，含命令）见 [runner-deployment-guide.md](./.codebuddy/skills/ci-integration/references/runner-deployment-guide.md)。
 
 ### 1. 部署 GitLab MCP server
 
