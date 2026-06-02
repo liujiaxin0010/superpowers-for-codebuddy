@@ -47,12 +47,22 @@ description: "多语言代码审查技能。用于对 Go、Python、Java、JavaS
 - 混合语言变更：只加载变更涉及语言的规范与清单，不要一次性加载全部 20+ 份文件
 - 生成 XLSX 汇总表时，再读取 `defect-classification.json`
 - 审查包含前端文件时，再协同加载 `web-code-review`
+- **大范围 / 定时自动审查**（非单次 diff 的逐文件审查）时，加载：`references/incremental-mode.md`（Baseline Commit 增量/全量 + Block 化）、`references/review-cube.md`（三维立方 + P0-P3 优先级）、`references/clawbench-issue-format.md`（Critical→Issue 闭环）
 
 ### 禁止的加载方式
 
 1. 禁止只加载 `standards/` 而跳过 `references/`
 2. 禁止只加载 `references/` 而跳过 `standards/`
 3. 禁止因为“看起来保险”而把全部语言规范一次性读入上下文
+
+## 两种审查模式
+
+| 模式 | 适用 | 看什么 | 范围怎么定 |
+|---|---|---|---|
+| 逐文件五维审查（默认）| 单次 PR / diff / 指定路径 | 各语言 `standards/` + `references/*-review-checklist.md` 的具体检查项 | 用户指定或当前 diff |
+| 增量 / 定时审查 | 大范围、定时自动（Task#4）、跨数据流 | `review-cube.md` 三维立方 + P0-P3；Critical→`.clawbench/issues/` | `incremental-mode.md`：Baseline Commit 增量 / 全量兜底 + Block 化 |
+
+两种模式不互斥：定时审查在确定 Block 范围后，仍对每个文件套用对应语言的 `standards/` + `references/` 检查项。
 
 ## 规范文件映射
 

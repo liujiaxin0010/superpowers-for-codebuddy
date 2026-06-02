@@ -14,6 +14,11 @@
 | `/Featureflow` | 需先识别任务类型并给出推荐命令 | 必须输出缺失前置与下一步动作，不得跳过路由直接乱执行 | `/Featureflow ...` |
 | `/extend` | 必须先生成并由 Boss 核实 `historical-spec.md`；再生成并由 Boss 核实 `requirement-analysis.md`；关联 finalTier | 同 L 级要求 + 必须关联完整 spec-lite/计划，且通过 `project-reading.md` 三层文档→GitNexus→手动 优先级；H 级需有 brainstorm 证据 | `/spec-lite ...` 或 `/brainstorm ...` |
 | `/brainstorm` | 允许执行 | H 级必须走完整流程 | `/brainstorm ...` |
+| `/walkthrough` | 可选；需存在有效 spec | 概要串讲在 `/write-plan` 前必备（H 级 spec 须具 `walkthroughPath`）；详细串讲在 `/execute-plan` 前建议（跨模块/跨端任务须具 `detailWalkthroughPath`）；关键分歧 ≥2 项未决即阻断 | `/spec-lite ...` 或 `/walkthrough ...` |
+| `/spec-check` | 可选 | 组件级 `spec/` 须结构合规（必须文件/命名/层级）才进 `/write-plan`；整改需 Boss 确认 | `/spec-check ...` |
+| `/spec-sync` | 软性回填，仅改 `spec/`，不改源码/CONTEXT.md | 同 L；定时场景经 MR 流程合并 | 无 `spec/` → 先 `spec-organization` |
+| `/defect-loop` | 需 `gitlab-bridge` 写动作可用或本地降级 + 标签体系就绪；每次 1 个 + 必带回归测试 | 同 L + Worktree 隔离 + 验证证据；触达数据/schema 须 `data-safety` 签字 | `/fix-bug ...` |
+| `/schedule-setup` | 需 `gitlab-bridge` 写动作可用（`GITLAB_READ_ONLY_MODE=false`）且已 `/ci-setup` | 同 L + 每任务 runbook 自洽、错峰串行 | `/ci-setup ...` |
 | `/status` | 展示任务类型、门禁、证据、owner | 额外展示 handoff / merge owner / 剩余风险 | `/status` |
 | `/research` | 允许执行；若有 Me2AI 文档则优先读取 | 建议关联 `spec` 与 `tier` 并回填 `researchPath` | `/research ...` |
 | `/testcase` | 需要 `target`、`spec`、`plan` | 必须具备 `Design + Architecture_Info + Protocol_and_Data` | `/execute-plan ...` |

@@ -5,7 +5,12 @@
 | 模糊需求（必须先澄清） | `new-feature` 或 `unknown` | `/brainstorm` | 补目标、范围、验收或方向选择 |
 | 模糊需求（建议先澄清） | `new-feature` | `/brainstorm`（优先） / `/spec-lite`（最小字段齐备时） | 补验收、入口、边界条件 |
 | 加功能、做需求 | `new-feature` | `/spec-lite` | 补需求澄清 |
-| 修问题、关缺陷 | `bugfix` | `/fix-bug` | 补复现条件 |
+| 写需求规格/功能清单 | `new-feature` | `requirement-spec`（需求规格列表）| 补开发背景 |
+| 编码前对齐架构/接口 | `new-feature` | `/walkthrough`（概要/详细串讲）| 补 spec / 计划草案 |
+| 校验 spec 目录结构 | `new-feature` | `/spec-check` | 补 spec/ 结构 |
+| 规格与代码同步回填 | 任意 | `/spec-sync` | 无 spec/ → spec-organization |
+| 修问题、关缺陷 | `bugfix` | `/fix-bug`（单次）/ `/defect-loop`（批量闭环）| 补复现条件 |
+| 接 GitLab 定时自动化 | 任意 | `/schedule-setup` | 先 `/ci-setup` |
 | 整理结构、行为不变 | `refactor` | `/write-plan` | 补行为边界 |
 | 写测试、补覆盖 | `test` | `/test-gen` / `/unified-test` | 补测试目标 |
 | 先分析再建议 | `research` | `/research` | 补研究问题 |

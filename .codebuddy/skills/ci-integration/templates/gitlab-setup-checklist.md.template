@@ -1,0 +1,56 @@
+# GitLab 项目设置清单（强门禁生效前置）
+
+> 本清单由 `/ci-setup` 生成。`.gitlab-ci.yml` 只提供「流水线」，必须配合下列 GitLab
+> 项目设置，门禁才真正具备「阻断合并」的强制力。
+>
+> 目标平台：GitLab Community Edition 14.8.2。以下均为 CE 可用功能。
+> 执行人：项目 Maintainer / 管理员。AI 无法代为修改项目设置，需人工在 GitLab 完成。
+
+## 1. Protected Branches（保护主分支）
+
+路径：项目 → **Settings → Repository → Protected branches**
+
+对 `master`（或 `main`）：
+
+- [ ] **Allowed to merge**：设为 `Maintainers`
+- [ ] **Allowed to push**：设为 `No one`（强制所有变更走 MR）
+- [ ] **Allowed to force push**：关闭
+
+> CE 无 Approval Rules，无法强制「N 人审批」。靠「Allowed to merge 限 Maintainers」
+> 把合并权收敛到少数人，配合 MR 模板 checklist 形成人工审查约束。
+
+## 2. Merge Request 设置（核心强门禁）
+
+路径：项目 → **Settings → Merge requests**
+
+- [ ] 勾选 **Pipelines must succeed** —— 流水线未通过禁止合并（CE 强门禁的核心）
+- [ ] 勾选 **All threads must be resolved** —— 所有评论 thread 解决后才能合并
+- [ ] Merge method 按团队约定选择（推荐 `Merge commit` 或 `Fast-forward`）
+
+## 3. Merge Request 模板
+
+- [ ] 确认 `.gitlab/merge_request_templates/featureflow.md` 已随本次 `/ci-setup` 生成并提交
+- [ ] 在 **Settings → Merge requests → Default description template** 可选设为默认
+
+## 4. CI/CD 与 Runner（没有 Runner 流水线不会跑）
+
+路径：项目 → **Settings → CI/CD → Runners**
+
+- [ ] 已安装并注册至少一个对本项目可用的 GitLab Runner（否则流水线一直 pending，门禁形同虚设）
+- [ ] 已选定 executor（**决定是否需要 Docker**）：
+  - **docker executor**（推荐，模板默认）：Runner 主机需装 Docker，且能拉内网 registry 镜像；支持 `services:` 真实中间件
+  - **shell executor**：不需要 Docker，但需主机预装构建/测试工具链，并删除 `.gitlab-ci.yml` 的 `default: image:` 与 `services:`
+- [ ] （docker executor）`.gitlab-ci.yml` 中 `<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>` 已替换为内网 registry 镜像，且 Runner 可访问该 registry
+
+> GitLab CE 14.8.2 自带 CI/CD，服务器侧通常无需额外开启。Runner + Docker 详见
+> `.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`。
+
+## 5. 验证
+
+- [ ] 新建一个测试 MR，确认流水线 `gate / build / test / quality / verify` 五阶段被触发（且在 Runner 上跑起来，不是 pending）
+- [ ] 故意推一条不合规 commit message，确认 `verify:commit-msg` job 失败且 MR 无法合并
+- [ ] 流水线全绿后，确认 MR 可正常合并
+
+---
+
+完成全部勾选后，Featureflow 门禁即从「协议驱动」升级为「系统强制」。

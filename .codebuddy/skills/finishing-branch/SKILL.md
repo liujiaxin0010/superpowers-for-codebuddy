@@ -101,6 +101,17 @@ description: 开发分支收尾技能。用于在任务完成、审查通过后�
 | 功能已完成但仍需观察或等待业务确认 | `C: 保留分支` |
 | 实验失败、方向放弃、确认不再保留成果 | `D: 放弃分支` |
 
+## GitLab MR 状态回查（gitlab-bridge 可用时）
+
+当收尾路径为 `A: 创建 PR/MR`、且项目接入了 GitLab（`gitlab-bridge` 技能可用）时，增加一步软性回查：
+
+1. 经 `gitlab-bridge` 执行 `bridge.probe` 确认可用性
+2. 经 `mr.status` / `pipeline.status` 查询该 MR 门禁流水线（gate / quality / verify 三阶段）状态
+3. 经 `mr.comment` 把门禁结果摘要回贴到 MR，便于审查者不进流水线即可看到证据
+4. 若流水线尚未通过，向 Boss 如实报告红在哪个 stage，不得宣称收尾完成
+
+`gitlab-bridge` 不可用（无 MCP / 非 GitLab 项目）时跳过本节，不阻断收尾——本节是软性增强，不是收尾的硬性前置。
+
 ## 输出要求
 
 1. 无论选择哪条路径，都要说明交付证据、剩余风险和 owner

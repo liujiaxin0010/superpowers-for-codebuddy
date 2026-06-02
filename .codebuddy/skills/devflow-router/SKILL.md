@@ -55,14 +55,15 @@ description: Featureflow 总控路由技能。用于把任意开发请求统一�
 H 级任务有两条都合法的进入路径：
 
 1. 模糊需求或明确要需求预分析文档：
-   `/brainstorm -> /spec-lite -> /write-plan`
+   `/brainstorm -> /spec-lite -> /walkthrough(概要) -> /write-plan -> /walkthrough(详细) -> /execute-plan`
 2. 需求较清晰，但 `/spec-lite` 判定为 `H`：
-   `/spec-lite -> /brainstorm spec=<specPath> tier=H -> /write-plan`
+   `/spec-lite -> /brainstorm spec=<specPath> tier=H -> /walkthrough(概要) -> /write-plan -> /walkthrough(详细) -> /execute-plan`
 
 共同约束：
 
-1. 进入 `/write-plan` 前，H 级 spec 必须具备 `brainstormPath`
-2. 若 `brainstormPath` 缺失，下游必须 `BLOCKED` 并回退 `/brainstorm`
+1. 进入 `/write-plan` 前，H 级 spec 必须具备 `brainstormPath` 与 `walkthroughPath`（概要串讲纪要）
+2. 若 `brainstormPath` 缺失，下游必须 `BLOCKED` 并回退 `/brainstorm`；若 `walkthroughPath` 缺失，回退 `/walkthrough layer=概要`
+3. 跨模块/跨端任务进入 `/execute-plan` 前建议具备 `detailWalkthroughPath`（详细串讲纪要）
 
 ## 输出要求
 

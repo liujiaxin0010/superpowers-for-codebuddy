@@ -3,3 +3,7 @@
 .claude/skills/
 AGENT.md
 CLAUDE.md
+
+# 运行时产物（代码审查 / 缺陷追踪闭环），非源码，不参与代码索引。
+# issues/ 建议保留可追踪；reviews/ 可按需 .gitignore。
+.clawbench/
