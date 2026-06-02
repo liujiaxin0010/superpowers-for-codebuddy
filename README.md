@@ -143,6 +143,8 @@ AI：Boss，探测到项目技术栈为 Maven……
 
 完整部署、功能开关与排障见 [.codebuddy/skills/gitlab-bridge/references/mcp-setup.md](./.codebuddy/skills/gitlab-bridge/references/mcp-setup.md)。
 
+> 接好基础门禁后可进一步：`/event-setup`（事件驱动触发）、`/pipeline-watch`（流水线自愈）、`/runner-deploy`（SSH MCP 远程部署 Runner）。详见[最佳实践教程 C 章](./docs/playbooks/best-practices-tutorial.md)。
+
 ---
 
 ## 项目结构
@@ -246,6 +248,9 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 🔁 **缺陷闭环**：`bugfix:*` 标签状态机 + `.clawbench`↔GitLab Issue 双向同步 + Worktree 隔离修复，缺陷从发现到关闭自驱动
 - 🔍 **增量代码审查**：Baseline Commit 锚点 + Block 化 + 审查立方 3×3×4 + Critical→可追踪 Issue 闭环
 - ⏰ **定时自动化交付**：7 类定时任务（文档/发布/审查/缺陷/MR 合并）让交付阶段 24×7 无人值守
+- 🔔 **事件驱动触发**：`/event-setup` 用 GitLab Webhook 实时触发；MR 评论 `/code-review`、打 `ai:review` 标签即可召唤 AI（对标 GitHub `@claude`），轮询退化为兜底
+- 🩺 **流水线自愈**：`/pipeline-watch` 监听 MR 流水线，失败则读日志→最小修复→重推→重试直到通过（有界，到顶升级人工）
+- 🖥️ **远程 Runner 部署**：`/runner-deploy` 给服务器地址即经 SSH MCP 探测→装→注册→验证（Windows shell / Linux docker）
 - 🗂️ **双层 Spec + 规格活文档**：`spec/` 三级目录（高层面向人 / 低层面向 AI）+ 三层自动规格回填（即时/每日/每周）+ Merge-Back
 - 📐 **GitLab CE 14.8.2 版本适配**：CI/CD 配置安全子集 + 版本能力支持矩阵 + 「未满足实现」清单与替代
 - 🐛 **`/fix-bug` 全流程**：问题单 → 上下文 → 定位 → 修复 → 验证
@@ -262,6 +267,8 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 工作流详解：[docs/workflows/](./docs/workflows/)
 - 流程实操手册：[docs/playbooks/workflow-playbook.md](./docs/playbooks/workflow-playbook.md)
 - 最佳实践教程（新建项目 & 老项目扩展）：[docs/playbooks/best-practices-tutorial.md](./docs/playbooks/best-practices-tutorial.md)
+- 事件驱动集成设计（P0/P1，对标 Claude Code GitHub）：[docs/specs/2026-06-02-event-driven-integration-design.md](./docs/specs/2026-06-02-event-driven-integration-design.md)
+- Runner 分步部署（Windows / Linux Docker + SSH MCP 远程）：[.codebuddy/skills/ci-integration/references/runner-deployment-guide.md](./.codebuddy/skills/ci-integration/references/runner-deployment-guide.md)
 - 门禁矩阵：[.codebuddy/skills/process-gatekeeper/gate-matrix.md](./.codebuddy/skills/process-gatekeeper/)
 - 路由规则：[.codebuddy/skills/devflow-router/SKILL.md](./.codebuddy/skills/devflow-router/SKILL.md)
 
