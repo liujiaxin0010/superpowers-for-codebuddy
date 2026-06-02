@@ -81,6 +81,9 @@ GitLab 对接的复杂度（MCP 工具名、CE/EE 差异、版本兼容、内网
 | `ci.lint` | 校验 `.gitlab-ci.yml` 语法 | available | 跳过，提示人工校验 |
 | `wiki.read` / `wiki.write` | 知识库读写 | available | 读写本地 `docs/knowledge/` |
 | `metrics.pipelines` | 拉流水线历史 | available | 读本地 `docs/metrics/` |
+| `mr.discussion` | 行内 diff 评论（指定文件+行）| available（需非只读）| 退化为 `mr.comment` 普通评论 |
+| `commit.status` | 把外部检查状态贴到 commit/MR | available（需非只读）| 写本地状态文件 + 人工提示 |
+| `webhook.list` / `webhook.register` / `webhook.test` | 注册/列出/测试 GitLab webhook（事件驱动触发）| degraded（多经 REST/UI）| 经 curl REST `/hooks` 或 UI 注册；回退轮询 |
 
 ## CE 14.8.2 边界
 
@@ -96,7 +99,7 @@ GitLab 对接的复杂度（MCP 工具名、CE/EE 差异、版本兼容、内网
 
 1. 初期接入阶段，MCP server 必须配 `GITLAB_READ_ONLY_MODE=true`，只跑探测与只读动作
 2. 写操作（`mr.create` / `wiki.write` 等）放开前，必须经 Boss 确认
-3. PAT 使用最小必要 scope（`api`），不要复用管理员 token
+3. 令牌最小权限：优先 **Project Access Token / 专用 bot**（项目级、可吊销、设过期），而非个人 `api` PAT；CI 侧用 masked+protected 变量；定期轮换；不复用管理员 token。详见 `references/mcp-setup.md`「令牌最小权限与轮换」
 
 ## 禁止事项
 

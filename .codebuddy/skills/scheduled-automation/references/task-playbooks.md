@@ -13,6 +13,14 @@
 
 CI 轮询主路径：`gitlab-bridge` 的 `pipeline.status`；MCP 不可用但本地 glab 可用时用 `templates/ci-poll.sh`。
 
+补充机制：
+
+- **事件驱动优先（P0）**：接了 `/event-setup` 后，MR/评论/pipeline 由 webhook 实时触发（见 `event-triggers`），此处定时轮询退化为**兜底/对账**——补扫漏事件、receiver 宕机期间积压，低频运行即可。
+- **幂等键（P1）**：统一用 `MR iid + 最新 commit sha`（或 event id），与 `event-triggers` **共用同一键**——已处理的 MR/commit 直接跳过，绝不重复合并、重复修复、重复评论。
+- **并发控制（P1）**：同一 MR 串行处理（按 MR iid 取锁）；新事件到来时取消/跳过该 MR 仍在跑的旧任务，避免对同一 MR 并行改动。
+- **结果回贴（P1）**：处理结论经 `commit.status`（`context=featureflow/<task>`）贴到 MR HEAD commit、审查意见经 `mr.discussion` 行内贴；CE 下 commit status 为展示态（非强制门禁）。
+- **触发身份核对（P1）**：AI 自动 push / 建 MR 必须用**能触发 MR 流水线的身份**（PAT / Project Access Token）。GitLab 对 `CI_JOB_TOKEN` / trigger token 触发的链路有**防循环限制**——若 AI 提交用 job token，新 commit 可能**不触发** MR pipeline，等于绕过门禁。接入前用测试 MR 确认 AI 的 push 能拉起 5 阶段流水线。
+
 ---
 
 ## Task #1 — 文档补充（每日 01:00）

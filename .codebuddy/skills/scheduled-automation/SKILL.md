@@ -58,6 +58,10 @@ description: 定时自动化交付体系技能。把文档补充、夜间发布�
 - CI 失败时分析日志自动修复（最多 3 次）
 - CI 通过后 auto-merge / squash 合并
 - 每个任务结束输出结构化报告
+- **事件驱动优先**：接 `/event-setup` 后由 webhook 实时触发，轮询退化为兜底/对账（见 `event-triggers`）
+- **幂等 + 并发**：幂等键用 `MR iid + 最新 sha`（与 event-triggers 共用）；同一 MR 串行、取消旧任务，杜绝重复合并/修复
+- **结果回贴**：经 `commit.status` 贴 MR 状态、`mr.discussion` 贴行内审查意见
+- **触发身份**：AI 自动 push 用能触发 MR 流水线的身份；`CI_JOB_TOKEN` 触发有防循环限制会绕过门禁——接入前用测试 MR 核对（见 `references/task-playbooks.md` 公共机制）
 
 ## 安全约束
 

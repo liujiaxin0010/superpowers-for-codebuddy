@@ -23,6 +23,9 @@
 | `wiki.read` | `get_wiki_page` / `list_wiki_pages` | available（需 `USE_GITLAB_WIKI=true`）| 读 Wiki |
 | `wiki.write` | `create_wiki_page` / `update_wiki_page` | available（需 `USE_GITLAB_WIKI=true`，且非只读模式）| 写 Wiki |
 | `metrics.pipelines` | `list_pipelines` | available（需 `USE_PIPELINE=true`）| 流水线历史 |
+| `mr.discussion` | `create_merge_request_thread` / discussion 类工具（带 `position`）| available（需非只读）| 行内 diff 评论（指定 `new_path`+`new_line`），落 MR 讨论线程；P0-3 行内审查 |
+| `commit.status` | `set_commit_status` / `create_commit_status` 类工具 | available（需非只读）| 外部检查状态贴到 commit/MR（`pending/running/success/failed`）；P1-6 |
+| `webhook.list` / `webhook.register` / `webhook.test` | （MCP 多无 hook 管理工具）| degraded | 多数 MCP 未暴露 hook 工具 → 经 REST v4 `POST /projects/:id/hooks` 或 UI 注册；事件由 `event-triggers` 的 receiver 接收 |
 
 ## CE 14.8.2 不可用工具（方案不依赖）
 
@@ -43,6 +46,7 @@
 | `wiki.read` / `wiki.write` | `USE_GITLAB_WIKI=true` |
 | `wiki.write` / `mr.create` / `mr.comment` / `mr.merge` | `GITLAB_READ_ONLY_MODE=false`（写操作） |
 | `issue.create` / `issue.update` / `issue.note` | `GITLAB_READ_ONLY_MODE=false`（写操作） |
+| `mr.discussion` / `commit.status` | `GITLAB_READ_ONLY_MODE=false`（写操作） |
 
 > 缺陷闭环（`defect-tracking`）与定时自动化（`scheduled-automation`）依赖 `issue.*` / `mr.merge` 等写动作——上线前必须把 `GITLAB_READ_ONLY_MODE` 改为 `false`，且经 Boss 确认（见 mcp-setup.md「写操作阶段」）。
 
@@ -61,6 +65,9 @@
 | `ci.lint` | 跳过，提示人工在 GitLab CI Lint 页面校验 |
 | `wiki.read` / `wiki.write` | 读写本地 `docs/knowledge/` |
 | `metrics.pipelines` | 读 `docs/metrics/` |
+| `mr.discussion` | 退化为 `mr.comment` 普通评论；再不行把审查意见写本地报告 + 人工提示 |
+| `commit.status` | 写 `docs/quality/` 状态文件，输出人工提示，不阻断 |
+| `webhook.*` | 经 curl REST `/projects/:id/hooks` 或 UI 注册；接收侧由 `event-triggers` 的 `webhook-receiver` 兜底，事件驱动不可用时回退 `scheduled-automation` 轮询 |
 
 ## probe 后修正流程
 

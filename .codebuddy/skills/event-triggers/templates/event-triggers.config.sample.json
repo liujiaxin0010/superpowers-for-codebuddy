@@ -1,0 +1,25 @@
+{
+  "_comment": "event-triggers 接收器配置样例。复制为 event-triggers.config.json 并替换占位符。密钥走环境变量 GITLAB_WEBHOOK_SECRET，不要写进本文件。",
+  "projectDir": "<PROJECT_DIR>",
+  "codebuddyCli": "<CODEBUDDY_CLI>",
+  "port": 3010,
+  "allowedActors": [],
+  "triggers": {
+    "comment": {
+      "/featureflow": "/Featureflow",
+      "/code-review": "/code-review",
+      "/fix-bug": "/fix-bug",
+      "/status": "/status",
+      "/pending": "/pending list"
+    },
+    "label": {
+      "ai:review": "/code-review",
+      "ai:fix": "/defect-loop source=gitlab max=1"
+    },
+    "mrAction": {
+      "open": "/code-review",
+      "reopen": "/code-review"
+    },
+    "pipelineFailed": "/defect-loop source=gitlab max=1"
+  }
+}

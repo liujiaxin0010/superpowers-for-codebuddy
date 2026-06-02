@@ -81,6 +81,20 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 
 `test:unit` 须产出 `docs/quality/test-summary.json` 供 `quality:check` 消费。若项目测试框架不直接产出该格式、转换步骤尚未配好，`quality:check` 会因缺文件阻断——此时可临时给 `quality:check` 设 `allow_failure: true` 渐进接入，待 `test:unit` 稳定产出 JSON 后改回强制。`gate:process`、`build:compile`、`test:unit`、`verify:commit-msg` 应一开始就强制。
 
+## 可选：AI 审查作为 pipeline job（P1-5）
+
+默认 AI 代码审查**不是** pipeline job（CE 无审查 widget，且审查需 agent 运行时而非普通 runner），而是走 `scheduled-automation` Task #4 产 Critical Issue、经 `/defect-loop` 闭环。
+
+若你愿意维护一个能拉起 CodeBuddy/Claude CLI 的专用 runner，可用 `templates/ai-review-job.yml.template` 把审查升级成**合并阻断 job**：
+
+1. 该 runner 打 tag `ai-review`，镜像含 CLI + node；CLI 鉴权走 masked+protected CI 变量
+2. 把模板的 `review` stage 合并进主 `stages:`（置于 quality 之后），拷入 `review:ai` job
+3. `<PLACEHOLDER:AI_REVIEW_COMMAND>` 填 CLI 调用（如 `codebuddy run "/code-review mr=$CI_MERGE_REQUEST_IID"`）；审查存在 🔴 严重问题 → 退出码非 0 → job 红
+4. 默认 `allow_failure: true` 先观察；稳定后改 `false` → 严重问题即阻断 MR
+5. 审查意见仍经 `gitlab-bridge` 的 `mr.discussion` 行内回贴、`commit.status` 贴状态（见 `/code-review` 步骤 11）
+
+> 没有这种 runner 时，**不要**硬把审查塞进普通 runner 的 job——普通 runner 跑不起 agent。维持"定时任务产 Issue"路径即可。
+
 ## 禁止事项
 
 1. 不要只生成 `.gitlab-ci.yml` 而不交付设置清单——没有「Pipelines must succeed」，流水线红了也合得了，门禁形同虚设
@@ -88,3 +102,4 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 3. 不要在引擎仓库根目录放成品 `.gitlab-ci.yml`——引擎在 GitHub，且应保持平台无关，只提供模板
 4. 不要默认让全部 job `allow_failure`——那等于没有门禁；渐进接入只针对 `quality:check` 且需明示
 5. 不要假设 Runner 是 Windows——默认 Linux + bash；Windows runner 需显式切到 `.ps1`
+6. 不要让 AI 自动 push 用 `CI_JOB_TOKEN` / trigger token 触发流水线——GitLab 防循环会使其**不触发** MR pipeline，等于绕过门禁；AI 提交用 PAT / Project Access Token，接入前用测试 MR 确认能拉起 5 阶段流水线（P1-8）

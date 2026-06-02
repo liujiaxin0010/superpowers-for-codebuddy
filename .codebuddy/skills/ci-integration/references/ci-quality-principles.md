@@ -110,3 +110,5 @@ lint → build → unit-test(L1≥80%,-race) → integration-test(L2≥40%) → 
 ```
 
 部署阶段（deploy-staging 自动 + deploy-production 手动 `when: manual`）由 `/release` 与 `scheduled-automation` Task#3 衔接；CE 14.8.2 生产部署仍需人工审批。
+
+可选 `review` 阶段（AI 代码审查作为合并阻断 job）需要能拉起 CLI 的专用 runner，见 `templates/ai-review-job.yml.template` 与 `SKILL.md`「可选：AI 审查作为 pipeline job」；无此 runner 时审查走 `scheduled-automation` Task #4 定时产 Issue。

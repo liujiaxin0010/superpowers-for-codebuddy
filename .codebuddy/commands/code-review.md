@@ -48,6 +48,10 @@
 10. 输出报告：
     - **EZStation / EZTools Qt 专项分支**：`D:/Review/[filename]_review.xlsx`（由 cpp-qt-code-reviewer-skill 生成）
     - **通用分支**：`code-review-report.md`、`code-review-report.xlsx`，以及可选 `web-code-review-report.json`
+11. **MR 行内化（GitLab 场景，P0-3）**：若审查目标是 GitLab MR 且 `gitlab-bridge` 写动作可用，除报告外把每条问题按"文件路径 + 行号"经 `mr.discussion` 贴成 MR **行内讨论线程**（含严重程度、问题、建议），配合项目设置「All threads must be resolved」形成软门禁。
+    - 仍是只读 / MCP 不可用 → 退化：`mr.comment` 贴一条汇总评论，或仅产报告并输出人工提示，**不阻断**。
+    - 行内讨论同样**默认只读、不改代码**；幂等：同一 MR 同一行不重复贴（已存在等价讨论则跳过）。
+    - 可选：审查结论经 `commit.status`（`context=featureflow/review`）贴到 MR HEAD commit，便于在 MR 上一眼看状态（CE 下为展示态，非强制门禁）。
 
 补充约束：
 - `/code-review` 默认不承担自动修复职责

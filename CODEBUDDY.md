@@ -135,6 +135,7 @@
 - `/spec-sync`：设计文档（`spec/`）自动规格回填（即时/每日/每周三层 + Merge-Back）
 - `/ci-setup`：把流程/质量门禁接入 GitLab CI/CD 流水线（GitLab CE 14.8.2，软门禁升级为 MR 合并阻断；经 `gitlab-bridge` 对接 MCP）
 - `/schedule-setup`：接入 7 类定时任务，交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）
+- `/event-setup`：事件驱动触发（GitLab Webhook → 命令），取代轮询；MR 评论 `/code-review`、打 `ai:review` 标签召唤 AI；轮询退化为兜底
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
 - `/requirement-review`：需求评审模拟器（四角色模拟评审 PRD，上会前自检）
@@ -152,6 +153,7 @@
 - 总说明：`README.md`
 - 工作流：`docs/workflows/*`
 - 流程实操：`docs/playbooks/workflow-playbook.md`
+- 最佳实践教程（新建项目 & 老项目扩展）：`docs/playbooks/best-practices-tutorial.md`
 - 门禁矩阵：`.codebuddy/skills/process-gatekeeper/gate-matrix.md`
 - 路由规则：`.codebuddy/skills/devflow-router/SKILL.md`
 - GitLab 服务器/Runner/Docker 前置：`.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`

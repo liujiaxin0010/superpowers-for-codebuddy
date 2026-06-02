@@ -72,6 +72,8 @@ AI：Boss，扫描项目并生成三层文档（项目地图 → 模块说明 �
 
 之后再让 AI 改代码，它能秒懂任意模块。
 
+> 📘 想看「新建项目」和「老项目扩展」从头到尾的完整走查（每步命令 + 会撞到的门禁 + 踩坑点）？读 [最佳实践教程](./docs/playbooks/best-practices-tutorial.md)。
+
 ---
 
 ## 接入 GitLab CI 强门禁（可选）
@@ -104,7 +106,7 @@ AI：Boss，扫描项目并生成三层文档（项目地图 → 模块说明 �
 
 ### 1. 部署 GitLab MCP server
 
-AI 经 [`@zereight/mcp-gitlab`](https://github.com/zereight/gitlab-mcp) 访问 GitLab。内网环境无法直连公网，需先把它搬进内网（二选一）：
+AI 经 [`@zereight/mcp-gitlab`](https://github.com/zereight/gitlab-mcp) 访问 GitLab，版本锁定 `2.1.12`。能直连 npm 时直接用 `npx`（mcp.json 配置见「2. 配置 MCP server」与 mcp-setup.md）；纯内网无公网时先把它搬进内网（二选一）：
 
 ```bash
 # 方式 A：自建 Docker 镜像（推荐）
@@ -181,6 +183,7 @@ your-project/
 | `/spec-sync` | 设计文档（`spec/`）自动规格回填：即时/每日/每周三层 + Merge-Back |
 | `/ci-setup` | 把流程/质量门禁接入 GitLab CI 流水线（GitLab CE 14.8.2，软门禁升级为合并阻断）|
 | `/schedule-setup` | 接入 7 类定时任务，让交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）|
+| `/event-setup` | 事件驱动触发：GitLab Webhook 把 MR/评论/label/pipeline 实时映射成命令（取代轮询）；支持 MR 评论 `/code-review`、打 `ai:review` 标签召唤 AI（对标 GitHub `@claude`）|
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
 | `/requirement-review` | 需求评审模拟器（四角色模拟评审 PRD，上会前自检） |
@@ -256,6 +259,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 会话最小手册：[CODEBUDDY.md](./CODEBUDDY.md)
 - 工作流详解：[docs/workflows/](./docs/workflows/)
 - 流程实操手册：[docs/playbooks/workflow-playbook.md](./docs/playbooks/workflow-playbook.md)
+- 最佳实践教程（新建项目 & 老项目扩展）：[docs/playbooks/best-practices-tutorial.md](./docs/playbooks/best-practices-tutorial.md)
 - 门禁矩阵：[.codebuddy/skills/process-gatekeeper/gate-matrix.md](./.codebuddy/skills/process-gatekeeper/)
 - 路由规则：[.codebuddy/skills/devflow-router/SKILL.md](./.codebuddy/skills/devflow-router/SKILL.md)
 

@@ -1,0 +1,46 @@
+# ai-review-job.yml.template — 可选：把 AI 代码审查做成 MR 阻断 job（P1-5）
+# 由 /ci-setup 在确认「runner 能拉起 CodeBuddy/Claude CLI」后，把下面的 job 合并进
+# 业务项目的 .gitlab-ci.yml。目标平台 GitLab CE 14.8.2；YAML 关键字落在安全子集内。
+#
+# 与默认门禁流水线的区别：基础 5 阶段（gate/build/test/quality/verify）在普通 runner 上跑；
+# AI 审查需要 agent 运行时——一个装了 CodeBuddy/Claude CLI 的专用 runner。这就是为什么
+# AI 审查默认走 scheduled-automation 定时任务（Task #4 产 Critical Issue）而不是 CI job；
+# 仅当你愿意维护这样一个 runner 时，才用本 job 把审查升级成"合并阻断"。
+#
+# 前置：
+#   1. 一个能运行 CLI 的 runner（镜像含 CLI + node），打 tag: ai-review
+#   2. CLI 鉴权（API key / token）走 masked+protected CI/CD Variable，不进本 YAML
+#   3. 该 runner 能访问内网 GitLab（行内回贴经 gitlab-bridge 的 mr.discussion）
+#
+# 合并方式：
+#   - 把 review 加进主 .gitlab-ci.yml 的 `stages:` 列表（建议置于 quality 之后、verify 之前）
+#   - 把下面的 review:ai job 整段拷入
+#   - 默认 allow_failure: true（先观察不阻断）；稳定后改 false → 🔴 严重问题即阻断 MR
+
+# stages:                 # ← 合并到主 stages，勿重复定义整段
+#   - gate
+#   - build
+#   - test
+#   - quality
+#   - review              # 新增
+#   - verify
+
+review:ai:
+  stage: review
+  tags:
+    - ai-review                              # 路由到带 CLI 的专用 runner
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'   # 仅 MR 触发
+  variables:
+    GIT_DEPTH: "50"                          # 取够 MR diff 基线
+  script:
+    # 对本 MR 跑增量审查；产报告 + 经 gitlab-bridge 贴行内评论 / commit status
+    # 退出码约定：存在 🔴 严重问题 → 非 0 → job 红 →（allow_failure=false 时）MR 阻断
+    - <PLACEHOLDER:AI_REVIEW_COMMAND>        # 例：codebuddy run "/code-review mr=$CI_MERGE_REQUEST_IID tier=M"
+  artifacts:
+    when: always
+    paths:
+      - docs/quality/code-review-report.md
+      - docs/quality/code-review-report.xlsx
+    expire_in: 30 days
+  allow_failure: true                        # 渐进接入：稳定后改 false 成为合并阻断

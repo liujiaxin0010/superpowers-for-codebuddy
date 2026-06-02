@@ -68,6 +68,9 @@
 | Wiki API | CE/Free | ✅ | 需 MCP `USE_GITLAB_WIKI=true` |
 | Pipelines API（度量）| CE/Free | ✅ | 需 MCP `USE_PIPELINE=true` |
 | GraphQL | CE 14.8 自带 | ⚠️ | schema 较老，新 type 缺失 → 抽象动作只走 REST v4 |
+| Project Webhooks API（push/MR/note/pipeline 事件）| CE/Free | ✅ | `event-triggers` 事件驱动；MCP 多无 hook 工具 → REST `/projects/:id/hooks` 或 UI 注册（bridge `webhook.*` 降级）|
+| MR diff discussions（行内 `position` 评论）| CE/Free | ✅ | 行内审查（P0-3）；REST `POST .../merge_requests/:iid/discussions` 带 `position`（bridge `mr.discussion`）|
+| Commit Status API（外部检查状态）| CE/Free | ✅ | `commit.status` 贴 MR；REST `POST /projects/:id/statuses/:sha`；**非强制门禁**，强制仍靠 pipeline（CE 无 External Status Checks）|
 
 ## 6. 「未满足实现」清单（CE 14.8.2 无法原生满足，已用替代闭合）
 
