@@ -95,6 +95,13 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 
 > 没有这种 runner 时，**不要**硬把审查塞进普通 runner 的 job——普通 runner 跑不起 agent。维持"定时任务产 Issue"路径即可。
 
+## 流水线自愈（/pipeline-watch）
+
+经 `gitlab-bridge` 监听某 MR 流水线，失败则取日志、定位根因、最小修复、重推、重试**直到通过**（有界，默认最多 3 次，到顶/不可修则升级人工）。协议（循环骨架、失败类型→修复策略、停止条件、安全幂等）见 `references/pipeline-self-heal.md`。
+
+- 按需单 MR：`/pipeline-watch mr=<iid>`；批量无人值守：`scheduled-automation` Task #17；事件实时：`event-triggers` 的 `pipelineFailed`。三者共用同一自愈循环。
+- 关键安全：只 push 源分支、有界重试、基础设施/flaky 不当代码改、自愈 push 用能触发流水线的身份（CI_JOB_TOKEN 防循环）。
+
 ## 禁止事项
 
 1. 不要只生成 `.gitlab-ci.yml` 而不交付设置清单——没有「Pipelines must succeed」，流水线红了也合得了，门禁形同虚设

@@ -20,6 +20,6 @@
       "open": "/code-review",
       "reopen": "/code-review"
     },
-    "pipelineFailed": "/defect-loop source=gitlab max=1"
+    "pipelineFailed": "/pipeline-watch"
   }
 }

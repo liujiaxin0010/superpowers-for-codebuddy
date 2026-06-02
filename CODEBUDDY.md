@@ -137,6 +137,7 @@
 - `/schedule-setup`：接入 7 类定时任务，交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）
 - `/event-setup`：事件驱动触发（GitLab Webhook → 命令），取代轮询；MR 评论 `/code-review`、打 `ai:review` 标签召唤 AI；轮询退化为兜底
 - `/runner-deploy`：给服务器地址，经 SSH MCP 远程部署 GitLab Runner（探测→装→注册→验证），只需提供地址
+- `/pipeline-watch`：监听 MR 流水线，失败则读日志→最小修复→重推→重试直到通过（有界 ≤3 次，到顶升级人工）
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
 - `/requirement-review`：需求评审模拟器（四角色模拟评审 PRD，上会前自检）

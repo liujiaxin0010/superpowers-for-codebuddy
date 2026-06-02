@@ -43,10 +43,10 @@
 
 | `object_kind=pipeline` 条件 | 映射命令 | 说明 |
 |---|---|---|
-| `status=failed` 且关联 MR | `/defect-loop source=gitlab max=1` | 即时触发自动修复，替代轮询等待 |
+| `status=failed` 且关联 MR | `/pipeline-watch` | 即时触发流水线自愈（监听→修复→重试），替代轮询等待 |
 
 - 幂等键：`pipe:<pipeline_id>`。
-- 注意防循环：自动修复 push 会再触发流水线——靠幂等键 + `scheduled-automation` 的"最多 3 次"修复上限收口（见 task-playbooks 公共机制）。
+- 注意防循环：自动修复 push 会再触发流水线——靠幂等键 + "最多 3 次"修复上限 + 同错复现即升级收口（见 `ci-integration/references/pipeline-self-heal.md` §4 停止条件）。
 
 ## 5. Issue 触发（可选）
 

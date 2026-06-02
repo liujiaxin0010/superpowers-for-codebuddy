@@ -65,7 +65,7 @@ GitLab 事件（MR / note / label / pipeline / issue）
 | MR `merge_request` | 加 `ai:review` 标签 | `/code-review` |
 | MR `merge_request` | 加 `ai:fix` 标签 | `/defect-loop source=gitlab max=1` |
 | MR `merge_request` | `action=open/reopen`（可选自动审查）| `/code-review` |
-| `pipeline` | MR 流水线 `failed`（可选自动修复）| `/defect-loop source=gitlab max=1` |
+| `pipeline` | MR 流水线 `failed`（可选自动修复）| `/pipeline-watch`（流水线自愈）|
 
 完整映射与扩展见 `references/trigger-map.md`。
 

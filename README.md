@@ -185,6 +185,7 @@ your-project/
 | `/schedule-setup` | 接入 7 类定时任务，让交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）|
 | `/event-setup` | 事件驱动触发：GitLab Webhook 把 MR/评论/label/pipeline 实时映射成命令（取代轮询）；支持 MR 评论 `/code-review`、打 `ai:review` 标签召唤 AI（对标 GitHub `@claude`）|
 | `/runner-deploy` | 给服务器地址，经 SSH MCP 远程把它部署成 GitLab Runner（探测系统→选 executor→取令牌→装/注册/配→验证），只需提供地址 |
+| `/pipeline-watch` | 经 GitLab MCP 监听某 MR 流水线，失败则取报错日志→最小修复→重推→重试，直到通过（有界，默认 ≤3 次，到顶/不可修则升级人工）|
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
 | `/requirement-review` | 需求评审模拟器（四角色模拟评审 PRD，上会前自检） |
