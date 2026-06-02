@@ -1,6 +1,10 @@
 # .gitlab-ci.yml — Featureflow 门禁流水线
 # 由 /ci-setup 生成。目标平台：GitLab Community Edition 14.8.2。
 #
+# ⚠️ 本模板的所有 YAML 关键字均落在 CE 14.8.2 安全子集内。
+#    增强 / 修改前必读：.codebuddy/skills/ci-integration/references/ce-14.8.2-cicd-support.md
+#    禁用 14.8 之后特性：id_tokens(16.4) / spec:inputs(17.x) / CI/CD components(17.0) / run: steps。
+#
 # 设计依据：CE 无 Push Rules / Approval Rules（EE 功能），所有强门禁收口到本流水线。
 # 任一 job 失败 → 流水线红 → 项目设置「Pipelines must succeed」→ MR 无法合并。
 #

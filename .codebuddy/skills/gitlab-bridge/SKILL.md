@@ -25,7 +25,11 @@ GitLab 对接的复杂度（MCP 工具名、CE/EE 差异、版本兼容、内网
 
 - `references/capability-map.md`（抽象动作 ↔ MCP 工具映射 + CE 14.8.2 兼容表）
 
-不要在未确定要执行哪个动作时就把两个 references 全部读入。
+需要判断「某能力 CE 14.8.2 能不能做、缺在哪个版本/tier、用什么替代」时，再读取：
+
+- `references/gitlab-version-support.md`（GitLab 版本能力支持矩阵 + 「未满足实现」清单 + 升级影响）
+
+不要在未确定要执行哪个动作时就把 references 全部读入。
 
 ## 何时使用
 
@@ -66,9 +70,13 @@ GitLab 对接的复杂度（MCP 工具名、CE/EE 差异、版本兼容、内网
 |---|---|---|---|
 | `bridge.probe` | 探测 MCP 工具可用性 | available | —— |
 | `intake.list` / `intake.get` | 拉取 / 查询 GitLab Issues | available | 读本地 `docs/backlog/` |
-| `mr.create` | 创建 Merge Request | available | 输出人工创建提示 |
-| `mr.comment` | 给 MR 贴评论 / discussion | available | 输出人工提示 |
+| `issue.create` | 创建 GitLab Issue（缺陷收录）| available（需非只读）| 写本地 `docs/backlog/` |
+| `issue.update` | 改 Issue 标签 / 状态 | available（需非只读）| 更新本地缺陷卡 |
+| `issue.note` | 给 Issue 贴评论 | available（需非只读）| 追加本地缺陷卡 |
+| `mr.create` | 创建 Merge Request | available（需非只读）| 输出人工创建提示 |
+| `mr.comment` | 给 MR 贴评论 / discussion | available（需非只读）| 输出人工提示 |
 | `mr.status` | 查询 MR 状态 | available | 读本地门禁产物 |
+| `mr.merge` | 合并 MR（CI 绿 + 无冲突后）| available（需非只读）| 输出人工合并提示 |
 | `pipeline.status` | 查询流水线 / job 状态 | available | 读 `docs/quality/last-quality-gate.json` |
 | `ci.lint` | 校验 `.gitlab-ci.yml` 语法 | available | 跳过，提示人工校验 |
 | `wiki.read` / `wiki.write` | 知识库读写 | available | 读写本地 `docs/knowledge/` |

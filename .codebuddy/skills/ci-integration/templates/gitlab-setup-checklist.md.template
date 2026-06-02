@@ -32,17 +32,22 @@
 - [ ] 确认 `.gitlab/merge_request_templates/featureflow.md` 已随本次 `/ci-setup` 生成并提交
 - [ ] 在 **Settings → Merge requests → Default description template** 可选设为默认
 
-## 4. CI/CD 与 Runner
+## 4. CI/CD 与 Runner（没有 Runner 流水线不会跑）
 
-路径：项目 → **Settings → CI/CD**
+路径：项目 → **Settings → CI/CD → Runners**
 
-- [ ] 确认已绑定可用的 GitLab Runner（shell 或 docker executor）
-- [ ] `.gitlab-ci.yml` 中 `<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>` 已替换为内网 registry 镜像
-- [ ] Runner 可访问内网 registry
+- [ ] 已安装并注册至少一个对本项目可用的 GitLab Runner（否则流水线一直 pending，门禁形同虚设）
+- [ ] 已选定 executor（**决定是否需要 Docker**）：
+  - **docker executor**（推荐，模板默认）：Runner 主机需装 Docker，且能拉内网 registry 镜像；支持 `services:` 真实中间件
+  - **shell executor**：不需要 Docker，但需主机预装构建/测试工具链，并删除 `.gitlab-ci.yml` 的 `default: image:` 与 `services:`
+- [ ] （docker executor）`.gitlab-ci.yml` 中 `<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>` 已替换为内网 registry 镜像，且 Runner 可访问该 registry
+
+> GitLab CE 14.8.2 自带 CI/CD，服务器侧通常无需额外开启。Runner + Docker 详见
+> `.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`。
 
 ## 5. 验证
 
-- [ ] 新建一个测试 MR，确认流水线 `gate / quality / verify` 三阶段被触发
+- [ ] 新建一个测试 MR，确认流水线 `gate / build / test / quality / verify` 五阶段被触发（且在 Runner 上跑起来，不是 pending）
 - [ ] 故意推一条不合规 commit message，确认 `verify:commit-msg` job 失败且 MR 无法合并
 - [ ] 流水线全绿后，确认 MR 可正常合并
 

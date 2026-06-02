@@ -27,9 +27,12 @@
      `pom.xml`→Maven、`build.gradle`→Gradle、`package.json`→Node、
      `CMakeLists.txt`→CMake、`*.pro`→qmake、`go.mod`→Go、`*.csproj`→.NET
    - 据探测结果预填，与 Boss 确认以下参数：
-     * 内网 Docker registry 镜像地址（含 bash、git 及构建工具链，替换 `<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>`）
+     * Runner executor（**决定是否需要 Docker**，见 `ci-integration/references/gitlab-server-setup.md`）：
+       - `docker`（推荐，默认）→ 保留模板 `image:`/`services:`，需内网 registry 镜像
+       - `shell` → 删除模板 `default: image:` 与 e2e `services:`，依赖主机预装工具链（不需要 Docker）
+     * 内网 Docker registry 镜像地址（docker executor 时，含 bash、git 及构建工具链，替换 `<PLACEHOLDER:INTERNAL_REGISTRY_IMAGE>`）
      * 主分支名（`master` 或 `main`）
-     * Runner 类型（Linux/bash 默认，或 Windows/pwsh）
+     * Runner OS/Shell（Linux/bash 默认，或 Windows/pwsh）
      * 编译命令 `<PLACEHOLDER:BUILD_COMMAND>`（按技术栈，如 `mvn -B compile`）
      * 测试命令 `<PLACEHOLDER:TEST_COMMAND>`（按技术栈，如 `mvn -B test`）——须产出
        `docs/quality/test-summary.json`；测试框架不直接产出该格式时，确认追加的转换步骤
@@ -49,9 +52,10 @@
    - 不可用 → 提示 Boss 在 GitLab 项目 `CI/CD → Pipeline editor / CI Lint` 页面手动校验
 
 6. **输出后续人工步骤清单**：
+   - 安装并注册 GitLab Runner（**没有 Runner 流水线不会跑**），按选定 executor 准备 Docker/工具链——见 `.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`
    - 部署 MCP server（见 `.codebuddy/skills/gitlab-bridge/references/mcp-setup.md`）
    - 按 `docs/gitlab-setup-checklist.md` 配置 GitLab 项目设置（Protected Branches、Pipelines must succeed 等）
-   - 用一个测试 MR 验证三阶段流水线触发与阻断
+   - 用一个测试 MR 验证五阶段流水线（gate/build/test/quality/verify）触发与阻断
 
 补充约束：
 - 本命令只生成文件与清单，**不替 Boss 修改 GitLab 项目设置**——AI 无此能力，必须人工执行

@@ -11,9 +11,13 @@
 | `bridge.probe` | （列出工具清单的元能力） | available | 探测 MCP server 暴露的工具 |
 | `intake.list` | `list_issues` | available | 拉取 Issue 列表 |
 | `intake.get` | `get_issue` | available | 取单个 Issue 详情 |
-| `mr.create` | `create_merge_request` | available | 创建 MR |
-| `mr.comment` | `create_merge_request_note` / discussion 类工具 | available | 给 MR 贴评论 |
+| `issue.create` | `create_issue` | available（需非只读）| 创建 Issue（缺陷收录）|
+| `issue.update` | `update_issue` | available（需非只读）| 改标签 / 状态（`bugfix:*` 状态机）|
+| `issue.note` | `create_issue_note` | available（需非只读）| Issue 评论 |
+| `mr.create` | `create_merge_request` | available（需非只读）| 创建 MR |
+| `mr.comment` | `create_merge_request_note` / discussion 类工具 | available（需非只读）| 给 MR 贴评论 |
 | `mr.status` | `get_merge_request` | available | 查 MR 状态、合并状态 |
+| `mr.merge` | `merge_merge_request` | available（需非只读）| 合并 MR（squash / remove-source-branch）|
 | `pipeline.status` | `get_pipeline` / `list_pipeline_jobs` / `get_pipeline_job_output` | available（需 `USE_PIPELINE=true`）| 查流水线与 job |
 | `ci.lint` | `validate_ci_lint` | available | 校验 `.gitlab-ci.yml` 语法 |
 | `wiki.read` | `get_wiki_page` / `list_wiki_pages` | available（需 `USE_GITLAB_WIKI=true`）| 读 Wiki |
@@ -37,7 +41,10 @@
 |---|---|
 | `pipeline.status` / `metrics.pipelines` | `USE_PIPELINE=true` |
 | `wiki.read` / `wiki.write` | `USE_GITLAB_WIKI=true` |
-| `wiki.write` / `mr.create` / `mr.comment` | `GITLAB_READ_ONLY_MODE=false`（写操作） |
+| `wiki.write` / `mr.create` / `mr.comment` / `mr.merge` | `GITLAB_READ_ONLY_MODE=false`（写操作） |
+| `issue.create` / `issue.update` / `issue.note` | `GITLAB_READ_ONLY_MODE=false`（写操作） |
+
+> 缺陷闭环（`defect-tracking`）与定时自动化（`scheduled-automation`）依赖 `issue.*` / `mr.merge` 等写动作——上线前必须把 `GITLAB_READ_ONLY_MODE` 改为 `false`，且经 Boss 确认（见 mcp-setup.md「写操作阶段」）。
 
 开关未开 → 对应工具不暴露 → `bridge.probe` 标记该抽象动作 `unavailable`。
 
@@ -46,7 +53,10 @@
 | 抽象动作 | 本地降级行为 |
 |---|---|
 | `intake.list` / `intake.get` | 读 `docs/backlog/` 下的需求卡文件 |
+| `issue.create` | 写 `docs/backlog/缺陷卡-{slug}.md`，标识待人工同步 GitLab |
+| `issue.update` / `issue.note` | 更新本地缺陷卡的标签/状态/评论段，不阻断 |
 | `mr.create` / `mr.comment` | 输出人工操作提示，不阻断 |
+| `mr.merge` | 输出人工合并提示（含 squash / remove-source-branch 建议），不自动合并 |
 | `mr.status` / `pipeline.status` | 读 `docs/quality/last-quality-gate.json` |
 | `ci.lint` | 跳过，提示人工在 GitLab CI Lint 页面校验 |
 | `wiki.read` / `wiki.write` | 读写本地 `docs/knowledge/` |

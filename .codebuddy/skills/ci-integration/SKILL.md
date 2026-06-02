@@ -19,10 +19,16 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 
 执行 `/ci-setup`、需要生成产物时，按需读取 `templates/` 下对应文件：
 
-- `templates/gitlab-ci.yml.template` —— 三阶段门禁流水线
+- `templates/gitlab-ci.yml.template` —— 五阶段门禁流水线
 - `templates/gitlab-setup-checklist.md.template` —— GitLab 项目设置清单（人工执行）
 - `templates/merge_request_template.md` —— MR 模板（含门禁 checklist）
 - `templates/commit-msg-lint.ps1` / `.sh` —— commit message 规范校验脚本
+
+**生成或增强任何 `.gitlab-ci.yml` 前，必须先读** `references/ce-14.8.2-cicd-support.md`（CE 14.8.2 CI/CD 配置适配基线）——所有产物的 YAML 关键字必须落在该安全子集内，禁用 14.8 之后引入的特性（`id_tokens` / `spec:inputs` / CI/CD components 等）。
+
+把基础 5 阶段门禁增强为完整质量流水线（lint / e2e / 覆盖率分层 / `-race` / deploy 阶段）时，读 `references/ci-quality-principles.md`（CI 质量 7 原则 + 三级测试体系 + CE 14.8.2 可用片段）。
+
+判断「GitLab 服务器/Runner 要配什么、需不需要 Docker、docker vs shell executor」时，读 `references/gitlab-server-setup.md`（CI 能跑起来的服务器侧前置）。
 
 校验生成的 `.gitlab-ci.yml` 语法时，经 `gitlab-bridge` 的 `ci.lint` 动作。
 

@@ -1,0 +1,41 @@
+# 定时自动化调度配置样例
+#
+# 由 /schedule-setup 在业务项目里实例化。两种落地方式二选一：
+#
+# 方式 A（推荐）：CodeBuddy 原生定时任务能力
+#   在 CodeBuddy 的定时任务配置中按下表登记，每条对应一个命令调用。
+#   优点：复用 CodeBuddy 会话与上下文隔离，无需额外 cron。
+#
+# 方式 B：系统 cron 调用 codebuddy CLI
+#   把下方 crontab 片段填入服务器 crontab，每条以非交互方式拉起一个 codebuddy 会话执行命令。
+#   <PROJECT_DIR> 替换为业务项目绝对路径；<CODEBUDDY_CLI> 替换为实际 CLI 调用方式。
+#
+# 方式 C：GitLab CE 14.8.2 原生 Pipeline Schedules（CI/CD → 计划）
+#   在 GitLab 项目「CI/CD → 计划」按 cron 登记计划；流水线以 $CI_PIPELINE_SOURCE == "schedule" 触发。
+#   纯 CI 类任务（如覆盖率全量）可直接在 .gitlab-ci.yml 用 schedule job；
+#   AI 驱动类（审查/修复/发布）需 runner 能拉起 codebuddy CLI（job script 调 CLI）。
+#   详见 ci-integration/references/ce-14.8.2-cicd-support.md §6。
+
+# ── 任务 ↔ 命令 映射 ───────────────────────────────────────────────
+# Task #1  文档补充        → /spec-sync mode=daily
+# Task #3  夜间发布        → /release （nightly）
+# Task #4  每日代码审查    → /code-review （增量模式）
+# Task #9  Review Issue清理 → /defect-loop source=clawbench max=3
+# Task #10 GitLab Issue修复 → /defect-loop source=gitlab max=1
+# Task #17 MR 审查合并     → （scheduled-automation Task#17 runbook）
+# Task #25 设计文档周更    → /spec-sync mode=weekly
+
+# ── 方式 B：crontab 片段（分 时 日 月 周）─────────────────────────
+# 注意：所有任务串行错峰，避免多个 codebuddy 实例争抢资源。
+# 0  1  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/spec-sync mode=daily"
+# 0  2  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/release nightly"
+# 0  3  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/code-review"
+# 0  5  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/defect-loop source=clawbench max=3"
+# 0  8,20 * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/defect-loop source=gitlab max=1"
+# 0  *  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "scheduled-automation Task#17 MR 审查合并"
+# 0  10 * * 1  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/spec-sync mode=weekly"
+
+# ── 前置 ───────────────────────────────────────────────────────────
+# 1. gitlab-bridge MCP server 已部署，GITLAB_READ_ONLY_MODE=false（经 Boss 确认）
+# 2. 业务项目已 /ci-setup，MR 流水线门禁就绪
+# 3. 专用服务账号 PAT（scope: api），不复用管理员 token

@@ -76,7 +76,31 @@ AI：Boss，扫描项目并生成三层文档（项目地图 → 模块说明 �
 
 ## 接入 GitLab CI 强门禁（可选）
 
-项目托管在 GitLab 时，可用 `/ci-setup` 把流程/质量门禁接入 CI 流水线，让门禁从「AI 自觉」升级为「MR 合并阻断」。这一步需要先装好 GitLab MCP server。
+项目托管在 GitLab 时，可用 `/ci-setup` 把流程/质量门禁接入 CI 流水线，让门禁从「AI 自觉」升级为「MR 合并阻断」。
+
+### 最终效果：AI 生成的流水线长什么样
+
+`/ci-setup` 让 AI **探测项目技术栈**（`pom.xml` / `go.mod` / `package.json` …），从模板**生成 `.gitlab-ci.yml`**（5 阶段），并填入构建/测试命令。开发者推 MR → 流水线跑 → 任一红灯 → MR 合不了：
+
+| 阶段 | 跑什么 | 是不是「review / 单测」 |
+|---|---|---|
+| `gate:process` | 门禁资产 / 证据齐备 | 流程门禁 |
+| `build:compile` | 真实编译 | — |
+| **`test:unit`** | **真实跑单元测试**，产出 `test-summary.json` | ✅ 单元测试在这 |
+| `quality:check` | 消费 `test-summary.json` 判通过率 / 覆盖率 / 文档同步 | 质量门禁 |
+| `verify:commit-msg` | commit 规范校验 | 替代 CE 缺失的 Push Rules |
+
+> **关于「代码 review」**：AI 代码审查（审查立方 / 找 bug）**默认不是流水线里的阻断 job**，而是 `/schedule-setup` 的**定时 AI 任务**——Task#4（每日审查 → 产出 Critical Issue）、Task#17（每小时审 open MR → 合并）。原因：GitLab CE 无代码审查 widget，且 AI 审查需要 agent 运行时（CodeBuddy CLI）而非普通 CI runner。审查结果走缺陷闭环（`/defect-loop`）变成 Issue，而非让流水线变红。若想让 AI 审查**也成为 MR 阻断 job**，需让 runner 能拉起 CodeBuddy CLI（可做，按需定制）。
+
+### 前置：GitLab 服务器要配什么（Runner + 是否需要 Docker）
+
+- **GitLab CE 14.8.2 自带 CI/CD，服务器侧通常无需额外开启。**
+- **必须有 GitLab Runner**：没 Runner 流水线一直 pending、门禁形同虚设——装 + 注册一个 Runner 到内网 GitLab。
+- **需要 Docker 吗？取决于 Runner executor**：
+  - **docker executor（推荐，模板默认）**：✅ 需要 Docker（Runner 主机装 Docker）+ 内网 Docker registry 提供 `image:` 基础镜像；e2e 真实中间件（`services:`）也只在此模式可用。
+  - **shell executor**：❌ 不需要 Docker，但要在 Runner 主机预装构建/测试工具链，并从 `.gitlab-ci.yml` 删掉 `image:` / `services:`。
+- MCP server（AI 访问 GitLab，与 Runner 无关）推荐也用 Docker 跑（或 npx + 内网 npm）。
+- 服务器/Runner/Docker 完整说明见 [.codebuddy/skills/ci-integration/references/gitlab-server-setup.md](./.codebuddy/skills/ci-integration/references/gitlab-server-setup.md)。
 
 ### 1. 部署 GitLab MCP server
 
@@ -125,10 +149,10 @@ AI：Boss，探测到项目技术栈为 Maven……
 your-project/
 ├── CODEBUDDY.md              # 主引导文件（铁律 + 工作流）
 └── .codebuddy/
-    ├── commands/             # 21 个斜杠命令
-    ├── skills/               # 33 个能力（按需调用）
-    ├── agents/               # 9 个专职子代理
-    └── rules/                # 7 条规则（核心常驻 + 按需加载）
+    ├── commands/             # 斜杠命令（单入口路由 + 各阶段专用入口）
+    ├── skills/               # 能力（按需调用）
+    ├── agents/               # 专职子代理
+    └── rules/                # 规则（核心常驻 + 按需加载）
 ```
 
 > 想了解每个目录里有什么？看 [docs/](./docs/) 和 [CODEBUDDY.md](./CODEBUDDY.md)。
@@ -143,15 +167,20 @@ your-project/
 | `/brainstorm` | 头脑风暴，需求澄清和方案发散（接口设计涉及平台 OpenAPI 时联动 openapi-creator 规范） |
 | `/openapi` | 宇视平台 OpenAPI 接口设计（五阶段：需求澄清 → 生成 → 校验 → 审查 → YAML 导出） |
 | `/spec-lite` | 写轻量规格（自动判定 L/M/H 难度） |
+| `/walkthrough` | 串讲（编码前设计对齐）：概要对齐架构/模块边界，详细锁定接口契约/数据流 |
+| `/spec-check` | 校验 `spec/` 三级目录结构合规（必须文件/命名/层级） |
 | `/write-plan` | 写实施计划 |
 | `/execute-plan` | 按批次执行计划，每批暂停等你确认 |
 | `/extend` | 在已有代码上安全加功能 |
-| `/fix-bug` | 修 Bug 全流程 |
+| `/fix-bug` | 修 Bug 全流程（单次手动） |
+| `/defect-loop` | 缺陷闭环（批量自动）：扫描→分类→Worktree 隔离修复→验证→MR→关闭，维护 `bugfix:*` 标签状态机 |
 | `/test-gen` / `/unified-test` | 生成单元测试（自动按语言路由） |
-| `/code-review` | 代码审查（通用五维 + Web 前端专项 + EZStation/EZTools Qt 专项智能路由，输出 MD/Excel 报告） |
+| `/code-review` | 代码审查（通用五维 + Web 前端专项 + Qt 专项；大范围/定时走增量模式：Baseline Commit + 审查立方 + `.clawbench` Issue 闭环） |
 | `/cpp-code-review` | EZStation/EZTools 项目 C++/Qt 专项审查（XLSX 报告输出到 `D:/Review/`） |
-| `/doc-init` / `/doc-sync` | 三层代码自文档体系 |
+| `/doc-init` / `/doc-sync` | 三层代码自文档体系（CONTEXT.md） |
+| `/spec-sync` | 设计文档（`spec/`）自动规格回填：即时/每日/每周三层 + Merge-Back |
 | `/ci-setup` | 把流程/质量门禁接入 GitLab CI 流水线（GitLab CE 14.8.2，软门禁升级为合并阻断）|
+| `/schedule-setup` | 接入 7 类定时任务，让交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）|
 | `/status` | 查看当前任务进度 |
 | `/pua` | 防摆烂引擎，AI 卡住时手动激活 |
 | `/requirement-review` | 需求评审模拟器（四角色模拟评审 PRD，上会前自检） |
@@ -208,6 +237,12 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 📋 **代码审查升级**：11 种语言规范 + Web 前端专项 + C++/Qt 专项（EZStation/EZTools 智能路由，按项目变体自动切换日志规范）+ Excel 报告
 - 🔌 **OpenAPI 接口设计**：宇视《平台类 OpenAPI 接口定义规范》五阶段工作流，自动规范校验 + 公司标准字段库核对 + OpenAPI YAML 导出；头脑风暴接口设计阶段自动联动
 - 🚦 **CI 强门禁**：经 `gitlab-bridge` 对接层接入内网 GitLab，把流程/质量门禁做成 CI 流水线 job，软门禁升级为 MR 合并阻断（GitLab CE 适配）
+- 🗣️ **串讲（设计对齐）**：编码前两层串讲（概要对齐架构/边界，详细锁接口契约），堵住「方向偏了再返工」的最大窗口
+- 🔁 **缺陷闭环**：`bugfix:*` 标签状态机 + `.clawbench`↔GitLab Issue 双向同步 + Worktree 隔离修复，缺陷从发现到关闭自驱动
+- 🔍 **增量代码审查**：Baseline Commit 锚点 + Block 化 + 审查立方 3×3×4 + Critical→可追踪 Issue 闭环
+- ⏰ **定时自动化交付**：7 类定时任务（文档/发布/审查/缺陷/MR 合并）让交付阶段 24×7 无人值守
+- 🗂️ **双层 Spec + 规格活文档**：`spec/` 三级目录（高层面向人 / 低层面向 AI）+ 三层自动规格回填（即时/每日/每周）+ Merge-Back
+- 📐 **GitLab CE 14.8.2 版本适配**：CI/CD 配置安全子集 + 版本能力支持矩阵 + 「未满足实现」清单与替代
 - 🐛 **`/fix-bug` 全流程**：问题单 → 上下文 → 定位 → 修复 → 验证
 - 🔥 **PUA 防摆烂引擎**：AI 卡住或敷衍时自动激活
 - 📊 **AI 交互质量评分**：4 维度 30 分制评估对话质量

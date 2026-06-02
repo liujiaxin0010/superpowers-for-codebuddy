@@ -65,11 +65,13 @@
 
 ### H 级 / 复杂任务
 
-`/brainstorm -> /spec-lite -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
+`/brainstorm -> /spec-lite -> /walkthrough(概要) -> /write-plan -> /walkthrough(详细) -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
 
 或（需求已清晰，但 `/spec-lite` 判定为 H）：
 
-`/spec-lite -> /brainstorm -> /write-plan -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
+`/spec-lite -> /brainstorm -> /walkthrough(概要) -> /write-plan -> /walkthrough(详细) -> /execute-plan -> /requirement-coverage -> /test-gen|/unified-test -> /security-review -> /perf-check -> /system-test -> /code-review -> /release -> /status`
+
+> H 级 `/write-plan` 前置：spec 须具 `walkthroughPath`（概要串讲纪要）；跨模块/跨端任务 `/execute-plan` 前建议具 `detailWalkthroughPath`。缺失则 `BLOCKED` 回退 `/walkthrough`。
 
 ### `/extend` 已有项目扩展（强制四步前置）
 
@@ -117,17 +119,22 @@
 
 - `/Featureflow`：单入口总控
 - `/spec-lite`：规格与分级
+- `/walkthrough`：串讲（编码前设计对齐，概要/详细两层；H 级 `/write-plan` 前置）
+- `/spec-check`：校验 `spec/` 三级目录结构合规
 - `/openapi`：宇视平台 OpenAPI 接口设计（五阶段：需求澄清 → 生成 → 校验 → 审查 → YAML 导出）；`/brainstorm` 阶段四接口设计涉及平台 OpenAPI 时自动联动
 - `/write-plan`：计划编排
 - `/execute-plan`：批次执行
 - `/extend`：已有项目功能扩展（强制 historical-spec → brainstorm → requirement-analysis 四步前置）
-- `/fix-bug`：缺陷修复
+- `/fix-bug`：缺陷修复（单次手动）
+- `/defect-loop`：缺陷闭环（批量自动，`bugfix:*` 标签状态机 + `.clawbench`↔GitLab 双向同步 + Worktree 隔离修复）
 - `/test-gen` `/unified-test`：测试
 - `/requirement-coverage`：系统测试前的需求覆盖独立审查（H 级 / 复杂任务必跑）
 - `/code-review`：审查
 - `/status`：查看进度
-- `/doc-sync`：文档同步
+- `/doc-sync`：文档同步（CONTEXT.md 代码自文档）
+- `/spec-sync`：设计文档（`spec/`）自动规格回填（即时/每日/每周三层 + Merge-Back）
 - `/ci-setup`：把流程/质量门禁接入 GitLab CI/CD 流水线（GitLab CE 14.8.2，软门禁升级为 MR 合并阻断；经 `gitlab-bridge` 对接 MCP）
+- `/schedule-setup`：接入 7 类定时任务，交付阶段 24×7 无人值守（CodeBuddy 定时 / cron / GitLab Pipeline Schedules）
 - `/pua`：激活防摆烂引擎（可带参数描述卡壳任务）
 - `/score-interaction`：AI 交互质量评分
 - `/requirement-review`：需求评审模拟器（四角色模拟评审 PRD，上会前自检）
@@ -147,3 +154,7 @@
 - 流程实操：`docs/playbooks/workflow-playbook.md`
 - 门禁矩阵：`.codebuddy/skills/process-gatekeeper/gate-matrix.md`
 - 路由规则：`.codebuddy/skills/devflow-router/SKILL.md`
+- GitLab 服务器/Runner/Docker 前置：`.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`
+- CE 14.8.2 CI/CD 适配基线：`.codebuddy/skills/ci-integration/references/ce-14.8.2-cicd-support.md`
+- GitLab 版本能力支持矩阵（未满足实现清单）：`.codebuddy/skills/gitlab-bridge/references/gitlab-version-support.md`
+- 定时自动化 7 任务 runbook：`.codebuddy/skills/scheduled-automation/references/task-playbooks.md`
