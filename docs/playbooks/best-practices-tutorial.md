@@ -587,7 +587,7 @@ test:unit:
 | #1 文档补充 | 每日 01:00 | 扫 24h 提交 → 规格回填（`/spec-sync`）|
 | #3 夜间发布 | 每日 02:00 | 定版 → Release Notes → 打 tag 触发 release 流水线 |
 | #4 每日审查 | 每日 03:00 | 增量审查（周日全量）→ 报告 + Critical Issue |
-| #9 Issue 清理 | 每日 05:00 | 扫 `.clawbench/issues/` → 修 Critical（`/defect-loop source=clawbench`）|
+| #9 Issue 清理 | 每日 05:00 | 扫 `.codebuddy-runtime/issues/` → 修 Critical（`/defect-loop source=codebuddy`）|
 | #10 GitLab Issue 修复 | 每日 08:00 / 20:00 | 扫 GitLab Issue → 分类 → 修 1 个（`/defect-loop source=gitlab`）|
 | #17 MR 审查合并 | 每小时 | open MR → CI 通过 + 审查通过 → 合并 |
 | #25 文档周更 | 周一 10:00 | 全量扫描 → README 重写 + 模块增量 |
@@ -600,7 +600,7 @@ test:unit:
 
 ### C.7 顺带：缺陷闭环 + 活文档
 
-- **`/defect-loop`**：缺陷从发现到关闭自驱动——经 `gitlab-bridge` 的 `issue.*` + `.clawbench`↔GitLab Issue 双向同步 + `bugfix:*` 标签状态机 + Worktree 隔离修复。
+- **`/defect-loop`**：缺陷从发现到关闭自驱动——经 `gitlab-bridge` 的 `issue.*` + `.codebuddy-runtime`↔GitLab Issue 双向同步 + `bugfix:*` 标签状态机 + Worktree 隔离修复。
 - **`/spec-sync` / `/doc-sync`**：把设计文档（`spec/`）和代码自文档（`CONTEXT.md`）做成**活文档**，即时/每日/每周三层自动回填，防文档与代码漂移。
 
 ### C.8 GitLab 接入常见坑

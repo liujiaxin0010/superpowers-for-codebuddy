@@ -4,7 +4,7 @@
 
 ## 1. Issue 文件格式
 
-每个 Critical 发现项创建 `.clawbench/issues/ISS-{nnn}.md`：
+每个 Critical 发现项创建 `.codebuddy-runtime/issues/ISS-{nnn}.md`：
 
 ```markdown
 ---
@@ -33,7 +33,7 @@ gitlab_issue: {iid}     # 由 defect-tracking 同步后回填
 
 ## 2. 编号规则
 
-- 编号递增：扫描 `.clawbench/issues/` 下已有文件，取最大编号 +1。
+- 编号递增：扫描 `.codebuddy-runtime/issues/` 下已有文件，取最大编号 +1。
 - 编号一旦分配不复用，即使 Issue 关闭也保留文件（可追溯历史）。
 
 ## 3. 疑似解决检查（每次审查必做）
@@ -57,7 +57,7 @@ Critical 缺陷同时存在于两个系统，由 `defect-tracking` 维护同步�
 
 | 系统 | 用途 | 标识 |
 |---|---|---|
-| 本地 `.clawbench/issues/` | 审查报告内部追踪 | `ISS-{nnn}` |
+| 本地 `.codebuddy-runtime/issues/` | 审查报告内部追踪 | `ISS-{nnn}` |
 | GitLab Issues | 外部可观测缺陷管理 | IID 编号 |
 
 同步规则：
@@ -67,4 +67,4 @@ Critical 缺陷同时存在于两个系统，由 `defect-tracking` 维护同步�
 3. GitLab Issue 描述中引用本地 ISS 编号
 4. 后续审查检查本地 Issue 疑似解决状态，经 `issue.update` / `issue.note` 同步到 GitLab
 
-> `gitlab-bridge` 不可用时降级：只维护本地 `.clawbench/issues/`，GitLab 同步留待 bridge 恢复后补做。
+> `gitlab-bridge` 不可用时降级：只维护本地 `.codebuddy-runtime/issues/`，GitLab 同步留待 bridge 恢复后补做。

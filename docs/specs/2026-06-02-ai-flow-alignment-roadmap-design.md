@@ -26,7 +26,7 @@
 | 代码审查 | `code-review-standards`、`web/cpp-qt`、`receiving/requesting-review` | 增量审查 + Baseline Commit 锚点、Block 化、审查立方、Critical→Issue 闭环 | **A** |
 | 测试验证 | `unified-test`、`system-test`、`verification-before-completion` | 覆盖良好 ✅（L2 集成分层略弱） | D（增强） |
 | CI/CD | `ci-integration`/`gitlab-bridge`/`/ci-setup`（5-stage MR 硬门禁） | 定时自动化体系（7 任务）、CI 7 原则编码化、e2e/deploy 阶段 | **A + D** |
-| 缺陷管理 | `bug-fix`、`systematic-debugging`、`issue-draft-pr` | 生命周期闭环、`bugfix:*` 标签状态机、`.clawbench`↔GitLab Issue 双向同步 | **A** |
+| 缺陷管理 | `bug-fix`、`systematic-debugging`、`issue-draft-pr` | 生命周期闭环、`bugfix:*` 标签状态机、`.codebuddy-runtime`↔GitLab Issue 双向同步 | **A** |
 | spec 组织规范 | `spec-lite`、`code-documentation`(CONTEXT.md) | spec/ 三级目录、唯一事实来源、三种 SSoT 错误约束 | B |
 | 自动规格回填 | `doc-sync`（仅 CONTEXT.md，非 spec/） | 三层保障（即时/每日/每周）、Merge-Back、三段式回填 | C |
 
@@ -66,16 +66,16 @@ Phase D 精细化 ── requirement-spec / testcase++ / ci-principles (增强, 
 | 能力 | 设计 | 落点 |
 |---|---|---|
 | 增量/全量模式 | 增量（默认）基于 Baseline Commit 的 `git diff`；全量（首次/周日）枚举源文件 | `code-review-standards` 新增 `references/incremental-mode.md` |
-| Baseline Commit 锚点 | 报告末尾记录 `Baseline Commit`，下次据此算 diff；丢失则退化全量 | `.clawbench/reviews/{date}/report.md` |
+| Baseline Commit 锚点 | 报告末尾记录 `Baseline Commit`，下次据此算 diff；丢失则退化全量 | `.codebuddy-runtime/reviews/{date}/report.md` |
 | 流程追踪 | 从变更文件沿 import/调用链纳入上下游（可跨前后端） | review 执行协议 |
 | Block 化 | 按数据流分组、每 Block ≤500 行、按 P0-P3 排序、超时截断（P0 不截断） | review 执行协议 |
 | 审查立方 | 流程×模块×关注点 = 3×3×4 = 36 项交叉 | `references/review-cube.md` |
-| Critical→Issue 闭环 | Critical 项同时写 `.clawbench/issues/ISS-{nnn}.md`（含 status/severity/dimension/files/History） | 新建 `.clawbench/` 产物规范 |
+| Critical→Issue 闭环 | Critical 项同时写 `.codebuddy-runtime/issues/ISS-{nnn}.md`（含 status/severity/dimension/files/History） | 新建 `.codebuddy-runtime/` 产物规范 |
 | 疑似解决检查 | 检查 open Issue 涉及文件是否已变更，标 `Suspected Resolved` | review 执行协议 |
 
 产物目录（新约定，加入 `.gitnexusignore`）：
 ```
-.clawbench/
+.codebuddy-runtime/
 ├── reviews/{date}/{plan.md, block-01.md, ..., report.md}
 └── issues/ISS-{nnn}.md
 ```
@@ -85,7 +85,7 @@ Phase D 精细化 ── requirement-spec / testcase++ / ci-principles (增强, 
 承接 `bug-fix`（单次修复方法论）+ `gitlab-bridge`（Issue API）+ `using-git-worktrees`（隔离），补全 **发现→分类→修复→验证→关闭** 全闭环。
 
 - **标签状态机**：`bug → bugfix:in-progress → bugfix:awaiting-review → 关闭`；分支 `bugfix:needs-design / failed / needs-verification`。
-- **双向同步**：`.clawbench/issues/ISS-{nnn}.md`（审查内部追踪）↔ GitLab Issue（外部可观测），History 互相记录编号。
+- **双向同步**：`.codebuddy-runtime/issues/ISS-{nnn}.md`（审查内部追踪）↔ GitLab Issue（外部可观测），History 互相记录编号。
 - **Worktree 隔离修复**：`.worktrees/bugfix-{iid}` + `fix/issue-{iid}`，每次只修 1 个，最小化变更，必带回归测试。
 - **放弃标准**：>5 文件 / 跨层架构 / 核心流程重构 / 方案不确定 / 信息不足 → 打 `bugfix:needs-design`。
 - **验证矩阵**：后端→测试全绿；前端→浏览器自动化；无法验证→`bugfix:needs-verification` 不关 Issue。
@@ -100,7 +100,7 @@ Phase D 精细化 ── requirement-spec / testcase++ / ci-principles (增强, 
 | Task #1 文档补充 | 01:00 | 扫 24h 提交 → 回填 spec/CONTEXT | Phase C `spec-backfill` |
 | Task #3 夜间发布 | 02:00 | semver 定版 → Release Notes → tag → release 流水线 | `release-and-rollback` |
 | Task #4 每日审查 | 03:00 | 增量审查（周日全量）→ 报告 + Issue | §4.1 incremental-review |
-| Task #9 Issue 清理 | 05:00 | 扫 `.clawbench/issues/` → 修 Critical（≤3）| §4.2 defect-tracking |
+| Task #9 Issue 清理 | 05:00 | 扫 `.codebuddy-runtime/issues/` → 修 Critical（≤3）| §4.2 defect-tracking |
 | Task #10 GitLab Issue 修复 | 08:00+20:00 | 扫 GitLab Issue → 分类 → 修 1 个 | §4.2 defect-tracking |
 | Task #17 MR 审查合并 | 每小时 | open MR → CI 通过+审查通过 → 合并 | `gitlab-bridge` + review |
 | Task #25 文档周更 | 周一 10:00 | 全量扫描 → README 重写 + 模块增量 | Phase C `spec-backfill` |
@@ -123,14 +123,14 @@ Phase D 精细化 ── requirement-spec / testcase++ / ci-principles (增强, 
 ```
 .codebuddy/skills/
 ├── code-review-standards/references/{incremental-mode.md, review-cube.md}   [新增]
-├── code-review-standards/references/clawbench-issue-format.md               [新增]
+├── code-review-standards/references/codebuddy-issue-format.md               [新增]
 ├── defect-tracking/{SKILL.md, references/label-state-machine.md,            [新增]
 │                    references/dual-sync.md, templates/fix-report.md}
 ├── scheduled-automation/{SKILL.md, references/task-playbooks.md,            [新增]
 │                         templates/{ci-poll.sh, schedule-config.sample}}
 └── gitlab-bridge/references/capability-map.md                              [修改] 补 4 动作
 .codebuddy/commands/{defect-loop.md, schedule-setup.md}                      [新增]
-.gitnexusignore                                                             [修改] 加 .clawbench/
+.gitnexusignore                                                             [修改] 加 .codebuddy-runtime/reviews/
 docs/quality/ 或 README/CODEBUDDY                                           [修改] 命令速查
 ```
 
@@ -256,7 +256,7 @@ docs/quality/ 或 README/CODEBUDDY                                           [�
 
 ## 9. 验证策略（每 Phase 落地时执行）
 
-- **Phase A**：构造含 Critical 的 diff → review 产出 `.clawbench/issues/ISS-001.md` 且报告含 Baseline Commit；模拟 GitLab Issue → `/defect-loop` 走通标签状态机（bridge 不可用时降级到 `docs/backlog/`）；`scheduled-automation` runbook 步骤自洽、引用路径存在；`gitlab-bridge` 4 新动作在 capability-map 标注完整。
+- **Phase A**：构造含 Critical 的 diff → review 产出 `.codebuddy-runtime/issues/ISS-001.md` 且报告含 Baseline Commit；模拟 GitLab Issue → `/defect-loop` 走通标签状态机（bridge 不可用时降级到 `docs/backlog/`）；`scheduled-automation` runbook 步骤自洽、引用路径存在；`gitlab-bridge` 4 新动作在 capability-map 标注完整。
 - **Phase B**：`/walkthrough` 产出纪要模板渲染正常；`/spec-check` 对合规/不合规 spec/ 目录各跑一次判定正确；6 个设计文档模板 Mermaid 语法可解析、配色符合规范。
 - **Phase C**：`/spec-sync` 即时回填只动 spec/ 不动源码；三段式 + 红线在 SKILL.md 定义完整；Task#1/#25 接线正确。
 - **Phase D**：CI 模板 YAML 可解析、7 原则各有对应 job/配置；testcase 8 维度模板齐全。
@@ -276,7 +276,7 @@ docs/quality/ 或 README/CODEBUDDY                                           [�
 | 风险 | 缓解 |
 |---|---|
 | 定时自动化放开 GitLab 写权限的安全风险 | 沿用本分支「初期只读」；写操作（issue/mr.merge）上线前单独评估，最小 scope PAT |
-| `.clawbench/` 产物污染仓库 | 加入 `.gitnexusignore`；reviews 可按需 gitignore，issues 保留可追踪 |
+| `.codebuddy-runtime/` 产物污染仓库 | 加入 `.gitnexusignore`；reviews 可按需 gitignore，issues 保留可追踪 |
 | 串讲流于形式（AI 自问自答）| 串讲纪要必须含 Boss 确认结论；H 级门禁强制 `walkthroughPath`，缺失即 BLOCKED |
 | spec/ 结构与现有 `docs/specs/` flat 模式并存混乱 | `spec-organization` 明确「轻量(docs/specs) → 组件级(spec/)」毕业路径，不强制小任务用重结构 |
 | CodeBuddy 定时能力与方法论假设有出入 | `scheduled-automation` 抽象为 runbook + `/schedule-setup` 适配层，调度器可换（原生/cron）|
@@ -285,7 +285,7 @@ docs/quality/ 或 README/CODEBUDDY                                           [�
 ## 12. 范围外
 
 - 不替 Boss 决定 GitLab 写权限放开时机（出评估清单，Boss 签字）。
-- 不在引擎仓库放成品 `.clawbench/`、`spec/{组件}/`、定时任务配置——这些是业务项目运行时产物。
+- 不在引擎仓库放成品 `.codebuddy-runtime/`、`spec/{组件}/`、定时任务配置——这些是业务项目运行时产物。
 - 不重写已覆盖良好的编码并行/TDD、测试验证主链路。
 - 多子系统/团队级并行（多人多服务器）属组织实践，非引擎能力，不实现。
 
@@ -293,7 +293,7 @@ docs/quality/ 或 README/CODEBUDDY                                           [�
 
 | Phase | 新增/修改 | 关键产物 |
 |---|---|---|
-| A.1 增量审查 | 改 `code-review-standards` | `references/{incremental-mode, review-cube, clawbench-issue-format}.md`（Baseline Commit + Block 化 + 立方 3×3×4 + Critical→ISS 闭环）|
+| A.1 增量审查 | 改 `code-review-standards` | `references/{incremental-mode, review-cube, codebuddy-issue-format}.md`（Baseline Commit + Block 化 + 立方 3×3×4 + Critical→ISS 闭环）|
 | A.2 bridge 动作 | 改 `gitlab-bridge` | SKILL + `capability-map.md` 补 `issue.create/update/note` + `mr.merge` |
 | A.3 缺陷闭环 | 新增 `defect-tracking` + `/defect-loop` | SKILL + `label-state-machine.md` + `dual-sync.md` + `fix-report.md` |
 | A.4 定时自动化 | 新增 `scheduled-automation` + `/schedule-setup` | SKILL + `task-playbooks.md`（7 任务）+ `ci-poll.sh` + `schedule-config.sample` |
@@ -302,7 +302,7 @@ docs/quality/ 或 README/CODEBUDDY                                           [�
 | C 规格回填 | 新增 `spec-backfill` + `/spec-sync`；改 `executing-plans` | SKILL + `{three-layer, three-paragraph-style, redlines}.md` + 即时回填 hook |
 | D 精细化 | 新增 `requirement-spec`；改 `testcase` / `ci-integration` | 需求规格列表模板 + 三级评审；testcase 8 维度 + 五维评分；CI 7 原则 `ci-quality-principles.md` |
 | CE 14.8.2 适配 | 新增基线 + 版本矩阵 | `ci-integration/references/ce-14.8.2-cicd-support.md`（安全子集）+ `gitlab-bridge/references/gitlab-version-support.md`（版本能力矩阵 + 未满足清单）|
-| 接线 | gate-matrix / router / README / CODEBUDDY / .gitnexusignore | 5 命令门禁行；H 级链插入串讲；命令速查；`.clawbench/` 忽略 |
+| 接线 | gate-matrix / router / README / CODEBUDDY / .gitnexusignore | 5 命令门禁行；H 级链插入串讲；命令速查；`.codebuddy-runtime/` 忽略 |
 
 验证：29 个新 skill 文件 + 5 命令 + 8 references 全部就位；`ci-poll.sh` 通过 `bash -n`；skill frontmatter name 与目录一致；引用路径全部解析；无 `.lingma`/错误路径。
 

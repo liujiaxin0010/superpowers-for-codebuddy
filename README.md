@@ -179,7 +179,7 @@ your-project/
 | `/fix-bug` | 修 Bug 全流程（单次手动） |
 | `/defect-loop` | 缺陷闭环（批量自动）：扫描→分类→Worktree 隔离修复→验证→MR→关闭，维护 `bugfix:*` 标签状态机 |
 | `/test-gen` / `/unified-test` | 生成单元测试（自动按语言路由） |
-| `/code-review` | 代码审查（通用五维 + Web 前端专项 + Qt 专项；大范围/定时走增量模式：Baseline Commit + 审查立方 + `.clawbench` Issue 闭环） |
+| `/code-review` | 代码审查（通用五维 + Web 前端专项 + Qt 专项；大范围/定时走增量模式：Baseline Commit + 审查立方 + `.codebuddy-runtime` Issue 闭环） |
 | `/cpp-code-review` | EZStation/EZTools 项目 C++/Qt 专项审查（XLSX 报告输出到 `D:/Review/`） |
 | `/doc-init` / `/doc-sync` | 三层代码自文档体系（CONTEXT.md） |
 | `/spec-sync` | 设计文档（`spec/`）自动规格回填：即时/每日/每周三层 + Merge-Back |
@@ -245,7 +245,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 🔌 **OpenAPI 接口设计**：宇视《平台类 OpenAPI 接口定义规范》五阶段工作流，自动规范校验 + 公司标准字段库核对 + OpenAPI YAML 导出；头脑风暴接口设计阶段自动联动
 - 🚦 **CI 强门禁**：经 `gitlab-bridge` 对接层接入内网 GitLab，把流程/质量门禁做成 CI 流水线 job，软门禁升级为 MR 合并阻断（GitLab CE 适配）
 - 🗣️ **串讲（设计对齐）**：编码前两层串讲（概要对齐架构/边界，详细锁接口契约），堵住「方向偏了再返工」的最大窗口
-- 🔁 **缺陷闭环**：`bugfix:*` 标签状态机 + `.clawbench`↔GitLab Issue 双向同步 + Worktree 隔离修复，缺陷从发现到关闭自驱动
+- 🔁 **缺陷闭环**：`bugfix:*` 标签状态机 + `.codebuddy-runtime`↔GitLab Issue 双向同步 + Worktree 隔离修复，缺陷从发现到关闭自驱动
 - 🔍 **增量代码审查**：Baseline Commit 锚点 + Block 化 + 审查立方 3×3×4 + Critical→可追踪 Issue 闭环
 - ⏰ **定时自动化交付**：7 类定时任务（文档/发布/审查/缺陷/MR 合并）让交付阶段 24×7 无人值守
 - 🔔 **事件驱动触发**：`/event-setup` 用 GitLab Webhook 实时触发；MR 评论 `/code-review`、打 `ai:review` 标签即可召唤 AI（对标 GitHub `@claude`），轮询退化为兜底

@@ -1,7 +1,7 @@
 ## 缺陷自动修复报告
 
 **日期**: YYYY-MM-DD HH:MM
-**来源**: 代码审查 .clawbench / GitLab Issue / 测试失败 / CI 失败
+**来源**: 代码审查 .codebuddy-runtime / GitLab Issue / 测试失败 / CI 失败
 **扫描**: X 个开放 Issue
 **分类**: X bug / X enhancement / X question / X 不确定
 

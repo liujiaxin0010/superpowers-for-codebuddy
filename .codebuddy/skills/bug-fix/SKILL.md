@@ -150,14 +150,15 @@ GitNexus 不可用时，直接使用下方的手动"上下文分层读取策略"
 
 ## 上库 commit message 规范
 
-修复完成、准备上库时，commit message 必须遵循缺陷单工单号格式：
+修复完成、准备上库时，commit message 必须带 AI 标签 + 遵循缺陷单工单号格式：
 
-- 首行：`AC<工单号>: <一句话修改说明>`
+- 首行：`[AI-x] AC<工单号>: <一句话修改说明>`
+  - **AI 标签**（必填，恰好一个，置于最前）：`[AI-0]` 纯手写 / `[AI-H]` 人机协作 / `[AI-100]` 全 AI 生成；缺失或出现多个均阻断。bug 修复一般是 `[AI-H]`。
 - 空一行后，body 包含 `Bug Id` / `Description` / `Root Cause` / `Solution` / `Impact` / `Verification` / `Risk`
 
 完整格式、字段说明与示例见 `templates/bugfix-commit-message.md`，按模板填写后再提交。
 
-首行格式会被 CI `verify:commit-msg` 校验（见 `ci-integration` 技能），不符即流水线阻断、MR 无法合并。
+首行格式由团队服务端 AI 标签 hook 与 CI `verify:commit-msg` 双重校验（见 `ci-integration` 技能），不符即流水线阻断、MR 无法合并。
 
 ## 常见错误（必须规避）
 
