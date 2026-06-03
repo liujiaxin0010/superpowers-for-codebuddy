@@ -243,11 +243,11 @@ A = arrow
 A(rc(boxes_term_start := (colx(0)-48, lane_cy(0)-20, colx(0)+48, lane_cy(0)+20), "r"), rc(boxes["n001"], "l"))
 A(rc(boxes["n001"], "b"), rc(boxes["n002"], "t"))
 A(rc(boxes["n002"], "r"), rc(boxes["n003"], "l"))
-A(rc(boxes["n003"], "t"), rc(boxes["n004"], "l"))
+A(rc(boxes["n003"], "r"), rc(boxes["n004"], "l"))
 A(rc(boxes["n004"], "b"), rc(boxes["n005"], "t"))
-A(rc(boxes["n005"], "t"), rc(boxes["n007"], "l"))
-A(rc(boxes["n007"], "r"), rc(boxes["n010so"], "l"))
-A(rc(boxes["n008"], "t"), rc(boxes["n007"], "b"))
+A(rc(boxes["n005"], "r"), rc(boxes["n007"], "l"))
+A(rc(boxes["n007"], "b"), rc(boxes["n008"], "t"))
+A(rc(boxes["n008"], "r"), rc(boxes["n010so"], "l"))
 # AI 主链
 for a, b in [("n010so","n010cg"),("n010cg","n010cr"),("n010cr","n010ug"),
              ("n010ug","n010ue"),("n010ue","n010cm"),("n010cm","n010st"),
@@ -261,8 +261,8 @@ for a, b in [("n010so","n009c"),("n010cg","n010cgc"),("n010cr","n010crc"),
 # 验收段
 A(rc(boxes["n011"], "b"), rc(boxes["n012"], "t"))
 A(rc(boxes["n012"], "r"), rc(boxes["n013"], "l"))
-A(rc(boxes["n014"], "b"), rc(boxes["n015"], "t"))
 A(rc(boxes["n013"], "t"), rc(boxes["n014"], "b"))
+A(rc(boxes["n014"], "r"), rc(boxes["n015"], "t"))
 A(rc(boxes["n015"], "r"), (colx(15), lane_cy(3)))
 
 import os
