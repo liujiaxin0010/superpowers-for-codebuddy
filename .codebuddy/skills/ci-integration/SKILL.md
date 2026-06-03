@@ -54,7 +54,9 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 | `build:compile` | 项目构建命令 | 编译检查：真实执行构建，编译失败即阻断 |
 | `test:unit` | 项目测试命令 | 单元测试：真实运行测试，产出 `test-summary.json` |
 | `quality:check` | `check-quality.sh` | 质量门禁：消费 `test-summary.json` 判通过率/覆盖率/文档同步 |
-| `verify:commit-msg` | `commit-msg-lint.sh` | commit 规范（替代 CE 缺失的 Push Rules）|
+| `verify:commit-msg` | `commit-msg-lint.sh` | commit 规范（替代 CE 缺失的 Push Rules）：AI 标签 `[AI-0\|AI-H\|AI-100]` 恰好一个 + `AC<数字>:`/Conventional 格式 |
+
+`verify:commit-msg` 与团队服务端 AI 标签 hook 对齐——本地/CI 提前拦截，避免推送被服务端 `GL-HOOK-ERR` 拒绝。AI 标签必须作为 subject 前缀、有且仅有一个（缺失或多个均阻断）。
 
 `build` / `test` 阶段真实编译并运行单测——这是「质量门禁」的证据来源。若 CI 只消费一个外部生成的 `test-summary.json`，门禁就建立在可能过时或造假的文件上。`build:compile` / `test:unit` 的命令由 `/ci-setup` 按项目技术栈填入。
 
