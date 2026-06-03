@@ -1,0 +1,117 @@
+@startuml Featureflow-Swimlane
+' Featureflow 软件开发流程（AI 应用整体）—— 可编辑源
+' 配套位图：featureflow-swimlane.png（横向泳道，由 gen_featureflow_swimlane.py 生成）
+' 说明：PlantUML 活动图泳道为「纵向列、流向自上而下」，与 PNG 的「横向泳道、流向自左向右」
+'      表达同一流程，便于二次编辑。中文渲染示例：
+'      java -jar plantuml.jar -charset UTF-8 -Sdefaultfontname="WenQuanYi Zen Hei" featureflow-swimlane.puml
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontSize 13
+skinparam ActivityBorderColor #6C8EBF
+skinparam ArrowColor #5A5A5A
+skinparam swimlaneBorderColor #99A7B5
+skinparam NoteBackgroundColor #FFEB9C
+skinparam NoteBorderColor #D6B656
+
+title Featureflow 软件开发流程（AI 应用整体）
+
+|#F2F6FA|需求下发人员|
+start
+:001 需求开发任务下发
+（Boss 提需求 → spec/Me2AI/需求描述.md）;
+
+|#D5E8D4|开发人员|
+:002 AI 环境配置
+（CODEBUDDY.md + .codebuddy/：四条铁律 + rules 常驻
++ skills 仓库 + agents + 双层 spec 约定）;
+:003 需求分析
+（/Featureflow 单入口 → devflow-router 智能分流）;
+
+|#DAE8FC|AI|
+:004 需求澄清和拓展
+（/brainstorm；接口涉及平台 OpenAPI → /openapi）;
+
+|开发人员|
+:005 需求分析内容确认
+（Boss 确认 · /requirement-review 四角色评审）;
+note right: 产出《需求分析文档》
+
+|AI|
+:007 方案设计和拓展
+（/spec-lite：H/M/L 分级 + 验收标准 + 技术约束）;
+
+|开发人员|
+:008 软件设计内容确认
+（/walkthrough(概要) 架构/模块边界对齐
+· /spec-check · Boss 审核）;
+note right: 产出《软件方案设计文档》
+
+' ===== 红色协同框：AI 协同编码与测试环（process-gatekeeper 硬门禁贯穿）=====
+partition "AI 协同环（命令协作完成 / 按场景人工支持 · 非必须环节可裁剪）" {
+  |AI|
+  :010 系统测试用例输出
+  （/testcase 8 维度）;
+  |开发人员|
+  :010 系统测试用例确认与补全
+  （五维加权评审 · Boss 确认）;
+
+  |AI|
+  :010 代码生成
+  （/write-plan → /execute-plan 或 子代理驱动 · TDD）;
+  |开发人员|
+  :010 代码生成效果确认（非必须 · Boss 检查点）;
+
+  |AI|
+  :010 代码 review
+  （/code-review 增量 · Baseline Commit · 审查立方 3×3×4）;
+  |开发人员|
+  :010 review 结果确认（非必须 · /code-self-check）;
+
+  |AI|
+  :010 单元测试用例生成
+  （/test-gen | /unified-test 按语言路由）;
+  |开发人员|
+  :010 单元测试用例确认（非必须）;
+
+  |AI|
+  :010 单元测试执行
+  （/unified-test · 覆盖率）;
+  |开发人员|
+  :010 测试用例评审（非必须）;
+
+  |AI|
+  :010 代码上库
+  （门禁通过 · /ci-setup MR 5 阶段强门禁）;
+  |开发人员|
+  :010 联调
+  （/parallel-delivery · using-git-worktrees）;
+
+  |AI|
+  :010 系统测试
+  （/system-test 端到端 · 发布前硬门禁）;
+  |开发人员|
+  :010 系统测试结果确认与补全
+  （/requirement-coverage 需求覆盖审查 · Boss 确认）;
+}
+
+|AI|
+:011 验收测试用例补全
+（/testcase 验收/版本用例）;
+|#FCE4D6|测试人员|
+:012 验收测试用例确认与补全
+（Boss / 测试确认）;
+:013 测试用例评审;
+note right: 产出《测试用例》
+
+|AI|
+:014 验收测试执行
+（执行 · 提问题单 → /defect-loop 缺陷闭环）;
+|测试人员|
+:015 验收测试结果确认与测试补全
+（/release 发布三件套 · /status 收尾
+· /doc-sync · /spec-sync 规格回填）;
+note right: 产出《测试报告》
+stop
+
+@enduml
