@@ -265,6 +265,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 
 - 会话最小手册：[CODEBUDDY.md](./CODEBUDDY.md)
 - 工作流详解：[docs/workflows/](./docs/workflows/)
+- 流程指导（AI 应用整体，对齐宇视流程图，含泳道图 + Word/Markdown 双份）：[docs/workflows/featureflow-process-guide.md](./docs/workflows/featureflow-process-guide.md)
 - 流程实操手册：[docs/playbooks/workflow-playbook.md](./docs/playbooks/workflow-playbook.md)
 - 最佳实践教程（新建项目 & 老项目扩展）：[docs/playbooks/best-practices-tutorial.md](./docs/playbooks/best-practices-tutorial.md)
 - 事件驱动集成设计（P0/P1，对标 Claude Code GitHub）：[docs/specs/2026-06-02-event-driven-integration-design.md](./docs/specs/2026-06-02-event-driven-integration-design.md)
