@@ -20,7 +20,7 @@
 # Task #1  文档补充        → /spec-sync mode=daily
 # Task #3  夜间发布        → /release （nightly）
 # Task #4  每日代码审查    → /code-review （增量模式）
-# Task #9  Review Issue清理 → /defect-loop source=clawbench max=3
+# Task #9  Review Issue清理 → /defect-loop source=codebuddy max=3
 # Task #10 GitLab Issue修复 → /defect-loop source=gitlab max=1
 # Task #17 MR 审查合并     → （scheduled-automation Task#17 runbook）
 # Task #25 设计文档周更    → /spec-sync mode=weekly
@@ -30,7 +30,7 @@
 # 0  1  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/spec-sync mode=daily"
 # 0  2  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/release nightly"
 # 0  3  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/code-review"
-# 0  5  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/defect-loop source=clawbench max=3"
+# 0  5  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/defect-loop source=codebuddy max=3"
 # 0  8,20 * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/defect-loop source=gitlab max=1"
 # 0  *  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "scheduled-automation Task#17 MR 审查合并"
 # 0  10 * * 1  cd <PROJECT_DIR> && <CODEBUDDY_CLI> run "/spec-sync mode=weekly"

@@ -18,7 +18,7 @@ Baseline 丢失或首次运行时**自动退化为全量**——这是安全兜�
 
 - 每次审查报告**末尾必须记录 `Baseline Commit: <HEAD commit id>`**，作为下次增量审查计算 diff 的基准。
 - 没有 Baseline 就无从计算「增量」；Baseline 的记录与读取是定时审查持续运转的基础设施。
-- 读取顺序：优先读上一次 `.clawbench/reviews/{上次date}/report.md` 末尾的 Baseline；缺失则全量。
+- 读取顺序：优先读上一次 `.codebuddy-runtime/reviews/{上次date}/report.md` 末尾的 Baseline；缺失则全量。
 
 ## 3. 流程追踪（增量模式核心）
 
@@ -48,16 +48,16 @@ Baseline 丢失或首次运行时**自动退化为全量**——这是安全兜�
 ## 5. 产物目录结构
 
 ```
-.clawbench/
+.codebuddy/
 ├── reviews/{date}/
 │   ├── plan.md          # 审查计划（Block 列表 + 模式 + 范围）
 │   ├── block-01.md      # 每个 Block 的审查结果
 │   ├── block-02.md
 │   └── report.md        # 汇总报告（末尾记录 Baseline Commit）
-└── issues/ISS-{nnn}.md  # Critical 发现项（格式见 clawbench-issue-format.md）
+└── issues/ISS-{nnn}.md  # Critical 发现项（格式见 codebuddy-issue-format.md）
 ```
 
-`.clawbench/` 是业务项目运行时产物，应加入 `.gitnexusignore`；`issues/` 建议保留可追踪，`reviews/` 可按需 gitignore。
+`.codebuddy/` 是业务项目运行时产物，应加入 `.gitnexusignore`；`issues/` 建议保留可追踪，`reviews/` 可按需 gitignore。
 
 ## 6. 汇总报告格式
 
@@ -105,5 +105,5 @@ Baseline 丢失或首次运行时**自动退化为全量**——这是安全兜�
 
 ## 7. 与缺陷闭环的衔接
 
-- Critical 发现项在审查时同时写 `.clawbench/issues/ISS-{nnn}.md`（格式见 `clawbench-issue-format.md`），并经 `defect-tracking` 同步到 GitLab Issue。
+- Critical 发现项在审查时同时写 `.codebuddy-runtime/issues/ISS-{nnn}.md`（格式见 `codebuddy-issue-format.md`），并经 `defect-tracking` 同步到 GitLab Issue。
 - 定时审查（Task #4）由 `scheduled-automation` 编排，只生成审查输出文件，**不修改源代码**；修复由 `defect-tracking`（Task #9）在独立 Worktree 中进行。

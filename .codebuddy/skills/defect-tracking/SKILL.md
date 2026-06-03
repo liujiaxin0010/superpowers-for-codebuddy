@@ -1,6 +1,6 @@
 ---
 name: defect-tracking
-description: 缺陷生命周期闭环技能。用于把代码审查、测试、CI、GitLab Issue 发现的缺陷，按「发现→分类→评估→Worktree 隔离修复→验证→MR→关闭」自驱动推进；维护 bugfix:* 标签状态机与 .clawbench↔GitLab Issue 双向同步。用户提到"缺陷闭环/批量修 issue/自动修 bug/缺陷生命周期/扫 issue 修复/defect loop"时触发。单次手动定位修复用 bug-fix；本技能是批量自动闭环。
+description: 缺陷生命周期闭环技能。用于把代码审查、测试、CI、GitLab Issue 发现的缺陷，按「发现→分类→评估→Worktree 隔离修复→验证→MR→关闭」自驱动推进；维护 bugfix:* 标签状态机与 .codebuddy-runtime↔GitLab Issue 双向同步。用户提到"缺陷闭环/批量修 issue/自动修 bug/缺陷生命周期/扫 issue 修复/defect loop"时触发。单次手动定位修复用 bug-fix；本技能是批量自动闭环。
 ---
 
 # 缺陷生命周期闭环（Defect Tracking）
@@ -28,12 +28,12 @@ description: 缺陷生命周期闭环技能。用于把代码审查、测试、C
 ## 资源加载规则
 
 - 判断标签流转、分类评级时，读 `references/label-state-machine.md`
-- 处理 `.clawbench/issues/` 与 GitLab Issue 同步时，读 `references/dual-sync.md`
+- 处理 `.codebuddy-runtime/issues/` 与 GitLab Issue 同步时，读 `references/dual-sync.md`
 - 输出修复报告时，读 `templates/fix-report.md`
 
 ## 何时使用
 
-1. 定时缺陷清理（Task #9：扫 `.clawbench/issues/`；Task #10：扫 GitLab Issue）
+1. 定时缺陷清理（Task #9：扫 `.codebuddy-runtime/issues/`；Task #10：扫 GitLab Issue）
 2. 代码审查产出 Critical → 收录为可追踪缺陷并推进修复
 3. 一批积压 Issue 需要分类 + 择一自动修复
 
@@ -53,7 +53,7 @@ description: 缺陷生命周期闭环技能。用于把代码审查、测试、C
 
 | 来源 | 触发 | 收录方式 |
 |---|---|---|
-| 代码审查 | 定时 Task#4 / MR | Critical → `.clawbench/issues/ISS-{nnn}.md` + `issue.create` |
+| 代码审查 | 定时 Task#4 / MR | Critical → `.codebuddy-runtime/issues/ISS-{nnn}.md` + `issue.create` |
 | 测试验证 | CI / 手动 | 失败日志分析 → `issue.create` |
 | CI 流水线 | 自动 | 解析失败原因 → 关联或 `issue.create` |
 | GitLab Issue | 人工提交 | `intake.list` 扫描 → AI 分类打标签 |

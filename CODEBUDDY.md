@@ -126,7 +126,7 @@
 - `/execute-plan`：批次执行
 - `/extend`：已有项目功能扩展（强制 historical-spec → brainstorm → requirement-analysis 四步前置）
 - `/fix-bug`：缺陷修复（单次手动）
-- `/defect-loop`：缺陷闭环（批量自动，`bugfix:*` 标签状态机 + `.clawbench`↔GitLab 双向同步 + Worktree 隔离修复）
+- `/defect-loop`：缺陷闭环（批量自动，`bugfix:*` 标签状态机 + `.codebuddy-runtime`↔GitLab 双向同步 + Worktree 隔离修复）
 - `/test-gen` `/unified-test`：测试
 - `/requirement-coverage`：系统测试前的需求覆盖独立审查（H 级 / 复杂任务必跑）
 - `/code-review`：审查

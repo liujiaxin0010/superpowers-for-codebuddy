@@ -1,10 +1,10 @@
-# .clawbench/issues ↔ GitLab Issue 双向同步
+# .codebuddy-runtime/issues ↔ GitLab Issue 双向同步
 
 代码审查发现的 Critical 缺陷同时存在于两个系统，本文件定义二者一致性的维护规则。
 
 | 系统 | 用途 | 标识 | 格式 |
 |---|---|---|---|
-| 本地 `.clawbench/issues/` | 审查报告内部追踪 | `ISS-{nnn}` | 见 `code-review-standards/references/clawbench-issue-format.md` |
+| 本地 `.codebuddy-runtime/issues/` | 审查报告内部追踪 | `ISS-{nnn}` | 见 `code-review-standards/references/codebuddy-issue-format.md` |
 | GitLab Issues | 外部可观测缺陷管理 | IID 编号 | GitLab 原生 |
 
 ## 同步规则
@@ -31,7 +31,7 @@
 
 ## 降级行为（gitlab-bridge 不可用）
 
-- 只维护本地 `.clawbench/issues/`，GitLab 同步留待 bridge 恢复后补做
+- 只维护本地 `.codebuddy-runtime/issues/`，GitLab 同步留待 bridge 恢复后补做
 - 或写 `docs/backlog/缺陷卡-{slug}.md` 占位，标识「待人工同步 GitLab」
 - 降级不阻断审查与本地缺陷追踪
 

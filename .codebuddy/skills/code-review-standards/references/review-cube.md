@@ -61,4 +61,4 @@ P0 必须全部完成；P1/P2/P3 按优先级覆盖，超时截断。
 | 14 | 安全性 | SQL 拼接（应使用参数化查询）| Critical |
 | 15 | 安全性 | 敏感信息硬编码 | Critical |
 
-> 级别映射到主报告的严重度：Critical→🔴 严重、Warning→🔵 一般、Info→🟢 提示。Critical 发现项必须同时创建 `.clawbench/issues/ISS-{nnn}.md`（见 `clawbench-issue-format.md`）。
+> 级别映射到主报告的严重度：Critical→🔴 严重、Warning→🔵 一般、Info→🟢 提示。Critical 发现项必须同时创建 `.codebuddy-runtime/issues/ISS-{nnn}.md`（见 `codebuddy-issue-format.md`）。

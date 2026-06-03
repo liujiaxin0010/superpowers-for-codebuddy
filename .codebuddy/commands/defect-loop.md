@@ -12,17 +12,17 @@
 4. 触达生产数据 / schema 的修复必须先有 data-safety 合同并经 Boss 签字
 
 **你的任务是：**
-扫描缺陷源，自动分类、择一修复、验证、走 MR 流程合入，并维护 `bugfix:*` 标签状态机与 `.clawbench`↔GitLab Issue 双向同步。**每次只修 1 个缺陷。**
+扫描缺陷源，自动分类、择一修复、验证、走 MR 流程合入，并维护 `bugfix:*` 标签状态机与 `.codebuddy`↔GitLab Issue 双向同步。**每次只修 1 个缺陷。**
 
 执行步骤：
 
 1. **门禁与探测**：
    - 调用 `process-gatekeeper`（`command=defect-loop`）；阻断则输出阻断报告并停止
    - 经 `gitlab-bridge` 执行 `bridge.probe`，确认 `issue.*` / `mr.*` 写动作可用性
-   - 写动作不可用且只读 → 走本地 `docs/backlog/` / `.clawbench/issues/` 降级，并提示 Boss 放开 `GITLAB_READ_ONLY_MODE`
+   - 写动作不可用且只读 → 走本地 `docs/backlog/` / `.codebuddy-runtime/issues/` 降级，并提示 Boss 放开 `GITLAB_READ_ONLY_MODE`
 
 2. **发现与收录**（按 `source` 参数，默认全部）：
-   - `source=clawbench`：扫 `.clawbench/issues/` 下 open Issue
+   - `source=codebuddy`：扫 `.codebuddy-runtime/issues/` 下 open Issue
    - `source=gitlab`：`intake.list` 扫 GitLab open Issue
    - `source=ci`：解析最近失败流水线日志 → `issue.create`
 
@@ -47,6 +47,6 @@
 - 修复必须最小化，不做无关重构、不改 docs/
 - 无验证证据不关 Issue
 
-参数：`source=<clawbench|gitlab|ci|all>`（默认 all）、`max=<本轮最多修复个数>`（默认 1）
+参数：`source=<codebuddy|gitlab|ci|all>`（默认 all）、`max=<本轮最多修复个数>`（默认 1）
 
 $ARGUMENTS

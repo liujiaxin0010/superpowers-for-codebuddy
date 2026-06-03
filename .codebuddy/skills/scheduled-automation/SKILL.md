@@ -44,7 +44,7 @@ description: 定时自动化交付体系技能。把文档补充、夜间发布�
 | Task #1 文档补充 | 每日 01:00 | 扫 24h 提交 → 即时/每日规格回填 | `spec-backfill` + `/spec-sync` |
 | Task #3 夜间发布 | 每日 02:00 | semver 定版 → Release Notes → tag → release 流水线 | `release-and-rollback` + `/release` |
 | Task #4 每日审查 | 每日 03:00 | 增量审查（周日全量）→ 报告 + Critical Issue | `code-review-standards`（增量模式）|
-| Task #9 Issue 清理 | 每日 05:00 | 扫 `.clawbench/issues/` → 修 Critical（≤3）| `defect-tracking` + `/defect-loop source=clawbench` |
+| Task #9 Issue 清理 | 每日 05:00 | 扫 `.codebuddy-runtime/issues/` → 修 Critical（≤3）| `defect-tracking` + `/defect-loop source=codebuddy` |
 | Task #10 GitLab Issue 修复 | 每日 08:00+20:00 | 扫 GitLab Issue → 分类 → 修 1 个 | `defect-tracking` + `/defect-loop source=gitlab` |
 | Task #17 MR 审查合并 | 每小时 | open MR → CI 通过+审查通过 → 合并 | `gitlab-bridge` + `code-review` |
 | Task #25 文档周更 | 周一 10:00 | 全量扫描 → README 重写 + 模块增量 | `spec-backfill` + `/spec-sync mode=weekly` |

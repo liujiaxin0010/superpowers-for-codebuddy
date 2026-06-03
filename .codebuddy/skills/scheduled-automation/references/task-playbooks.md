@@ -44,16 +44,16 @@ CI 轮询主路径：`gitlab-bridge` 的 `pipeline.status`；MCP 不可用但本
 
 - 触发：定时
 - 模式：增量（工作日，基于 Baseline Commit diff）/ 全量（周日 / 首次）
-- 动作：流程追踪 → Block 化 → 按 P0-P3 逐 Block 审查 → Critical 写 `.clawbench/issues/ISS-{nnn}.md` → 检查已有 open Issue 疑似解决状态
-- 委托：`code-review-standards`（`references/incremental-mode.md` + `review-cube.md` + `clawbench-issue-format.md`）
+- 动作：流程追踪 → Block 化 → 按 P0-P3 逐 Block 审查 → Critical 写 `.codebuddy-runtime/issues/ISS-{nnn}.md` → 检查已有 open Issue 疑似解决状态
+- 委托：`code-review-standards`（`references/incremental-mode.md` + `review-cube.md` + `codebuddy-issue-format.md`）
 - 约束：**只生成审查输出文件，不修改源代码**（修复由 Task #9 做）
 - 产出：审查计划 + Block 报告 + 汇总报告（末尾记 Baseline Commit）+ Issue 文件
 
 ## Task #9 — Review Issue 清理（每日 05:00）
 
 - 触发：定时
-- 动作：扫 `.clawbench/issues/` open Issue → 验证已有修复 → 按 P0 Security > P0 Flow > P1 Concurrency 选目标 → 每次最多修 3 个，最小化修复 + 补测试
-- 委托：`defect-tracking` + `/defect-loop source=clawbench max=3`
+- 动作：扫 `.codebuddy-runtime/issues/` open Issue → 验证已有修复 → 按 P0 Security > P0 Flow > P1 Concurrency 选目标 → 每次最多修 3 个，最小化修复 + 补测试
+- 委托：`defect-tracking` + `/defect-loop source=codebuddy max=3`
 - 产出：修复代码 + 测试 + Issue 状态更新 + MR
 
 ## Task #10 — GitLab Issue 自动修复（每日 08:00 + 20:00）
