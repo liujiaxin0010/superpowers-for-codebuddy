@@ -87,6 +87,7 @@ GitLab 事件（MR / note / label / pipeline / issue）
 3. 可选 `allowedActors`：限制谁能触发写动作（建议 ≥ Developer 成员；外部/访客评论不触发）
 4. 接收器只在内网监听，置于反向代理/服务管理（systemd/pm2）之后；写动作仍受 `GITLAB_READ_ONLY_MODE` 与 Boss 确认约束
 5. 接收器不内联密钥：PAT / token 仍走 `gitlab-bridge` 的 MCP env
+6. 无人值守免确认：webhook 拉起的会话无 TTY，逐工具确认会让进程挂起；经 `automationSettings` / `--settings` 注入专用设置（`templates/automation-settings.sample.json`：allow 白名单 + deny 红线，deny 优先），把"免确认"限定在无人值守路径，交互式人工会话不受影响。注意这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作）是两层，别混淆。真正的护栏是 token 验签 + trigger/actor allowlist + MR/CI 门禁，而非逐工具弹窗
 
 ## 禁止事项
 

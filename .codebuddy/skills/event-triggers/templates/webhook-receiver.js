@@ -15,6 +15,8 @@
  * Config : event-triggers.config.json  (see event-triggers.config.sample.json)
  * Env    : GITLAB_WEBHOOK_SECRET (required), CODEBUDDY_CLI (optional override)
  *          EVENT_CONFIG (optional path to config), PORT (optional)
+ *          CODEBUDDY_SETTINGS (optional: automation-settings.json for unattended,
+ *                              confirmation-free runs; see automation-settings.sample.json)
  */
 'use strict';
 const http = require('http');
@@ -100,7 +102,15 @@ function dispatch(job) {
   console.log('[dispatch]', job.actor, '->', prompt);
   // NOTE: command/args come from the allowlist + are passed as a single arg (no shell),
   //       user-controlled text is never interpolated into a shell string.
-  const child = spawn(cli, ['run', '--cwd', CONFIG.projectDir, prompt], { stdio: 'inherit', detached: true });
+  // 无人值守：detached 会话没有 TTY/stdin，逐工具的确认弹窗会让进程永久挂起。
+  // --settings 指向主机上的专用 automation-settings.json（allow 白名单 + deny 红线），
+  // 让 CI 事件触发的会话免人工确认，同时保留 rm -rf 等红线。flag 名以 CLI --help 为准。
+  const settings = process.env.CODEBUDDY_SETTINGS || CONFIG.automationSettings;
+  const args = ['run', '--cwd', CONFIG.projectDir];
+  if (settings) args.push('--settings', settings);
+  args.push(prompt);
+  // stdin 用 'ignore'：无人值守不继承终端，杜绝任何残留的交互等待
+  const child = spawn(cli, args, { stdio: ['ignore', 'inherit', 'inherit'], detached: true });
   child.on('error', e => console.error('[cli] spawn failed:', e.message));
   child.unref();
 }

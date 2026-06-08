@@ -68,6 +68,7 @@ description: 定时自动化交付体系技能。把文档补充、夜间发布�
 1. 定时自动化依赖 GitLab 写动作——上线前必须把 MCP server 的 `GITLAB_READ_ONLY_MODE` 改为 `false`，且经 Boss 确认
 2. 写权限放开后建议用专用服务账号 PAT（scope: api），不复用管理员 token
 3. Task #3 夜间发布只打 tag 触发 release 流水线，**不直接部署生产**；生产部署仍需人工审批（与 `/release` 一致）
+4. 无人值守免确认：cron / Pipeline 拉起的会话无终端，逐工具确认会让任务挂起；用 `--settings` 注入专用 `automation-settings.json`（allow 白名单 + deny 红线，见 `event-triggers/templates/automation-settings.sample.json`）限定在无人值守路径。注意这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作）是两层，别混淆；deny 优先于 allow，触达生产数据仍受 data-safety 数据铁律约束
 
 ## 禁止事项
 
