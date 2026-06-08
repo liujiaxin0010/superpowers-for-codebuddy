@@ -598,6 +598,13 @@ test:unit:
 
 > 🔒 安全：Task #3 夜间发布**只打 tag 触发流水线，不直接部署生产**；生产部署仍需人工审批。定时任务上线前先手动触发一次只读的 Task #4 验证 runbook 跑通。
 
+> ⚙️ **无人值守免确认（必配，否则会卡死）**：cron / Pipeline / webhook 拉起的会话**没有终端**，AI 一要用 `Bash`/`DeferExecuteTool` 就会停在「是否允许」确认弹窗 → 任务永久挂起。在接收器/runner 主机备一份专用 `automation-settings.json`（`permissions.allow` 白名单 + `permissions.deny` 红线，**deny 优先**），经 CLI `--settings`（或 `webhook-receiver.js` 的 `automationSettings`）注入，让无人值守会话免逐工具确认，**交互式人工会话不受影响**。
+>
+> - 样例：`.codebuddy/skills/event-triggers/templates/automation-settings.sample.json`（复制为 `automation-settings.json`，**勿入库**，按环境调 `deny`）
+> - cron/CI 调用：`<CODEBUDDY_CLI> run --settings <AUTOMATION_SETTINGS> "/code-review"`
+> - ⚠️ 这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作层）是**两层，别混淆**：前者决定会不会卡在弹窗，后者决定能不能合 MR / 改 Issue。
+> - flag 名以 `codebuddy run --help` 为准。
+
 ### C.7 顺带：缺陷闭环 + 活文档
 
 - **`/defect-loop`**：缺陷从发现到关闭自驱动——经 `gitlab-bridge` 的 `issue.*` + `.codebuddy-runtime`↔GitLab Issue 双向同步 + `bugfix:*` 标签状态机 + Worktree 隔离修复。
@@ -626,7 +633,7 @@ GitHub 上 Claude Code 走"GitHub App + 事件触发 + 行内评论 + 多 checks
 | 审查作阻断 job | `ai-review-job.yml.template`（需专用 runner）| 审查红 → MR 合不了 |
 | 结果贴 MR | `commit.status` | MR 上一眼看 AI 检查状态（CE 展示态）|
 
-接入顺序：`/ci-setup` → 令牌收敛 → `/event-setup`（注册 webhook + 接收器）→ 放开写权限 → 把 `scheduled-automation` 轮询调成低频兜底 →（可选）维护带 CLI 的 runner 启用审查 job。设计与权衡见 [event-driven-integration-design](../specs/2026-06-02-event-driven-integration-design.md)。
+接入顺序：`/ci-setup` → 令牌收敛 → `/event-setup`（注册 webhook + 接收器）→ 放开写权限 → 配好无人值守免确认（`automation-settings.json` + `--settings`，见 C.6）→ 把 `scheduled-automation` 轮询调成低频兜底 →（可选）维护带 CLI 的 runner 启用审查 job。设计与权衡见 [event-driven-integration-design](../specs/2026-06-02-event-driven-integration-design.md)。
 
 ---
 
