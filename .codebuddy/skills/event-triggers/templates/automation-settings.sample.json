@@ -1,5 +1,5 @@
 {
-  "_comment": "无人值守（CI 事件 / 定时任务）专用 CodeBuddy 权限设置样例。复制到接收器/runner 主机后改名为 automation-settings.json（勿提交进引擎仓库），由 webhook-receiver.js 的 automationSettings 或 CLI `--settings` 指向。allow 白名单免去逐工具人工确认；deny 兜住红线（deny 优先于 allow）。仅作用于带 --settings 的无人值守会话，不影响交互式人工会话。deny 清单按环境调整：不直推 main 由 GitLab 分支保护在服务端兜底；触达生产数据 / 表结构仍受 data-safety 数据铁律约束，无人值守不得触达。flag/字段名以 codebuddy run --help 为准。",
+  "_comment": "无人值守（CI 事件 / 定时任务）专用 CodeBuddy 权限设置样例。复制到接收器/runner 主机后改名为 automation-settings.json（勿提交进引擎仓库），由 webhook-receiver.js 的 automationSettings 或 CLI `--settings` 指向。allow 白名单免去逐工具人工确认；deny 兜住红线（deny 优先于 allow）。仅作用于带 --settings 的无人值守会话，不影响交互式人工会话。deny 清单按环境调整：不直推 main 由 GitLab 分支保护在服务端兜底；触达生产数据 / 表结构仍受 data-safety 数据铁律约束，无人值守不得触达。flag/字段名以 codebuddy run --help 为准。注意：allow/deny 只控制【工具确认】，不控制 plan 模式 / 命令内『询问 Boss』/ 数据铁律签字 这类【方案确认】——后者靠『只映射自主型命令 + 非 plan 模式 + headless 拉起 + 遇不确定异步落盘退出』避免阻塞；defaultMode 切勿设 plan。",
   "permissions": {
     "defaultMode": "acceptEdits",
     "allow": [

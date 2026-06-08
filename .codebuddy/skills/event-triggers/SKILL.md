@@ -97,3 +97,4 @@ GitLab 事件（MR / note / label / pipeline / issue）
 4. 不要在事件链路里绕过 `gitlab-bridge` 直接调 MCP/REST——回贴与注册都走对接层，保持可移植
 5. 不要在写权限未放开时谎报已合并/已改——只读模式下只能产报告并输出人工提示
 6. 不要让事件触发直推 main——所有改动仍走 MR + CI 门禁（与 scheduled-automation 一致）
+7. 不要把"会同步等人确认"的命令映射给无人值守触发——`permissions.allow` 只免**工具确认**，免不了 **plan 模式 / 命令内「询问 Boss」/ 数据铁律签字** 这类**方案确认**。无人值守只映射自主型/产报告型命令（`/code-review`、`/defect-loop`、`/spec-sync` 等），别映射 `/write-plan`、`/walkthrough`、`/brainstorm`、生产 `/release`；遇不确定须**异步降级**（落盘 `docs/pending-decisions.md` + 回贴 MR 评论 + 安全退出），不得同步阻塞等待
