@@ -603,7 +603,8 @@ test:unit:
 > - 样例：`.codebuddy/skills/event-triggers/templates/automation-settings.sample.json`（复制为 `automation-settings.json`，**勿入库**，按环境调 `deny`）
 > - cron/CI 调用：`<CODEBUDDY_CLI> -p --settings <AUTOMATION_SETTINGS> "/code-review"`（`-p` 非交互；`-p` 单独不免确认，靠 `permissions.allow` 白名单免确认，**全量**免确认用 `-p -y`，`-y` 自动批准所有、无护栏）
 > - ⚠️ 这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作层）是**两层，别混淆**：前者决定会不会卡在弹窗，后者决定能不能合 MR / 改 Issue。
-> - flag 名以 `codebuddy run --help` 为准。
+> - flag 名以 `codebuddy --help` 为准。
+> - 📋 上线步骤 / 卡住排错 / 最小验证：见 [无人值守免确认 Checklist](unattended-permission-checklist.md)。
 
 ### C.7 顺带：缺陷闭环 + 活文档
 

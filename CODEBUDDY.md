@@ -162,3 +162,4 @@
 - CE 14.8.2 CI/CD 适配基线：`.codebuddy/skills/ci-integration/references/ce-14.8.2-cicd-support.md`
 - GitLab 版本能力支持矩阵（未满足实现清单）：`.codebuddy/skills/gitlab-bridge/references/gitlab-version-support.md`
 - 定时自动化 7 任务 runbook：`.codebuddy/skills/scheduled-automation/references/task-playbooks.md`
+- 无人值守免确认上线 / 排错 checklist：`docs/playbooks/unattended-permission-checklist.md`
