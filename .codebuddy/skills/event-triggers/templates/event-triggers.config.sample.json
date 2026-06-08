@@ -1,7 +1,8 @@
 {
-  "_comment": "event-triggers 接收器配置样例。复制为 event-triggers.config.json 并替换占位符。密钥走环境变量 GITLAB_WEBHOOK_SECRET，不要写进本文件。automationSettings 指向主机上的专用 CodeBuddy 权限设置（见 automation-settings.sample.json），让无人值守触发的会话免逐工具人工确认。",
+  "_comment": "event-triggers 接收器配置样例。复制为 event-triggers.config.json 并替换占位符。密钥走环境变量 GITLAB_WEBHOOK_SECRET，不要写进本文件。codebuddyFlags 默认 ['-p']（CodeBuddy 非交互 headless）+ permissions.allow 白名单（automationSettings → automation-settings.sample.json）即免逐工具确认；要全量免确认改 ['-p','-y']（-y 自动批准所有，无护栏）。",
   "projectDir": "<PROJECT_DIR>",
   "codebuddyCli": "<CODEBUDDY_CLI>",
+  "codebuddyFlags": ["-p"],
   "automationSettings": "<RECEIVER_HOST_DIR>/automation-settings.json",
   "port": 3010,
   "allowedActors": [],

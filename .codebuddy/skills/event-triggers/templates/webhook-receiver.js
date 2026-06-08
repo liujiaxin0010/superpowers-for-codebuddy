@@ -15,8 +15,8 @@
  * Config : event-triggers.config.json  (see event-triggers.config.sample.json)
  * Env    : GITLAB_WEBHOOK_SECRET (required), CODEBUDDY_CLI (optional override)
  *          EVENT_CONFIG (optional path to config), PORT (optional)
- *          CODEBUDDY_SETTINGS (optional: automation-settings.json for unattended,
- *                              confirmation-free runs; see automation-settings.sample.json)
+ *          CODEBUDDY_SETTINGS (optional: automation-settings.json for unattended runs)
+ *          CODEBUDDY_FLAGS (optional: CLI flags, default "-p"; set "-p -y" to approve all)
  */
 'use strict';
 const http = require('http');
@@ -102,15 +102,21 @@ function dispatch(job) {
   console.log('[dispatch]', job.actor, '->', prompt);
   // NOTE: command/args come from the allowlist + are passed as a single arg (no shell),
   //       user-controlled text is never interpolated into a shell string.
-  // 无人值守：detached 会话没有 TTY/stdin，逐工具的确认弹窗会让进程永久挂起。
-  // --settings 指向主机上的专用 automation-settings.json（allow 白名单 + deny 红线），
-  // 让 CI 事件触发的会话免人工确认，同时保留 rm -rf 等红线。flag 名以 CLI --help 为准。
+  // 无人值守：detached 会话没有 TTY/stdin，交互确认会让进程永久挂起。
+  //   -p = 以非交互(print)方式跑（CodeBuddy headless）。注意：-p 单独不免确认，
+  //        仍按 permissions.allow / -y 决定是否弹窗。
+  //   免确认二选一：① 受控（推荐）= permissions.allow 白名单 + deny 红线（automation-settings.json，
+  //                              经 --settings 注入或放进 CodeBuddy 设置），只用 -p；
+  //                 ② 全量    = codebuddyFlags 设 ["-p","-y"]，-y 自动批准所有确认（无工具级护栏）。
+  //   flag 名以 `codebuddy --help` 为准（依据 CLI 在缺权限时给出的 `codebuddy -p -y "..."` 提示）。
+  const flags = (process.env.CODEBUDDY_FLAGS && process.env.CODEBUDDY_FLAGS.trim().split(/\s+/))
+             || CONFIG.codebuddyFlags || ['-p'];
   const settings = process.env.CODEBUDDY_SETTINGS || CONFIG.automationSettings;
-  const args = ['run', '--cwd', CONFIG.projectDir];
-  if (settings) args.push('--settings', settings);
+  const args = [...flags];
+  if (settings) args.push('--settings', settings); // 若 CLI 支持；否则把 allow/deny 放进 CodeBuddy 设置
   args.push(prompt);
-  // stdin 用 'ignore'：无人值守不继承终端，杜绝任何残留的交互等待
-  const child = spawn(cli, args, { stdio: ['ignore', 'inherit', 'inherit'], detached: true });
+  // cwd 经 spawn 指定（不依赖 --cwd flag）；stdin 'ignore' 杜绝残留交互等待
+  const child = spawn(cli, args, { cwd: CONFIG.projectDir, stdio: ['ignore', 'inherit', 'inherit'], detached: true });
   child.on('error', e => console.error('[cli] spawn failed:', e.message));
   child.unref();
 }

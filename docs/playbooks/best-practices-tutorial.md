@@ -601,7 +601,7 @@ test:unit:
 > ⚙️ **无人值守免确认（必配，否则会卡死）**：cron / Pipeline / webhook 拉起的会话**没有终端**，AI 一要用 `Bash`/`DeferExecuteTool` 就会停在「是否允许」确认弹窗 → 任务永久挂起。在接收器/runner 主机备一份专用 `automation-settings.json`（`permissions.allow` 白名单 + `permissions.deny` 红线，**deny 优先**），经 CLI `--settings`（或 `webhook-receiver.js` 的 `automationSettings`）注入，让无人值守会话免逐工具确认，**交互式人工会话不受影响**。
 >
 > - 样例：`.codebuddy/skills/event-triggers/templates/automation-settings.sample.json`（复制为 `automation-settings.json`，**勿入库**，按环境调 `deny`）
-> - cron/CI 调用：`<CODEBUDDY_CLI> run --settings <AUTOMATION_SETTINGS> "/code-review"`
+> - cron/CI 调用：`<CODEBUDDY_CLI> -p --settings <AUTOMATION_SETTINGS> "/code-review"`（`-p` 非交互；`-p` 单独不免确认，靠 `permissions.allow` 白名单免确认，**全量**免确认用 `-p -y`，`-y` 自动批准所有、无护栏）
 > - ⚠️ 这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作层）是**两层，别混淆**：前者决定会不会卡在弹窗，后者决定能不能合 MR / 改 Issue。
 > - flag 名以 `codebuddy run --help` 为准。
 

@@ -91,7 +91,7 @@ GitLab **Community Edition** 缺失 EE 的 Push Rules、Approval Rules、Securit
 
 1. 该 runner 打 tag `ai-review`，镜像含 CLI + node；CLI 鉴权走 masked+protected CI 变量
 2. 把模板的 `review` stage 合并进主 `stages:`（置于 quality 之后），拷入 `review:ai` job
-3. `<PLACEHOLDER:AI_REVIEW_COMMAND>` 填 CLI 调用（如 `codebuddy run --settings <AUTOMATION_SETTINGS> "/code-review mr=$CI_MERGE_REQUEST_IID"`）；runner 上无人值守须免逐工具确认，`--settings` 指向专用权限设置（allow 白名单 + deny 红线，见 `event-triggers/templates/automation-settings.sample.json`），否则会话会卡在确认弹窗导致 job 超时；审查存在 🔴 严重问题 → 退出码非 0 → job 红
+3. `<PLACEHOLDER:AI_REVIEW_COMMAND>` 填 CLI 调用（如 `codebuddy -p --settings <AUTOMATION_SETTINGS> "/code-review mr=$CI_MERGE_REQUEST_IID"`）；runner 上无人值守须免逐工具确认：`-p` 非交互 + `permissions.allow` 白名单（`--settings` 指向专用设置，含 deny 红线，见 `event-triggers/templates/automation-settings.sample.json`），或最简用 `-p -y`（`-y` 自动批准所有，无护栏）；否则会话会卡在确认弹窗导致 job 超时；审查存在 🔴 严重问题 → 退出码非 0 → job 红
 4. 默认 `allow_failure: true` 先观察；稳定后改 `false` → 严重问题即阻断 MR
 5. 审查意见仍经 `gitlab-bridge` 的 `mr.discussion` 行内回贴、`commit.status` 贴状态（见 `/code-review` 步骤 11）
 
