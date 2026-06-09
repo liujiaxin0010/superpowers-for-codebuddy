@@ -269,7 +269,7 @@ brainstorm / spec-lite 阶段尤其依赖 `pending-decisions.md`（≥ 2 个待�
 - 最佳实践教程（新建项目 & 老项目扩展）：[docs/playbooks/best-practices-tutorial.md](./docs/playbooks/best-practices-tutorial.md)
 - 事件驱动集成设计（P0/P1，对标 Claude Code GitHub）：[docs/specs/2026-06-02-event-driven-integration-design.md](./docs/specs/2026-06-02-event-driven-integration-design.md)
 - Runner 分步部署（Windows / Linux Docker + SSH MCP 远程）：[.codebuddy/skills/ci-integration/references/runner-deployment-guide.md](./.codebuddy/skills/ci-integration/references/runner-deployment-guide.md)
-- 门禁矩阵：[.codebuddy/skills/process-gatekeeper/gate-matrix.md](./.codebuddy/skills/process-gatekeeper/)
+- 门禁矩阵：[.codebuddy/skills/process-gatekeeper/references/gate-matrix.md](./.codebuddy/skills/process-gatekeeper/references/gate-matrix.md)
 - 路由规则：[.codebuddy/skills/devflow-router/SKILL.md](./.codebuddy/skills/devflow-router/SKILL.md)
 
 ---

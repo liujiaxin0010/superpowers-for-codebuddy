@@ -156,7 +156,7 @@
 - 工作流：`docs/workflows/*`
 - 流程实操：`docs/playbooks/workflow-playbook.md`
 - 最佳实践教程（新建项目 & 老项目扩展）：`docs/playbooks/best-practices-tutorial.md`
-- 门禁矩阵：`.codebuddy/skills/process-gatekeeper/gate-matrix.md`
+- 门禁矩阵：`.codebuddy/skills/process-gatekeeper/references/gate-matrix.md`
 - 路由规则：`.codebuddy/skills/devflow-router/SKILL.md`
 - GitLab 服务器/Runner/Docker 前置：`.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`
 - CE 14.8.2 CI/CD 适配基线：`.codebuddy/skills/ci-integration/references/ce-14.8.2-cicd-support.md`

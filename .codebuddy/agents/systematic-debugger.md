@@ -191,6 +191,6 @@ Boss，您选哪个方向？
 
 遇到复杂调试场景时，参考以下专项文档：
 
-- **根因追溯技术** → `.codebuddy/skills/systematic-debugging/root-cause-tracing.md`（五步向后追溯法，从症状回溯到源头）
-- **纵深防御验证** → `.codebuddy/skills/systematic-debugging/defense-in-depth.md`（四层防御模型，确保修复完整性）
-- **基于条件的等待** → `.codebuddy/skills/systematic-debugging/condition-based-waiting.md`（异步 Bug 调试，时序和竞争条件处理）
+- **根因追溯技术** → `.codebuddy/skills/systematic-debugging/references/root-cause-tracing.md`（五步向后追溯法，从症状回溯到源头）
+- **纵深防御验证** → `.codebuddy/skills/systematic-debugging/references/defense-in-depth.md`（四层防御模型，确保修复完整性）
+- **基于条件的等待** → `.codebuddy/skills/systematic-debugging/references/condition-based-waiting.md`（异步 Bug 调试，时序和竞争条件处理）

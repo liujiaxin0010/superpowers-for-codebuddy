@@ -190,7 +190,7 @@ H 级任务统一允许两条合法路径：
 实现位置：
 
 1. `.codebuddy/skills/process-gatekeeper/SKILL.md`
-2. `.codebuddy/skills/process-gatekeeper/gate-matrix.md`
+2. `.codebuddy/skills/process-gatekeeper/references/gate-matrix.md`
 3. `.codebuddy/skills/process-gatekeeper/templates/*.md`
 
 ### 6.1 门禁语义
@@ -409,7 +409,7 @@ H 级任务统一允许两条合法路径：
 1. `.codebuddy/skills/spec-lite/SKILL.md`
 2. `.codebuddy/skills/spec-lite/template.md`
 3. `.codebuddy/skills/process-gatekeeper/SKILL.md`
-4. `.codebuddy/skills/process-gatekeeper/gate-matrix.md`
+4. `.codebuddy/skills/process-gatekeeper/references/gate-matrix.md`
 5. `.codebuddy/skills/executing-plans/SKILL.md`
 6. `.codebuddy/skills/research/SKILL.md`
 7. `.codebuddy/skills/testcase/SKILL.md`
