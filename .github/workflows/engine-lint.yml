@@ -1,0 +1,53 @@
+# 引擎自检流水线：让引擎自己先通过自己的门禁。
+# 检查项：JS 语法 / JSON 可解析 / Shell 语法 + shellcheck / 文档路径引用 /
+#         commit-msg AI 标签门禁（用自家 commit-msg-lint.sh 检自家 PR 提交）/ 模板回归单测
+name: engine-lint
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: JS syntax (node --check)
+        run: |
+          git ls-files '*.js' | while read -r f; do
+            node --check "$f"
+          done
+          echo "all .js OK"
+
+      - name: JSON validity
+        run: |
+          git ls-files '*.json' | while read -r f; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" \
+              || { echo "INVALID JSON: $f"; exit 1; }
+          done
+          echo "all .json OK"
+
+      - name: Shell syntax (bash -n) + shellcheck
+        run: |
+          git ls-files '*.sh' | while read -r f; do
+            bash -n "$f"
+          done
+          # 起步只拦 error 级，存量脚本治理后可升 -S warning
+          git ls-files '*.sh' | xargs shellcheck -S error
+          echo "all .sh OK"
+
+      - name: Doc path references
+        run: bash scripts/lint-doc-paths.sh
+
+      - name: commit-msg-lint unit tests
+        run: bash scripts/test-commit-msg-lint.sh
+
+      - name: commit-msg AI-tag gate (own commits)
+        if: github.event_name == 'pull_request'
+        env:
+          CI_MERGE_REQUEST_DIFF_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bash .codebuddy/skills/ci-integration/templates/commit-msg-lint.sh
