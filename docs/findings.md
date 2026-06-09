@@ -232,3 +232,14 @@
 | 为 `ai-interaction-scoring` 补证据模式与阻断规则 | 让评分动作更稳定、可解释 |
 | 为 `receiving-code-review` 补回复模板 | 让 review 反馈处理更标准化 |
 | 为 `custom-testing` 补规则冲突样例 | 让规则解释从“知道”升级为“会裁决” |
+
+## 2026-06-09 无人值守权限与工程化审计
+
+### 关键发现
+
+- 「确认」有三层：①工具确认（permissions.allow/-y 可免）②方案确认（plan 模式）③行为级提问（铁律"询问 Boss"）——白名单只解决①；无人值守须同时满足：自主型命令 + 非 plan + headless(`-p`) + 遇不确定异步落盘退出
+- CodeBuddy CLI 实测：`-p` = headless 但不免确认；`-y` = 自动批准一切（绕过 deny 红线）；此前模板按 `codebuddy run --cwd` 假设编写——**模板必须以 CLI 实测输出为准，不能凭同源工具类推**
+- 复制式模板分发必然腐烂：引擎修复不会同步到存量业务项目（本次 3h 挂死的 receiver 即旧模板）→ 版本标注 + CHANGELOG + /upgrade-check 是最小闭环
+- 路径腐烂集中在反引号文本路径（markdown 链接抽查 27/27 通过但文本路径 9 处烂）；lint 落地当场抓出人工 grep 漏掉的 2 处
+- spec/AI2AI、spec/Me2AI 不是 demo 垃圾而是契约槽位（research 默认写 spec/AI2AI/research.md 等）——结构审计要先查引用再下结论
+- 进程组杀树在 Windows 不可用（无负 pid），须 taskkill /T 分支；引擎产物要把 Windows 当一等公民（用户生产环境即 Windows）

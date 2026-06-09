@@ -41,6 +41,11 @@
 # 0  *  * * *  cd <PROJECT_DIR> && <CODEBUDDY_CLI> -p --settings <AUTOMATION_SETTINGS> "scheduled-automation Task#17 MR 审查合并"
 # 0  10 * * 1  cd <PROJECT_DIR> && <CODEBUDDY_CLI> -p --settings <AUTOMATION_SETTINGS> "/spec-sync mode=weekly"
 
+# ── 方式 B'：Windows 任务计划程序（宿主是 Windows 时替代 crontab）──
+# schtasks /create /tn "cb-daily-review" /sc daily /st 03:00 ^
+#   /tr "cmd /c cd /d <PROJECT_DIR> && <CODEBUDDY_CLI> -p --settings <AUTOMATION_SETTINGS> \"/code-review\""
+# 其余任务同理换 /tn /st /tr；常驻进程（如 webhook 接收器）服务化用 NSSM 或 pm2-windows。
+
 # ── 前置 ───────────────────────────────────────────────────────────
 # 1. gitlab-bridge MCP server 已部署，GITLAB_READ_ONLY_MODE=false（经 Boss 确认）
 # 2. 业务项目已 /ci-setup，MR 流水线门禁就绪

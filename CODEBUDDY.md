@@ -5,7 +5,7 @@
 ## 1) 四条铁律（最高优先级）
 
 1. 称呼规则：每次回复第一句话必须称呼 `Boss`。
-2. 决策确认：遇到不确定设计，先询问 `Boss`，不得擅自拍板。
+2. 决策确认：遇到不确定设计，先询问 `Boss`，不得擅自拍板。**无人值守会话**（cron / webhook / CI 拉起，headless）禁止同步等待人工回复——落盘 `docs/pending-decisions.md` + 回贴 MR/报告 + `BLOCKED` 安全退出，由人事后裁决。
 3. 兼容性禁令：未经 `Boss` 明确要求，不得编写兼容性代码。
 4. **数据铁律**：任何触达生产数据 / 共享存储 / 表结构的操作——包括但不限于数据迁移、批量 UPDATE / DELETE / TRUNCATE / DROP、`rm -rf`、`kubectl delete`、索引重建——必须先有 `data-safety` 合同（行数预估 + 备份快照 + dry-run 证据 + 回滚脚本），并由 `Boss` 显式签字；见 `.codebuddy/skills/data-safety/SKILL.md`。
 
@@ -149,6 +149,7 @@
 - `/release`：发布三件套（changelog / release-notes / rollback-playbook）
 - `/rollback`：回滚准备 / dry-run / 真实执行（真实回滚需 Boss 签字）
 - `/resume`：基于 session-handoff 快照恢复上次会话
+- `/upgrade-check`：对照引擎 `CHANGELOG.md` 检查业务项目内已实例化模板（接收器/调度/权限样例）的版本差异，产出迁移清单
 
 ## 9) 详细文档位置（按需加载）
 

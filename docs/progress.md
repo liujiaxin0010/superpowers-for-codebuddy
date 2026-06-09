@@ -496,3 +496,15 @@
 - 分布：`A=1, B=32, C=0, D=0, F=0`
 - 本轮提升最大的 skills：`using-git-worktrees(93->97)`、`writing-skills(92->96)`
 - 当前后续建议：本轮全库 skill 优化已可视为完成，下一步优先整理提交说明与收尾文档
+
+## 会话：2026-06-09（无人值守免确认 + 工程化审计落地，PR #18）
+
+- 根因修复：CI 事件/定时任务拉起的 AI 会话卡在权限确认（实测挂 3h）——CLI 实测形态 `-p`（headless）单独不免确认，免确认 = `permissions.allow` 白名单（受控）或 `-y`（全量）；模板/技能/手册全链对齐，新增 `automation-settings.sample.json` 与 `docs/playbooks/unattended-permission-checklist.md`
+- 工程化审计逐项落地：
+  - 引擎自检 CI（engine-lint.yml：JS/JSON/Shell 语法、路径引用 lint、commit-msg 单测与自检）
+  - 仓库卫生：settings.local.json 与 docs/quality 运行产物出库（+.gitignore）、9 处路径腐烂修复、`缺陷.md`→`defect-classification.md`
+  - webhook-receiver v1.1.0：看门狗杀进程树（POSIX/Windows）、maxConcurrent 队列、持久幂等、jobs.jsonl 台账（冒烟全过）
+  - 铁律 2 增无人值守分支（headless 禁止同步等人，落盘+回贴+BLOCKED 退出）
+  - 模板版本化 + CHANGELOG.md + `/upgrade-check`；Windows schtasks/NSSM 支持；docs/architecture/project-structure.md
+- 审计中改判：spec/AI2AI、spec/Me2AI 为 10+ 技能引用的契约槽位样例，保留不迁（已写入结构图"契约路径不可动"）
+- 未做（需 Boss 决策）：H 级链路瘦身（P1-5）、master 分支保护需仓库管理员在 GitHub 设置开启
