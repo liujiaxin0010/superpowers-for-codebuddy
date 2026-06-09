@@ -11,7 +11,7 @@
 | event-triggers.config.sample.json | 1.1.0 | 同上 |
 | automation-settings.sample.json | 1.1.0 | 同上 |
 | schedule-config.sample | 1.1.0 | `.codebuddy/skills/scheduled-automation/templates/` |
-| commit-msg-lint.sh | 1.0.0 | `.codebuddy/skills/ci-integration/templates/` |
+| commit-msg-lint.sh | 1.0.1 | `.codebuddy/skills/ci-integration/templates/` |
 | ci-poll.sh | 1.0.0 | `.codebuddy/skills/scheduled-automation/templates/` |
 
 ## 2026-06-09 — 模板 1.1.0（无人值守免确认 + 可运维加固）
@@ -28,6 +28,10 @@
 - `automation-settings.sample.json`（新增模板）：无人值守专用权限设置——`allow` 白名单 + `deny` 红线（deny 优先）；仅作用于带 `--settings` 的会话
 - `schedule-config.sample`：cron 行加 `-p --settings`；新增 Windows `schtasks` 方式 B'
 - 升级要点（从 pre-1.1.0）：替换 `webhook-receiver.js` 整文件；config 增补新字段（旧字段兼容）；主机落一份 `automation-settings.json`（勿入库）；验证命令见 `docs/playbooks/unattended-permission-checklist.md` §4
+
+## 2026-06-09 — commit-msg-lint.sh 1.0.1
+
+- **修复**：merge 提交豁免（`git rev-list --no-merges`）。此前从 master 合回 MR 分支的合并提交、GitHub Actions 的合成 PR merge commit 等**自动生成消息**会被误判"缺 AI 标签"而拦红流水线——引擎自检 CI 首跑即复现此 bug。升级 = 整文件替换。
 
 ## 2026-06-09 — 引擎自身
 

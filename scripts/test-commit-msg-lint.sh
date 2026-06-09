@@ -51,5 +51,30 @@ run_case 1 "[AI-H] 没有类型前缀的标题"
 run_case 1 "[AI-H] unknown: 非法类型"
 run_case 1 "[AI-50] feat: 非法标签值"
 
+# ── merge 提交豁免：自动生成的合并消息（无 AI 标签）不得被拦 ──
+merge_repo="$TMP/merge-case"
+git init -q "$merge_repo"
+(
+  cd "$merge_repo"
+  git config user.email t@t && git config user.name t
+  git config commit.gpgsign false
+  git commit -q --allow-empty -m "[AI-0] chore: base"
+  git branch side
+  git commit -q --allow-empty -m "[AI-H] feat: 主线提交"
+  git checkout -q side
+  git commit -q --allow-empty -m "[AI-H] feat: 支线提交"
+  git checkout -q -
+  git merge -q --no-ff --no-edit side   # 消息形如 "Merge branch 'side'"，无标签
+  set +e
+  bash "$LINT" >/dev/null 2>&1
+  echo $? > .exit
+)
+if [ "$(cat "$merge_repo/.exit")" = "0" ]; then
+  pass=$((pass + 1))
+else
+  echo "FAIL expect=0 got=$(cat "$merge_repo/.exit") msg='merge commit exemption'"
+  fail=$((fail + 1))
+fi
+
 echo "test-commit-msg-lint: pass=$pass fail=$fail"
 [ "$fail" -eq 0 ]
