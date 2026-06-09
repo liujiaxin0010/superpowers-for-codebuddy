@@ -1,4 +1,4 @@
-﻿# Featureflow 总控架构图（命令 / Agent / Skill 依赖）
+# Featureflow 总控架构图（命令 / Agent / Skill 依赖）
 
 ## 智能路由逻辑在哪
 
