@@ -1,9 +1,13 @@
 {
-  "_comment": "event-triggers 接收器配置样例。复制为 event-triggers.config.json 并替换占位符。密钥走环境变量 GITLAB_WEBHOOK_SECRET，不要写进本文件。codebuddyFlags 默认 ['-p']（CodeBuddy 非交互 headless）+ permissions.allow 白名单（automationSettings → automation-settings.sample.json）即免逐工具确认；要全量免确认改 ['-p','-y']（-y 自动批准所有，无护栏）。",
+  "_comment": "event-triggers 接收器配置样例（TEMPLATE_VERSION 1.1.0）。复制为 event-triggers.config.json 并替换占位符。密钥走环境变量 GITLAB_WEBHOOK_SECRET，不要写进本文件。codebuddyFlags 默认 ['-p']（CodeBuddy 非交互 headless）+ permissions.allow 白名单（automationSettings → automation-settings.sample.json）即免逐工具确认；要全量免确认改 ['-p','-y']（-y 自动批准所有，无护栏）。maxConcurrent=并发上限（防评论风暴拉爆主机）；jobTimeoutMs=单任务看门狗（到时杀整棵进程树并记台账，根治挂死）；stateDir=持久化幂等键 processed-keys.json 与任务台账 jobs.jsonl 的目录。",
+  "_templateVersion": "1.1.0",
   "projectDir": "<PROJECT_DIR>",
   "codebuddyCli": "<CODEBUDDY_CLI>",
   "codebuddyFlags": ["-p"],
   "automationSettings": "<RECEIVER_HOST_DIR>/automation-settings.json",
+  "maxConcurrent": 2,
+  "jobTimeoutMs": 1800000,
+  "stateDir": ".webhook-receiver-state",
   "port": 3010,
   "allowedActors": [],
   "triggers": {
