@@ -22,6 +22,7 @@
    - 命中但缺少已签字的 `docs/plans/*-data-safety.md` → BLOCKED，回退到 `/data-safety-check`
    - 命中且已签字 → 在执行日志中记录报告路径与签字时间戳
 5. 若通过：加载计划中的合同摘要，按批次执行，并展示测试证据
+5.5 **批次 checkpoint（OPT-C1）**：每个批次验证通过后**立即提交一次** checkpoint commit（消息带批次号，如 `[AI-H] feat: <功能> 批次2/4`）；后续批次失败时回退到上一 checkpoint 重试，**不整计划重来**；执行中发现任务实际复杂度高于计划标注（S→L 类）须在执行日志记录原因（供 scope-creep 度量）
 6. 执行质量门禁脚本（按平台分流，**不得双执行**）：
    - 先读取会话上下文的 `isWindows` 标记（由 CODEBUDDY.md §2 第 4 步启动时写入）
    - `isWindows=true`：`powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`

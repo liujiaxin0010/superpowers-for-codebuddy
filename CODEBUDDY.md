@@ -97,6 +97,7 @@
 - `docs/progress.md`：每个阶段、每次错误后更新。
 - `docs/findings.md`：每 2 次搜索/读取后更新；出现新结论/决策时立即更新。
 - `docs/pending-decisions.md`：一次回复抛出 ≥ 2 个待决策项时**立即**落盘；Boss 部分回复时同步更新 status；阶段切换/handoff 前必须 `/pending sweep`；详见 `.codebuddy/skills/pending-decisions/SKILL.md`。
+- `docs/adr/`：walkthrough 中经 Boss 确认的**架构级**决策落 ADR（模板 `.codebuddy/skills/walkthrough/templates/adr-template.md`）；`/write-plan` 读取并禁止静默偏离，冲突须显式 supersede。
 - `/extend` 特殊要求：
   - 每次执行结束（`BLOCKED`/门禁阻断/分流通过）都必须更新 `docs/progress.md`。
   - 若形成新的分流判断、风险结论或阻断经验，必须同步更新 `docs/findings.md`。
