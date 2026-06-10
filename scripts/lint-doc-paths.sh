@@ -3,7 +3,8 @@
 #
 # 范围：所有纳管 *.md 中形如 `.codebuddy/...` 的反引号路径（引擎自有命名空间）。
 # 豁免：
-#   - docs/progress.md / docs/findings.md / docs/pr-summaries/ —— 历史台账，允许引用已删除的旧路径
+#   - docs/progress.md / docs/findings.md / docs/pr-summaries/ / docs/archive/ —— 历史台账
+#     （含 file-based-memory 归档轮转产物），允许引用已删除的旧路径
 #   - */templates/* —— 实例化素材，路径指向业务项目（落地后才存在）
 #   - .codebuddy/state/ 与 .codebuddy-runtime —— 运行期才生成
 #   - 含 <占位符>、通配符、$变量 的路径
@@ -17,7 +18,7 @@ checked=0
 
 while IFS= read -r file; do
   case "$file" in
-    docs/progress.md|docs/findings.md|docs/pr-summaries/*) continue ;;
+    docs/progress.md|docs/findings.md|docs/pr-summaries/*|docs/archive/*) continue ;;
     */templates/*) continue ;;
   esac
   while IFS= read -r raw; do
