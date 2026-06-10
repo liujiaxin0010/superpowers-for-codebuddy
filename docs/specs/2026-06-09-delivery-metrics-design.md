@@ -1,7 +1,7 @@
 # 交付效能度量（/metrics）设计
 
 - 日期：2026-06-09
-- 状态：Tier 0 已实现（`scripts/metrics.js` + `/metrics` 命令，已在本仓库自验证）；Tier 1/2 待排期
+- 状态：Tier 0 已实现（`.codebuddy/skills/delivery-metrics/scripts/metrics.js` + `/metrics` 命令，已在本仓库自验证）；Tier 1/2 待排期
 - 关联：流程治理白皮书、`process-gatekeeper`、`event-triggers`（`jobs.jsonl`）、`defect-tracking`（标签状态机）
 
 ## 1. 背景与问题
@@ -45,7 +45,7 @@
 
 9. **自动修复接受率** ✅ 已实现，**零埋点**：解析 `Revert "..."` 提交体的 `This reverts commit <sha>`，回查被回滚提交的 AI 标签 → `AI-100` 接受率 = 1 − 被回滚/全部 AI-100 提交。git 关系即真实，立即可用。
 8. **缺陷逃逸率** ✅ 聚合已实现，**需约定**：缺陷台账 `.codebuddy-runtime/defects.jsonl` 每行 `{id, foundPhase}`，`foundPhase ∈ {review, test, system-test, prod}`；逃逸 = review 后才发现。`defect-tracking` 写缺陷时带 `foundPhase`，无则标 N/A。
-7. **各阶段周期时间** ✅ 聚合已实现，**需埋点**：`scripts/stage-event.js <phase> <start|end> [--task]` 在命令起止追加事件到 `.codebuddy-runtime/stage-events.jsonl`；`/metrics §6` 配对 start/end 算各阶段 p50/p95。接入择一：①命令 runbook 起止各调一次；②CodeBuddy hook 在命令前后触发。未埋点标 N/A。
+7. **各阶段周期时间** ✅ 已实现并**接入主链**：`.codebuddy/skills/delivery-metrics/scripts/stage-event.js <phase> <start|end> [--task]` 追加事件到 `.codebuddy-runtime/stage-events.jsonl`；`/metrics §6` 配对算 p50/p95。已在 7 个主链命令（spec-lite/write-plan/execute-plan/test-gen/unified-test/code-review/release）的执行步骤 0 接线（脚本缺失自动跳过不阻断）。未埋点标 N/A。
 
 ### Tier 2 — 需集成（三期）
 

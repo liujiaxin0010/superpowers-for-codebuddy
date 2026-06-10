@@ -9,7 +9,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const SCRIPT = path.join(__dirname, 'diff-risk.js');
+const SCRIPT = path.join(__dirname, '..', '.codebuddy', 'skills', 'code-review-standards', 'scripts', 'diff-risk.js');
 let pass = 0, fail = 0;
 
 function run(files) {

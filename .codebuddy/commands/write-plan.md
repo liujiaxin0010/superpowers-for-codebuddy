@@ -12,6 +12,7 @@
 计划编写前先过门禁，不通过则阻断。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js plan start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析参数：`spec=<path>`、`tier=<L|M|H>`
 2. 若缺少 `spec` 或 `tier`：直接输出 `BLOCKED` 并引导回 `/spec-lite <需求描述>`
 3. 读取 spec 中"需求澄清结论""方案方向确认""TaskContract"段落：

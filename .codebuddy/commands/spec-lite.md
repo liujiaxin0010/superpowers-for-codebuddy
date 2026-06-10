@@ -13,6 +13,7 @@
 执行 `/spec-lite`，并输出 `GateContext` 与 `GateResult`。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js spec start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析参数：`/spec-lite <需求描述> [tierOverride=L|M|H] [overrideReason=...] [explore=true|false]`
 2. 先识别任务类型：`new-feature|bugfix|refactor|test|research|review-pr|issue-draft-pr|parallel-delivery`
 3. 再执行“通用需求澄清”：

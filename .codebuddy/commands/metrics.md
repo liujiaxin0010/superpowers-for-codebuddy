@@ -1,6 +1,6 @@
 请先阅读并遵循：
 1. `docs/specs/2026-06-09-delivery-metrics-design.md`（度量设计、指标定义、分期口径）
-2. 聚合器实现 `scripts/metrics.js`（Tier 0，只读纯聚合）
+2. 聚合器实现 `.codebuddy/skills/delivery-metrics/scripts/metrics.js`（Tier 0，只读纯聚合）
 
 **务必遵守三条铁律：**
 1. 每次回复第一句话必须称呼 "Boss"
@@ -13,7 +13,7 @@
 执行步骤：
 
 1. **运行聚合器**：
-   - `node scripts/metrics.js [--since=YYYY-MM-DD] [--format=md|json] [--jobs=<jobs.jsonl 路径>]`
+   - `node .codebuddy/skills/delivery-metrics/scripts/metrics.js [--since=YYYY-MM-DD] [--format=md|json] [--jobs=<jobs.jsonl 路径>]`
    - 默认窗口最近 30 天、md 格式、报告写入 `docs/quality/metrics-<date>.md`
    - 业务项目若接了 event-triggers，`--jobs` 指向接收器 `stateDir/jobs.jsonl` 以纳入自动化 ROI
    - Tier 1：`--stages` 指向阶段计时台账、`--defects` 指向缺陷台账（默认探测 `.codebuddy-runtime/`）；自动修复接受率从 git revert 关系算，零埋点即真实

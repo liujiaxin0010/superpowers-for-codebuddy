@@ -15,6 +15,7 @@
 在门禁约束下准备并执行发布。默认只准备，真实发布动作需 Boss 显式确认。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js release start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 
 1. 解析参数：`/release version=<vX.Y.Z> [spec=<path>] [plan=<path>] [strategy=canary|full|batch]`
 2. 调用 `process-gatekeeper`（`command=release`）

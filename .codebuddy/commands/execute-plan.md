@@ -12,6 +12,7 @@
 先过门禁，再执行计划。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js execute start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析参数：`planPath`，可选 `spec=<path>`、`tier=<L|M|H>`
 2. 调用 `process-gatekeeper`（`command=execute-plan`）
 2.5 跑 `/pending sweep`：若 `docs/pending-decisions.md` 存在 `status in (pending, partial)` 项 → 直接 `BLOCKED`，并提示需先 `/pending answer|defer|drop` 收敛
