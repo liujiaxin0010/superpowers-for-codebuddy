@@ -25,10 +25,10 @@
 | `/testcase` | 需要 `target`、`spec`、`plan` | 必须具备 `Design + Architecture_Info + Protocol_and_Data` | `/execute-plan ...` |
 | `/code-self-check` | 需可确定 VCS（git/svn）并生成 diff | 可选自动修复时必须保留修复证据 | `/code-self-check ...` |
 | `/score-interaction` | 需提供对话内容（文本/文件路径/当前上下文） | 建议关联 `task` 描述以确定评分基线；输出 MD + XLSX 报告 | `/score-interaction ...` |
-| `/security-review` | 需明确审查范围（scope 或 spec/plan 路径）；触发条件命中时强制执行 | 必须完成 9 维度判定 + 依赖审计命令 + 秘密扫描命令，输出 MD + XLSX；🔴 严重问题存在即阻断 | `/security-review ...` |
+| `/security-review` | 需明确审查范围（scope 或 spec/plan 路径）；**触发由 `diff-risk.js` 基于实际 diff 自动判定**（命中鉴权/加密/外部输入等代码信号即强制），不靠读 spec 关键词 | 必须完成 9 维度判定 + 依赖审计命令 + 秘密扫描命令，输出 MD + XLSX；🔴 严重问题存在即阻断 | `/security-review ...` |
 | `/data-safety-check` | 任何触发条件（DDL / 批量 DML / rm -rf / kubectl delete / 对象存储批量 / MQ purge / 迁移脚本 / 脱敏回灌）命中即必须执行 | 四件套齐全（行数预估 + 快照 + dry-run + 回滚脚本）+ Boss 显式签字 + 执行窗口/值守人 | `/data-safety-check ...` |
 | `/release` | 必须关联已通过的 `spec/plan`，且包含 changelog 条目与预期观测指标 | 同 L + 发布前 checklist、pre-release gate、发布公告、回滚预案已联动 `/rollback` | `/release ...` |
 | `/rollback` | 必须存在 `rollback-playbook`，记录最近一次部署与快照点 | 同 L + Boss 显式签字、通知链、RTO/RPO 预估、真实回滚完成后复盘 | `/rollback ...` |
-| `/perf-check` | 变更命中性能触发条件（热路径 / 批量处理 / 并发模型变更 / DB 查询）时强制 | 必须提供基线 vs 本次结果、同输入同机型对比、阈值判定、证据路径 | `/perf-check ...` |
+| `/perf-check` | 性能触发由 `diff-risk.js` 基于实际 diff 自动判定（命中查询/仓储/批量等代码信号即强制）；亦可手动指定 | 必须提供基线 vs 本次结果、同输入同机型对比、阈值判定、证据路径 | `/perf-check ...` |
 | `/system-test` | 必须先通过 `/requirement-coverage`；存在端到端验证脚本或剧本 | 同 L + 系统测试剧本、数据准备/清理脚本、证据录制、缺陷分类表 | `/requirement-coverage ...` 或 `/execute-plan ...` |
 | `/resume` | 存在 `.codebuddy/state/session-handoff.json` 且含最近一次任务上下文 | 同 L + 已关联未完成任务合同，门禁状态已校验，未决 BLOCKED 显式提示 | `/resume ...` |

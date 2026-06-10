@@ -46,6 +46,14 @@ jobs:
       - name: commit-msg-lint unit tests
         run: bash scripts/test-commit-msg-lint.sh
 
+      - name: diff-risk unit tests
+        run: node scripts/test-diff-risk.js
+
+      - name: metrics smoke (valid JSON aggregation)
+        run: |
+          node scripts/metrics.js --since=2026-01-01 --format=json --out=/tmp/m.json >/dev/null
+          node -e "const m=require('/tmp/m.json'); if(typeof m.git.total!=='number') throw new Error('metrics broken'); console.log('metrics OK: commits='+m.git.total)"
+
       - name: commit-msg AI-tag gate (own commits)
         if: github.event_name == 'pull_request'
         env:
