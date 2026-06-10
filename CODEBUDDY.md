@@ -164,3 +164,5 @@
 - GitLab 版本能力支持矩阵（未满足实现清单）：`.codebuddy/skills/gitlab-bridge/references/gitlab-version-support.md`
 - 定时自动化 7 任务 runbook：`.codebuddy/skills/scheduled-automation/references/task-playbooks.md`
 - 无人值守免确认上线 / 排错 checklist：`docs/playbooks/unattended-permission-checklist.md`
+- 工具流分阶段优化 backlog：`docs/optimization-backlog.md`
+- 交付效能度量 `/metrics` 设计：`docs/specs/2026-06-09-delivery-metrics-design.md`
