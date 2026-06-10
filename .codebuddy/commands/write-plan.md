@@ -12,6 +12,7 @@
 计划编写前先过门禁，不通过则阻断。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js plan start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析参数：`spec=<path>`、`tier=<L|M|H>`
 2. 若缺少 `spec` 或 `tier`：直接输出 `BLOCKED` 并引导回 `/spec-lite <需求描述>`
 3. 读取 spec 中"需求澄清结论""方案方向确认""TaskContract"段落：
@@ -22,10 +23,12 @@
    - 若日志策略缺失（未说明沿用结构/框架选型、英文日志约束、禁控制台策略）：直接 `BLOCKED`
    - 若合同缺少目标、边界、验证、证据、owner：直接 `BLOCKED`
 3.5 跑 `/pending sweep`（或读取 `docs/pending-decisions.md`）：若存在 `status in (pending, partial)` 项 → 直接 `BLOCKED`，并提示需先 `/pending answer|defer|drop` 收敛
+3.6 读 `docs/adr/` 既有架构决策（如存在）：本计划方案与某 ADR 冲突 → 不得静默偏离，须在计划中显式声明"拟 supersede ADR-NNN + 理由"并经 Boss 确认（OPT-P2）
 4. 调用 `process-gatekeeper`（`command=write-plan`）
 5. 若 `GateResult.status=blocked`：输出阻断报告并停止
 6. 若通过：生成 `docs/plans/YYYY-MM-DD-<功能名称>.md`
 7. 在计划中写入元信息：`specPath`、`finalTier`、`gateStatus`、`taskType`
+7.5 **复杂度估算（OPT-P1）**：每个任务/批次标注 `complexity: S|M|L`（S=单文件局部、M=跨文件单模块、L=跨模块/跨端或含迁移），并汇总 `complexityProfile`（如 `S:3 M:2 L:1`）写入元信息——供容量规划、scope-creep 对比（执行中升级复杂度须记录原因）、`/metrics` 周期数据关联
 8. 将 spec 中的 TaskContract 压缩为“执行合同摘要”，写入计划中
 9. 同步兼容产物：
    - `spec/AI2AI/plan.md`

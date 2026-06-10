@@ -188,6 +188,5 @@ alwaysApply: false
 
 ## 辅助文档
 
-- **测试反模式深度详解** → `.codebuddy/skills/test-driven-development/testing-anti-patterns.md`（10 大反模式及修正方法，含代码示例）
 - **自定义测试方法论** → `.codebuddy/skills/custom-testing/SKILL.md`（Boss 定义的项目专属测试规则）
 - **生成测试命令** → `/test-gen`（为指定文件/模块自动生成符合自定义规则的单元测试）

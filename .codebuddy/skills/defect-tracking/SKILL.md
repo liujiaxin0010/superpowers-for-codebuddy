@@ -31,6 +31,8 @@ description: 缺陷生命周期闭环技能。用于把代码审查、测试、C
 - 处理 `.codebuddy-runtime/issues/` 与 GitLab Issue 同步时，读 `references/dual-sync.md`
 - 输出修复报告时，读 `templates/fix-report.md`
 
+> **缺陷台账（供 `/metrics` 缺陷逃逸率，Tier 1）**：每收录一个缺陷，向 `.codebuddy-runtime/defects.jsonl` 追加一行 `{"id":"<iid>","foundPhase":"<阶段>"}`，`foundPhase` 由「来源」映射：代码审查→`review`、测试失败→`test`、系统测试→`system-test`、线上→`prod`。逃逸率 = review 后才发现的占比，是评审有效性的反指标。
+
 ## 何时使用
 
 1. 定时缺陷清理（Task #9：扫 `.codebuddy-runtime/issues/`；Task #10：扫 GitLab Issue）

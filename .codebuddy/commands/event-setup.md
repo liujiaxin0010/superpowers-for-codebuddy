@@ -25,7 +25,7 @@
    - 写动作类触发（合并/改 Issue/行内评论）需 `GITLAB_READ_ONLY_MODE=false`；仍只读 → 提示 Boss 放开，未放开则只登记只读类触发（如 `/code-review` 仅产报告）
 
 3. **选择部署形态 + 采集参数**（询问 Boss，一次问清）：
-   - 接收器运行方式：systemd / pm2 / 容器（推荐常驻 + 自启）
+   - 接收器运行方式：systemd / pm2 / 容器（推荐常驻 + 自启；Windows 主机用 NSSM 或 pm2-windows）
    - 业务项目绝对路径 `<PROJECT_DIR>`、CodeBuddy CLI 调用方式 `<CODEBUDDY_CLI>`
    - 监听端口、反向代理/内网地址（GitLab 能 POST 到的 URL）
    - `X-Gitlab-Token` 密钥（生成强随机串，走环境变量 `GITLAB_WEBHOOK_SECRET`）

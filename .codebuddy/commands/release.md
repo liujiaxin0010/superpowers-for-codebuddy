@@ -15,6 +15,7 @@
 在门禁约束下准备并执行发布。默认只准备，真实发布动作需 Boss 显式确认。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js release start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 
 1. 解析参数：`/release version=<vX.Y.Z> [spec=<path>] [plan=<path>] [strategy=canary|full|batch]`
 2. 调用 `process-gatekeeper`（`command=release`）
@@ -23,6 +24,7 @@
    - `docs/changelog/<version>.md`（依据 `changelog-entry.md` 模板）
    - `docs/release/<version>-release-notes.md`（依据 `release-notes.md` 模板）
    - `docs/runbooks/<feature>-rollback.md`（依据 `rollback-playbook.md` 模板）
+4.5 **版本追溯链（OPT-D3）**：changelog 每条目标注来源需求（spec 的 REQ-ID / 规格路径）与落地 MR/PR 链接，形成「版本 → 需求 → MR」可追溯链；无法关联的条目标 `untracked` 并说明（杂项修复可豁免，feature 级不可）
 5. 发布前 checklist：逐项确认 `/requirement-coverage` / `/security-review` / `/unified-test` / `/system-test` / `/perf-check` / `/data-safety-check` 通过态
 6. 任何一项未通过 → BLOCKED，回退对应命令
 7. Rollback playbook 必须在 staging 演练过一次，演练记录写入模板第 7 节

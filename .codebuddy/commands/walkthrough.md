@@ -22,6 +22,7 @@
 5. **逐议题主持**（一次一个）：展示现状 + AI 提案 → 等 Boss 确认 / 质疑 → 记录结论
 6. 出现 ≥2 项未决议题 → 立即落 `docs/pending-decisions.md`（经 `/pending`）
 7. 按 `walkthrough/templates/walkthrough-minutes.md` 产出纪要，committed 到 `docs/specs/{date}-{slug}-walkthrough.md`
+7.5 **ADR 沉淀（OPT-P2）**：经 Boss 确认的**架构级**结论（选型 / 模块边界 / 契约约定——会约束后续多个计划的那类）按 `walkthrough/templates/adr-template.md` 落 `docs/adr/NNN-<slug>.md`，纪要中引用 ADR 编号；普通实现细节结论留在纪要即可，**不要为每条结论都开 ADR**
 8. 回填 spec-lite 追踪字段：概要 → `walkthroughPath`；详细 → `detailWalkthroughPath`
 9. 输出下一步：概要 → `/write-plan`；详细 → `/execute-plan`
 

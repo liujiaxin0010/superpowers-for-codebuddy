@@ -87,6 +87,8 @@ GitLab 事件（MR / note / label / pipeline / issue）
 3. 可选 `allowedActors`：限制谁能触发写动作（建议 ≥ Developer 成员；外部/访客评论不触发）
 4. 接收器只在内网监听，置于反向代理/服务管理（systemd/pm2）之后；写动作仍受 `GITLAB_READ_ONLY_MODE` 与 Boss 确认约束
 5. 接收器不内联密钥：PAT / token 仍走 `gitlab-bridge` 的 MCP env
+6. 无人值守免确认：webhook 拉起的会话无 TTY，逐工具确认会让进程挂起；经 `automationSettings` / `--settings` 注入专用设置（`templates/automation-settings.sample.json`：allow 白名单 + deny 红线，deny 优先），把"免确认"限定在无人值守路径，交互式人工会话不受影响。注意这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作）是两层，别混淆。真正的护栏是 token 验签 + trigger/actor allowlist + MR/CI 门禁，而非逐工具弹窗
+7. 无人值守可运维四件套（模板 v1.1.0 内置，业务项目按需调参）：`jobTimeoutMs` 看门狗到时杀整棵进程树（防确认挂死类故障无限期占坑）、`maxConcurrent` 并发上限（防评论风暴 fork 炸弹）、`stateDir/processed-keys.json` 持久化幂等（重启不丢、有上限）、`stateDir/jobs.jsonl` 任务台账（每任务起止/退出码/耗时可查）
 
 ## 禁止事项
 
@@ -96,3 +98,4 @@ GitLab 事件（MR / note / label / pipeline / issue）
 4. 不要在事件链路里绕过 `gitlab-bridge` 直接调 MCP/REST——回贴与注册都走对接层，保持可移植
 5. 不要在写权限未放开时谎报已合并/已改——只读模式下只能产报告并输出人工提示
 6. 不要让事件触发直推 main——所有改动仍走 MR + CI 门禁（与 scheduled-automation 一致）
+7. 不要把"会同步等人确认"的命令映射给无人值守触发——`permissions.allow` 只免**工具确认**，免不了 **plan 模式 / 命令内「询问 Boss」/ 数据铁律签字** 这类**方案确认**。无人值守只映射自主型/产报告型命令（`/code-review`、`/defect-loop`、`/spec-sync` 等），别映射 `/write-plan`、`/walkthrough`、`/brainstorm`、生产 `/release`；遇不确定须**异步降级**（落盘 `docs/pending-decisions.md` + 回贴 MR 评论 + 安全退出），不得同步阻塞等待

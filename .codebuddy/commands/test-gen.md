@@ -13,6 +13,7 @@
 生成并执行测试，但必须先通过门禁。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js test start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析参数：`target`，可选 `spec=<path>`、`tier=<L|M|H>`、`options.goProfile`
 2. 调用 `process-gatekeeper`（`command=test-gen`）
 3. 若阻断：输出阻断报告并停止

@@ -16,7 +16,7 @@
 
 ### 1. 内置规则（skill 内部）
 
-- **缺陷分类映射**：`references/缺陷.md`
+- **缺陷分类映射**：`references/defect-classification.md`
 - **分析指南**：`references/code-analysis-guide.md`
 - **缺陷检测规则**：代码逻辑、内存管理、线程安全、性能、Qt 机制
 
@@ -158,7 +158,7 @@ Skill 会重点关注以下方面的 Major 缺陷：
 ├── SKILL.md              # 技能主定义文件
 ├── README.md             # 本文件
 └── references/
-    ├── 缺陷.md            # 缺陷分类映射表
+    ├── defect-classification.md            # 缺陷分类映射表
     └── code-analysis-guide.md  # 代码分析指南
 
 项目规则（动态读取）：

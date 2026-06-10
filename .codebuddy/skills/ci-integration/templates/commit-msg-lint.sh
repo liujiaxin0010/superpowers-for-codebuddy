@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # commit-msg-lint.sh - validate commit messages against the accepted formats.
+# TEMPLATE_VERSION: 1.0.1  (changelog: 引擎仓库根目录 CHANGELOG.md)
 #
 # Purpose: GitLab CE has no Push Rules (an EE feature). The CI "verify" stage
 #          runs this script instead; a failed job turns the pipeline red, and
@@ -39,6 +40,10 @@ TYPE_PATTERN='^(feat|fix|docs|refactor|test|chore|perf|build|ci|revert)(\([^)]+\
 TICKET_PATTERN="${TICKET_PATTERN:-^AC[0-9]+: .+}"
 REQUIRE_TICKET="${REQUIRE_TICKET:-0}"
 
+# Merge commits are skipped (--no-merges): their messages are auto-generated
+# (GitLab merge trains, "Merge branch 'master' into feature", GitHub Actions'
+# synthetic PR merge commit) and must not be forced to carry an AI tag.
+#
 # Determine the commit range: prefer GitLab MR predefined variables,
 # fall back to the last 20 commits (safe on shallow history).
 if [ -n "${CI_MERGE_REQUEST_DIFF_BASE_SHA:-}" ]; then
@@ -101,7 +106,7 @@ while IFS= read -r sha; do
   fi
 
   echo "  OK   ${short}  ${subject}"
-done < <(git rev-list $REVLIST_ARGS 2>/dev/null || true)
+done < <(git rev-list --no-merges $REVLIST_ARGS 2>/dev/null || true)
 
 if [ "$checked" -eq 0 ]; then
   echo "commit-msg-lint: no commits in range, skipped."

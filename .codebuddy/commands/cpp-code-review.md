@@ -44,7 +44,7 @@
 技能将自动：
 
 - 读取编码规范：`.codebuddy/rules/cpp-qt-coding-standard.md`
-- 读取缺陷分类：`.codebuddy/skills/cpp-qt-code-reviewer-skill/references/缺陷.md`
+- 读取缺陷分类：`.codebuddy/skills/cpp-qt-code-reviewer-skill/references/defect-classification.md`
 - 按项目变体选用日志规范章节
 - 执行代码分析
 - 识别 Major / General / Suggest 级别缺陷
@@ -199,7 +199,7 @@ Suggest：N
     ↓
 调用 cpp-qt-code-reviewer-skill
     ↓
-读取 .codebuddy/rules/cpp-qt-coding-standard.md 和 references/缺陷.md
+读取 .codebuddy/rules/cpp-qt-coding-standard.md 和 references/defect-classification.md
     ↓
 按项目变体选用日志规范章节（5.1 / 5.2）
     ↓

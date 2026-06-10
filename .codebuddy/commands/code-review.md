@@ -9,6 +9,7 @@
 在门禁约束下执行统一代码审查，并按"项目路径 + 文件扩展名"双条件智能路由到 EZStation/EZTools Qt 专项流程或通用流程。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js review start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析可选参数：`spec=<path>`、`tier=<L|M|H>`、`plan=<path>`
 1.5. **智能路由判断（EZStation/EZTools Qt 专项分支）**：
    - 提取待审查文件路径（参数 / 当前打开 / git diff）
@@ -23,6 +24,11 @@
    - **否则** → 继续步骤 2（原有通用流程；C/C++ 标准类型由 `code-review-standards` 处理）
 2. 调用 `process-gatekeeper`（`command=code-review`）
 3. 若阻断：输出阻断报告并停止
+3.5. **diff 风险加权 + 强制门禁触发（OPT-R1）**：
+   - 运行 `node .codebuddy/skills/code-review-standards/scripts/diff-risk.js --range=<目标分支>...HEAD`（无远端则 `HEAD~1..HEAD`），基于**实际 diff**（代码文件的新增行，自动排除文档/测试/`.sample`）判定风险
+   - 按 `reviewDepth` 定强度：`deep`=逐文件深审 + 强制下列门禁；`standard`=常规五维；`light`=纯文档/测试快速路径（五维择要，省人也省 token）
+   - 按 `mandatoryGates` **强制联动**：命中 `/security-review` / `/perf-check` / `/data-safety-check` 则该门禁必须在本次审查内执行或已有通过记录，否则 BLOCKED 并提示先跑对应命令——**触发依据是 diff 命中的代码信号（鉴权/加密/DDL/查询等），不靠读 spec 关键词，杜绝漏触发**
+   - 把风险维度与证据写入审查报告"风险评估"章节
 4. 若通过：执行通用五维审查；对前端文件追加 Web 专项审查
 5. 审查阶段严格只读：先输出问题清单（按严重程度分组），**不得直接修改代码**
 6. 输出“修复建议列表 + 建议命令”，等待 Boss 明确确认后再进入修复流程

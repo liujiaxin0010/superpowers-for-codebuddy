@@ -5,7 +5,7 @@
 ## 1) 四条铁律（最高优先级）
 
 1. 称呼规则：每次回复第一句话必须称呼 `Boss`。
-2. 决策确认：遇到不确定设计，先询问 `Boss`，不得擅自拍板。
+2. 决策确认：遇到不确定设计，先询问 `Boss`，不得擅自拍板。**无人值守会话**（cron / webhook / CI 拉起，headless）禁止同步等待人工回复——落盘 `docs/pending-decisions.md` + 回贴 MR/报告 + `BLOCKED` 安全退出，由人事后裁决。
 3. 兼容性禁令：未经 `Boss` 明确要求，不得编写兼容性代码。
 4. **数据铁律**：任何触达生产数据 / 共享存储 / 表结构的操作——包括但不限于数据迁移、批量 UPDATE / DELETE / TRUNCATE / DROP、`rm -rf`、`kubectl delete`、索引重建——必须先有 `data-safety` 合同（行数预估 + 备份快照 + dry-run 证据 + 回滚脚本），并由 `Boss` 显式签字；见 `.codebuddy/skills/data-safety/SKILL.md`。
 
@@ -97,6 +97,7 @@
 - `docs/progress.md`：每个阶段、每次错误后更新。
 - `docs/findings.md`：每 2 次搜索/读取后更新；出现新结论/决策时立即更新。
 - `docs/pending-decisions.md`：一次回复抛出 ≥ 2 个待决策项时**立即**落盘；Boss 部分回复时同步更新 status；阶段切换/handoff 前必须 `/pending sweep`；详见 `.codebuddy/skills/pending-decisions/SKILL.md`。
+- `docs/adr/`：walkthrough 中经 Boss 确认的**架构级**决策落 ADR（模板 `.codebuddy/skills/walkthrough/templates/adr-template.md`）；`/write-plan` 读取并禁止静默偏离，冲突须显式 supersede。
 - `/extend` 特殊要求：
   - 每次执行结束（`BLOCKED`/门禁阻断/分流通过）都必须更新 `docs/progress.md`。
   - 若形成新的分流判断、风险结论或阻断经验，必须同步更新 `docs/findings.md`。
@@ -149,6 +150,8 @@
 - `/release`：发布三件套（changelog / release-notes / rollback-playbook）
 - `/rollback`：回滚准备 / dry-run / 真实执行（真实回滚需 Boss 签字）
 - `/resume`：基于 session-handoff 快照恢复上次会话
+- `/upgrade-check`：对照引擎 `CHANGELOG.md` 检查业务项目内已实例化模板（接收器/调度/权限样例）的版本差异，产出迁移清单
+- `/metrics`：聚合现有产物（git/门禁/jobs.jsonl/决策）产出交付效能度量报告与 Top 摩擦点（只读，Tier 0）
 
 ## 9) 详细文档位置（按需加载）
 
@@ -156,9 +159,12 @@
 - 工作流：`docs/workflows/*`
 - 流程实操：`docs/playbooks/workflow-playbook.md`
 - 最佳实践教程（新建项目 & 老项目扩展）：`docs/playbooks/best-practices-tutorial.md`
-- 门禁矩阵：`.codebuddy/skills/process-gatekeeper/gate-matrix.md`
+- 门禁矩阵：`.codebuddy/skills/process-gatekeeper/references/gate-matrix.md`
 - 路由规则：`.codebuddy/skills/devflow-router/SKILL.md`
 - GitLab 服务器/Runner/Docker 前置：`.codebuddy/skills/ci-integration/references/gitlab-server-setup.md`
 - CE 14.8.2 CI/CD 适配基线：`.codebuddy/skills/ci-integration/references/ce-14.8.2-cicd-support.md`
 - GitLab 版本能力支持矩阵（未满足实现清单）：`.codebuddy/skills/gitlab-bridge/references/gitlab-version-support.md`
 - 定时自动化 7 任务 runbook：`.codebuddy/skills/scheduled-automation/references/task-playbooks.md`
+- 无人值守免确认上线 / 排错 checklist：`docs/playbooks/unattended-permission-checklist.md`
+- 工具流分阶段优化 backlog：`docs/optimization-backlog.md`
+- 交付效能度量 `/metrics` 设计：`docs/specs/2026-06-09-delivery-metrics-design.md`

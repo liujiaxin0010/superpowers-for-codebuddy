@@ -12,6 +12,7 @@
 先过门禁，再执行计划。
 
 执行步骤：
+0. 阶段计时（供 `/metrics` §6 周期时间，建议执行）：开始时 `node .codebuddy/skills/delivery-metrics/scripts/stage-event.js execute start --task=<规格/任务名>`；本命令结束（含 BLOCKED）前同参数执行 `end`。脚本缺失则跳过，不阻断。
 1. 解析参数：`planPath`，可选 `spec=<path>`、`tier=<L|M|H>`
 2. 调用 `process-gatekeeper`（`command=execute-plan`）
 2.5 跑 `/pending sweep`：若 `docs/pending-decisions.md` 存在 `status in (pending, partial)` 项 → 直接 `BLOCKED`，并提示需先 `/pending answer|defer|drop` 收敛
@@ -21,6 +22,7 @@
    - 命中但缺少已签字的 `docs/plans/*-data-safety.md` → BLOCKED，回退到 `/data-safety-check`
    - 命中且已签字 → 在执行日志中记录报告路径与签字时间戳
 5. 若通过：加载计划中的合同摘要，按批次执行，并展示测试证据
+5.5 **批次 checkpoint（OPT-C1）**：每个批次验证通过后**立即提交一次** checkpoint commit（消息带批次号，如 `[AI-H] feat: <功能> 批次2/4`）；后续批次失败时回退到上一 checkpoint 重试，**不整计划重来**；执行中发现任务实际复杂度高于计划标注（S→L 类）须在执行日志记录原因（供 scope-creep 度量）
 6. 执行质量门禁脚本（按平台分流，**不得双执行**）：
    - 先读取会话上下文的 `isWindows` 标记（由 CODEBUDDY.md §2 第 4 步启动时写入）
    - `isWindows=true`：`powershell -ExecutionPolicy Bypass -File .codebuddy/skills/process-gatekeeper/scripts/check-quality.ps1`

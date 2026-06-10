@@ -1,0 +1,20 @@
+# 个人本地配置（机器特定，不入库）
+.claude/settings.local.json
+.codebuddy/settings.local.json
+
+# 质量门禁运行产物（契约见 docs/quality/README.md；库里只留 *.sample）
+docs/quality/last-quality-gate.json
+docs/quality/test-summary.json
+docs/quality/doc-sync-report.json
+
+# /metrics 运行产物（dated 报告，运行期生成）
+docs/quality/metrics-*.md
+docs/quality/metrics-*.json
+
+# 业务项目运行态目录（引擎仓库不应出现）
+.codebuddy-runtime/
+
+# 常见杂物
+node_modules/
+*.log
+.DS_Store

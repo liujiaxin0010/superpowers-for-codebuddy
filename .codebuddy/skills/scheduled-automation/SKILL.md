@@ -68,6 +68,7 @@ description: 定时自动化交付体系技能。把文档补充、夜间发布�
 1. 定时自动化依赖 GitLab 写动作——上线前必须把 MCP server 的 `GITLAB_READ_ONLY_MODE` 改为 `false`，且经 Boss 确认
 2. 写权限放开后建议用专用服务账号 PAT（scope: api），不复用管理员 token
 3. Task #3 夜间发布只打 tag 触发 release 流水线，**不直接部署生产**；生产部署仍需人工审批（与 `/release` 一致）
+4. 无人值守免确认：cron / Pipeline 拉起的会话无终端，逐工具确认会让任务挂起；用 `--settings` 注入专用 `automation-settings.json`（allow 白名单 + deny 红线，见 `event-triggers/templates/automation-settings.sample.json`）限定在无人值守路径。注意这是 **CLI 工具层**确认，与 `GITLAB_READ_ONLY_MODE`（GitLab 写动作）是两层，别混淆；deny 优先于 allow，触达生产数据仍受 data-safety 数据铁律约束
 
 ## 禁止事项
 
@@ -75,3 +76,4 @@ description: 定时自动化交付体系技能。把文档补充、夜间发布�
 2. 不要在写权限未放开时假装能合并——只读模式下输出人工提示，不谎报已合并
 3. 不要把 7 个任务塞进一个会话连续跑——每任务独立上下文，避免上下文失忆（新窗口原则）
 4. 不要在引擎仓库放成品调度配置——只在装了 `.codebuddy/` 的业务项目里 `/schedule-setup` 实例化
+5. 不要让定时任务停在"等人确认"——`permissions.allow` 只免**工具确认**，免不了 plan 模式 / 命令内「询问 Boss」/ 数据铁律签字 这类**方案确认**。定时任务只跑自主型 runbook，遇不确定走 `BLOCKED → 产报告 → 安全退出`（不同步等待）；并以真正非交互方式（headless，确认 `codebuddy run --help`）拉起 CLI，让游离的提问**结束本轮**而非挂起进程；`defaultMode` 切勿设 `plan`

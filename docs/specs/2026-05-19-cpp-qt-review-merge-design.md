@@ -18,7 +18,7 @@
 - `C++&Qt代码review/commands/code-review.md`（含 C++/Qt 智能路由分支）
 - `C++&Qt代码review/commands/cpp-code-review.md`
 - `C++&Qt代码review/rules/Coding-Standard.md`（通义灵码版，与 ezs 99% 相同）
-- `C++&Qt代码review/skills/cpp-qt-code-reviewer-skill/`（含 SKILL.md、README.md、references/缺陷.md、references/code-analysis-guide.md，共 384 行）
+- `C++&Qt代码review/skills/cpp-qt-code-reviewer-skill/`（含 SKILL.md、README.md、references/defect-classification.md、references/code-analysis-guide.md，共 384 行）
 
 ## 2. 现状盘点
 
@@ -155,13 +155,13 @@ model: inherit
 原文搬运，仅修改路径引用：
 
 - `.lingma/rules/Coding-Standard.md` → `.codebuddy/rules/cpp-qt-coding-standard.md`
-- `skills/cpp-qt-code-reviewer-skill/references/缺陷.md` → `.codebuddy/skills/cpp-qt-code-reviewer-skill/references/缺陷.md`
+- `skills/cpp-qt-code-reviewer-skill/references/defect-classification.md` → `.codebuddy/skills/cpp-qt-code-reviewer-skill/references/defect-classification.md`
 
 ### 3.7 Skill 改写（`.codebuddy/skills/cpp-qt-code-reviewer-skill/`）
 
 - `SKILL.md`：步骤 2「读取配置和规则」、步骤 3「加载参考材料」中所有 `.lingma/rules/Coding-Standard.md` 引用替换为 `.codebuddy/rules/cpp-qt-coding-standard.md`
 - `README.md`：「规则来源」「技能结构」段落中 `.lingma/` 引用同步替换
-- `references/缺陷.md`、`references/code-analysis-guide.md`：原样搬运，不改动
+- `references/defect-classification.md`、`references/code-analysis-guide.md`：原样搬运，不改动
 
 ## 4. 验证策略
 

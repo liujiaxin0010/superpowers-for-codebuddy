@@ -45,7 +45,7 @@ disable: false
 
 **内置配置（skill 内部）：**
 
-- 读取 `references/缺陷.md` 获取缺陷分类映射
+- 读取 `references/defect-classification.md` 获取缺陷分类映射
 - 读取 `references/code-analysis-guide.md` 获取代码审查方法论
 
 **项目规则（动态读取）：**
@@ -79,7 +79,7 @@ disable: false
 
 **审查重点领域：**
 
-#### A. 缺陷检测（根据 `references/缺陷.md`）
+#### A. 缺陷检测（根据 `references/defect-classification.md`）
 
 - 代码逻辑和实现问题
 - 内存管理问题
@@ -144,9 +144,9 @@ disable: false
 
 ### 4. 将缺陷映射到分类系统
 
-将识别出的问题映射到 `references/缺陷.md` 中的缺陷分类：
+将识别出的问题映射到 `references/defect-classification.md` 中的缺陷分类：
 
-- **缺陷来源**（Source）：来自缺陷.md 中的类别（例如：编码、详细设计、概要设计等）
+- **缺陷来源**（Source）：来自defect-classification.md 中的类别（例如：编码、详细设计、概要设计等）
 - **缺陷类型**（Type）：主要缺陷类别
 - **缺陷子类型**（Subtype）：具体的缺陷子类型
 - **缺陷界定**（Category）：以下之一：代码逻辑类、内存管理类缺陷、线程安全类缺陷、性能表现类缺陷、Qt 机制类缺陷
@@ -161,7 +161,7 @@ disable: false
 
 **约束条件**：
 
-- 缺陷来源、类型和子类型必须精确映射到 `references/缺陷.md` 中的某一行
+- 缺陷来源、类型和子类型必须精确映射到 `references/defect-classification.md` 中的某一行
 - 不要跨行组合条目
 - 不要创建参考文件中没有的新条目
 - 输出严重程度为 Major（严重）、General（一般）、Suggest（建议）的缺陷
