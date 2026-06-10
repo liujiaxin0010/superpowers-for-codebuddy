@@ -7,6 +7,10 @@ docs/quality/last-quality-gate.json
 docs/quality/test-summary.json
 docs/quality/doc-sync-report.json
 
+# /metrics 运行产物（dated 报告，运行期生成）
+docs/quality/metrics-*.md
+docs/quality/metrics-*.json
+
 # 业务项目运行态目录（引擎仓库不应出现）
 .codebuddy-runtime/
 

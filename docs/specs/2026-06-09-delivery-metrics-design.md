@@ -1,7 +1,7 @@
 # 交付效能度量（/metrics）设计
 
 - 日期：2026-06-09
-- 状态：设计待评审（spec 先行，评审通过再 `/write-plan` → `/execute-plan`）
+- 状态：Tier 0 已实现（`scripts/metrics.js` + `/metrics` 命令，已在本仓库自验证）；Tier 1/2 待排期
 - 关联：流程治理白皮书、`process-gatekeeper`、`event-triggers`（`jobs.jsonl`）、`defect-tracking`（标签状态机）
 
 ## 1. 背景与问题

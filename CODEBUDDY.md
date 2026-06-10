@@ -150,6 +150,7 @@
 - `/rollback`：回滚准备 / dry-run / 真实执行（真实回滚需 Boss 签字）
 - `/resume`：基于 session-handoff 快照恢复上次会话
 - `/upgrade-check`：对照引擎 `CHANGELOG.md` 检查业务项目内已实例化模板（接收器/调度/权限样例）的版本差异，产出迁移清单
+- `/metrics`：聚合现有产物（git/门禁/jobs.jsonl/决策）产出交付效能度量报告与 Top 摩擦点（只读，Tier 0）
 
 ## 9) 详细文档位置（按需加载）
 

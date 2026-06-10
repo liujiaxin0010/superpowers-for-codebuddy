@@ -20,6 +20,7 @@
 | `/defect-loop` | 需 `gitlab-bridge` 写动作可用或本地降级 + 标签体系就绪；每次 1 个 + 必带回归测试 | 同 L + Worktree 隔离 + 验证证据；触达数据/schema 须 `data-safety` 签字 | `/fix-bug ...` |
 | `/schedule-setup` | 需 `gitlab-bridge` 写动作可用（`GITLAB_READ_ONLY_MODE=false`）且已 `/ci-setup` | 同 L + 每任务 runbook 自洽、错峰串行 | `/ci-setup ...` |
 | `/status` | 展示任务类型、门禁、证据、owner | 额外展示 handoff / merge owner / 剩余风险 | `/status` |
+| `/metrics` | 只读聚合现有产物（git/门禁/jobs.jsonl/决策）；无门禁前置，缺数据标 N/A 不阻断 | 同 L + 解读 Top 摩擦点并映射到 `optimization-backlog.md` 对应 OPT 项 | `/metrics` |
 | `/research` | 允许执行；若有 Me2AI 文档则优先读取 | 建议关联 `spec` 与 `tier` 并回填 `researchPath` | `/research ...` |
 | `/testcase` | 需要 `target`、`spec`、`plan` | 必须具备 `Design + Architecture_Info + Protocol_and_Data` | `/execute-plan ...` |
 | `/code-self-check` | 需可确定 VCS（git/svn）并生成 diff | 可选自动修复时必须保留修复证据 | `/code-self-check ...` |
