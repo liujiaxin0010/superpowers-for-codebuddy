@@ -15,6 +15,13 @@
 | ci-poll.sh | 1.0.0 | `.codebuddy/skills/scheduled-automation/templates/` |
 | hooks-settings.sample.json（写完即检） | 1.0.0 | `.codebuddy/skills/instant-check/templates/` |
 
+## 2026-06-10 — 计划/决策/记忆三件套（OPT-P1/P2/X1 + Q3/C1/D3/O1）
+
+- write-plan 7.5：任务级复杂度 `S|M|L` + `complexityProfile`（OPT-P1）；3.6：读 `docs/adr/`，冲突须显式 supersede（OPT-P2）
+- walkthrough 7.5 + `templates/adr-template.md`：架构级结论沉淀 ADR（accepted 后只可 supersede 不可改写）
+- file-based-memory 归档轮转：台账 >400 行原文搬运 `docs/archive/` + 指针，禁总结压缩（OPT-X1）；引擎 progress.md 已轮转（518→23 行）
+- requirement-review 7.5 风险回填 spec（Q3）；execute-plan 5.5 批次 checkpoint commit（C1）；release 4.5 版本→需求→MR 追溯链（D3）；O1 由 /metrics §3+§5 覆盖核销
+
 ## 2026-06-10 — 度量/审查/质量左移三件套 + 脚本归位
 
 - **修复（重要）**：随安装分发的脚本归位技能目录——`/metrics`、`/code-review` 此前引用引擎根 `scripts/`，业务项目安装 `.codebuddy/` 后会 404。现：`metrics.js`/`stage-event.js` → `delivery-metrics/scripts/`，`diff-risk.js` → `code-review-standards/scripts/`；引擎根 `scripts/` 只留引擎自检。

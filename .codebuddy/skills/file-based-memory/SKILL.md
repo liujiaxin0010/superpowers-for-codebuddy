@@ -193,6 +193,16 @@ bash .codebuddy/skills/file-based-memory/scripts/lint-memory.sh
 - `docs/findings.md`
 - `docs/progress.md`
 - `docs/pending-decisions.md`
+- `docs/archive/`（归档轮转目标）
+
+## 归档轮转（OPT-X1：防记忆膨胀）
+
+append-only 台账会无限增长，挤占"会话启动必读"的上下文预算。约定：
+
+1. **阈值**：`progress.md` / `findings.md` 超过 **400 行**即触发轮转（会话启动检查时顺带看一眼行数）
+2. **动作**：把"近期活跃期之前"的整段历史**原文移入** `docs/archive/<file>-<period>.md`（如 `progress-2026Q1Q2.md`），活跃文件头部留一行指针（归档路径 + 机制说明）
+3. **不变量**：只搬运不改写——历史条目逐字保留；归档文件加注来源头；指针永远可达
+4. **检索**：需要翻旧账时按 period 文件名定位，再全文搜索；活跃文件保持"一屏可读"
 
 ## 禁止事项
 
@@ -200,4 +210,5 @@ bash .codebuddy/skills/file-based-memory/scripts/lint-memory.sh
 2. 不要把未经验证的猜测写成研究结论
 3. 不要把同一条信息同时写进 `findings` 和 `progress`
 4. 不要创建空文档后长期不更新
+5. 不要在归档时改写或"总结压缩"历史条目——归档是搬运，不是重写；丢上下文的总结比长文件更危险
 5. 不要在继续任务前跳过对已有文档的阅读
