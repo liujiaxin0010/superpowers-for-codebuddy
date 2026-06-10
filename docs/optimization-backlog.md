@@ -8,7 +8,7 @@
 | 编号 | 杠杆 | 一句话 |
 |---|---|---|
 | OPT-00 | ★★★ | 建反馈闭环 `/metrics`（已出 spec）——解锁其余所有项的效果判定 |
-| OPT-R1 | ★★★ | ✅ 已落地：`scripts/diff-risk.js` 基于实际 diff 分类风险，自动定审查深度 + 强制 security/perf/data 门禁，文件感知排除文档误判；接入 `/code-review` 步骤 3.5 |
+| OPT-R1 | ★★★ | ✅ 已落地：`.codebuddy/skills/code-review-standards/scripts/diff-risk.js` 基于实际 diff 分类风险，自动定审查深度 + 强制 security/perf/data 门禁，文件感知排除文档误判；接入 `/code-review` 步骤 3.5 |
 | OPT-P1 | ★★☆ | 计划阶段加复杂度估算（最小改动，解锁容量规划与周期度量） |
 
 ## 需求阶段
@@ -33,7 +33,7 @@
 |---|---|---|---|---|
 | OPT-C1 | execute-plan 批次崩了回退整批 | 批次间自动 checkpoint commit，细粒度可回退点 | ★★☆ | — |
 | OPT-C2 | 并行交付文件边界靠人工声明，无冲突检测 | parallel-delivery 自动检测多任务是否改同一文件并预警 | ★★☆ | — |
-| OPT-C3 | 写完即检缺 hook，问题堆到测试/评审阶段才发现 | 写完文件即触发 lint/类型检查（PostToolUse hook 下沉） | ★★★ | — |
+| OPT-C3 ✅ | 写完即检缺 hook，问题堆到测试/评审阶段才发现 | **已落地** `instant-check` 技能：PostToolUse hook 在 Edit/Write 后毫秒级单文件语法检查（JS/JSON/Shell/Python），失败 exit 2 + stderr 当场回馈 AI；缺工具/异常一律放行不挡路；引擎仓库已 dogfood（`.claude/settings.json`）；10 用例回归 + 入 CI | ★★★ | — |
 
 ## 测试阶段
 

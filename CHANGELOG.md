@@ -13,6 +13,15 @@
 | schedule-config.sample | 1.1.0 | `.codebuddy/skills/scheduled-automation/templates/` |
 | commit-msg-lint.sh | 1.0.1 | `.codebuddy/skills/ci-integration/templates/` |
 | ci-poll.sh | 1.0.0 | `.codebuddy/skills/scheduled-automation/templates/` |
+| hooks-settings.sample.json（写完即检） | 1.0.0 | `.codebuddy/skills/instant-check/templates/` |
+
+## 2026-06-10 — 度量/审查/质量左移三件套 + 脚本归位
+
+- **修复（重要）**：随安装分发的脚本归位技能目录——`/metrics`、`/code-review` 此前引用引擎根 `scripts/`，业务项目安装 `.codebuddy/` 后会 404。现：`metrics.js`/`stage-event.js` → `delivery-metrics/scripts/`，`diff-risk.js` → `code-review-standards/scripts/`；引擎根 `scripts/` 只留引擎自检。
+- 新技能 `delivery-metrics`：`/metrics` Tier 0（git/门禁/jobs/决策聚合 + Top 摩擦点）+ Tier 1（自动修复接受率=git revert 零埋点；阶段周期 stage-event 埋点已接入 7 个主链命令步骤 0；缺陷逃逸率 foundPhase 约定）。
+- `code-review-standards` 增 `diff-risk.js`（OPT-R1）：审查深度（deep/standard/light）与 `/security-review`·`/perf-check`·`/data-safety-check` 强制门禁由**实际 diff 代码信号**自动触发；文件感知排除文档/.sample 误判。
+- 新技能 `instant-check`（OPT-C3）：PostToolUse hook 写完即检（JS/JSON/Shell/Python 单文件语法层），失败 stderr 当场回馈 AI；缺工具/异常一律放行；引擎仓库已 dogfood（`.claude/settings.json`）。
+- 引擎 CI 新增三组单测（diff-risk 7 / instant-check 10 / metrics 冒烟）。
 
 ## 2026-06-09 — 模板 1.1.0（无人值守免确认 + 可运维加固）
 

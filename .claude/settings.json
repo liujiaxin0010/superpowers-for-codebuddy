@@ -1,0 +1,16 @@
+{
+  "_comment": "引擎仓库自用（dogfood instant-check 技能）：每次 Edit/Write 后立即做单文件语法检查，错误当场回馈。业务项目接入见 .codebuddy/skills/instant-check/templates/hooks-settings.sample.json。",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codebuddy/skills/instant-check/scripts/post-write-check.js"
+          }
+        ]
+      }
+    ]
+  }
+}
