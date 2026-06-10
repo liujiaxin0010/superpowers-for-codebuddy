@@ -132,6 +132,72 @@ function jobsMetrics(jobsPath) {
   return { file, rows };
 }
 
+// ── Tier 1：自动修复接受率（git revert 关系，零埋点、可靠）──
+// 解析 "Revert ..." 提交体里的 "This reverts commit <sha>"，回查被回滚提交的 AI 标签，
+// 得出"AI 自动提交被回滚"的比例 = 自动化产出的接受度反指标。
+function revertMetrics(since, gitTags) {
+  const raw = sh(`git log --since=${since} --pretty=%H%x1f%B%x1e`);
+  const entries = raw.split('\x1e').map(s => s.trim()).filter(Boolean);
+  const reverts = [];
+  for (const ent of entries) {
+    const i = ent.indexOf('\x1f');
+    const body = i >= 0 ? ent.slice(i + 1) : ent;
+    const m = body.match(/This reverts commit ([0-9a-f]{7,40})/);
+    if (!m) continue;
+    const sub = sh(`git log -1 --pretty=%s ${m[1]}`).trim();
+    const tagM = (sub.match(/\[AI-(0|H|100)\]/) || [])[0];
+    reverts.push({ revertedTag: tagM ? 'AI-' + tagM.slice(4, -1) : 'none', subject: sub });
+  }
+  const byTag = { 'AI-100': 0, 'AI-H': 0, 'AI-0': 0, none: 0 };
+  reverts.forEach(r => { byTag[r.revertedTag] += 1; });
+  // 接受率以 AI-100（全自动）为主口径：1 - 被回滚/全部 AI-100 提交
+  const ai100 = gitTags ? gitTags['AI-100'] : 0;
+  const acceptanceRate = ai100 > 0 ? pct(ai100 - byTag['AI-100'], ai100) : null;
+  return { total: reverts.length, byTag, ai100, acceptanceRate, samples: reverts.slice(0, 5) };
+}
+
+// ── Tier 1：各阶段周期时间（读阶段事件台账，需轻量埋点）──
+// 台账由 scripts/stage-event.js 在命令起止追加：{ts, task, phase, event:start|end}
+function stageMetrics(ledgerPath) {
+  const candidates = ledgerPath ? [ledgerPath]
+    : ['.codebuddy-runtime/stage-events.jsonl', '.codebuddy/state/stage-events.jsonl'];
+  const file = candidates.find(p => fs.existsSync(p));
+  if (!file) return null;
+  const open = {}; const durByPhase = {};
+  for (const ln of fs.readFileSync(file, 'utf8').split('\n').filter(Boolean)) {
+    let e; try { e = JSON.parse(ln); } catch (x) { continue; }
+    const key = `${e.task || ''}:${e.phase}`;
+    if (e.event === 'start') open[key] = Date.parse(e.ts);
+    else if (e.event === 'end' && open[key]) {
+      (durByPhase[e.phase] = durByPhase[e.phase] || []).push(Date.parse(e.ts) - open[key]);
+      delete open[key];
+    }
+  }
+  const rows = Object.entries(durByPhase).map(([phase, ds]) => {
+    const s = ds.slice().sort((a, b) => a - b);
+    return { phase, n: ds.length, p50min: Math.round(quantile(s, 0.5) / 6e4), p95min: Math.round(quantile(s, 0.95) / 6e4) };
+  });
+  return { file, rows };
+}
+
+// ── Tier 1：缺陷逃逸率（读缺陷台账的 foundPhase，需约定）──
+// 约定：缺陷记录带 foundPhase ∈ {review, test, system-test, prod}。
+// 逃逸 = review 已过却在更晚阶段发现。来源：.codebuddy-runtime/defects.jsonl 每行 {id, foundPhase}。
+function escapeMetrics(defectsPath) {
+  const candidates = defectsPath ? [defectsPath]
+    : ['.codebuddy-runtime/defects.jsonl', '.codebuddy/state/defects.jsonl'];
+  const file = candidates.find(p => fs.existsSync(p));
+  if (!file) return null;
+  const byPhase = {}; let total = 0;
+  for (const ln of fs.readFileSync(file, 'utf8').split('\n').filter(Boolean)) {
+    let e; try { e = JSON.parse(ln); } catch (x) { continue; }
+    if (!e.foundPhase) continue;
+    total += 1; byPhase[e.foundPhase] = (byPhase[e.foundPhase] || 0) + 1;
+  }
+  const escaped = (byPhase['test'] || 0) + (byPhase['system-test'] || 0) + (byPhase['prod'] || 0);
+  return { total, byPhase, escapeRate: pct(escaped, total) };
+}
+
 // ── 决策时效 ──
 function pendingMetrics() {
   const p = 'docs/pending-decisions.md';
@@ -153,6 +219,10 @@ function frictionPoints(m) {
     const worst = m.jobs.rows.filter(r => r.timeoutRate > 0).sort((a, b) => b.timeoutRate - a.timeoutRate)[0];
     if (worst) out.push(`自动化超时：${worst.cmd} 超时率 ${worst.timeoutRate}%（${worst.runs} 次）`);
   }
+  if (m.reverts && m.reverts.byTag['AI-100'] > 0)
+    out.push(`自动产出被回滚：${m.reverts.byTag['AI-100']} 个 AI-100 提交被 revert（接受率 ${m.reverts.acceptanceRate}%）`);
+  if (m.escape && m.escape.total > 0 && m.escape.escapeRate > 0)
+    out.push(`缺陷逃逸：${m.escape.escapeRate}% 缺陷在 review 后才被发现（${m.escape.total} 总缺陷）`);
   if (m.pending && (m.pending.pending + m.pending.partial) > 0)
     out.push(`决策挂起：${m.pending.pending} 项 pending、${m.pending.partial} 项 partial 未收敛`);
   return out;
@@ -163,7 +233,7 @@ function renderMd(m) {
   L.push(`# 交付效能度量报告`, '');
   L.push(`- 窗口：自 ${m.since}（约 ${daysAgo(m.since + 'T00:00:00Z')} 天）`);
   L.push(`- 生成：${m.generatedAt}`);
-  L.push(`- 口径：Tier 0（仅聚合现有产物，无新埋点；逃逸率/接受率等精确值待 Tier 1）`, '');
+  L.push(`- 口径：Tier 0（git/门禁/jobs/决策，零埋点）+ Tier 1（接受率=git revert 零埋点；阶段周期/逃逸率需埋点，未埋点标 N/A）`, '');
 
   L.push('## ⚠️ Top 摩擦点', '');
   const fp = frictionPoints(m);
@@ -203,6 +273,31 @@ function renderMd(m) {
   L.push(m.pending ? `- pending ${m.pending.pending} 项 ｜ partial ${m.pending.partial} 项`
     : 'N/A（无 docs/pending-decisions.md）');
   L.push('');
+
+  L.push('## 5. 自动修复接受率（Tier 1 · git revert，零埋点）', '');
+  if (m.reverts) {
+    const r = m.reverts;
+    L.push(`- 窗口内 revert 提交：${r.total}　其中回滚的是：AI-100 ${r.byTag['AI-100']} ｜ AI-H ${r.byTag['AI-H']} ｜ AI-0 ${r.byTag['AI-0']} ｜ 无标签 ${r.byTag.none}`);
+    L.push(`- AI-100（全自动）接受率：${r.acceptanceRate == null ? 'N/A（窗口内无 AI-100 提交）' : r.acceptanceRate + '%'}（${r.ai100} 个 AI-100 提交，${r.byTag['AI-100']} 个被回滚）`);
+    if (r.samples.length) L.push(`- 被回滚样例：${r.samples.map(s => s.subject.slice(0, 40)).join(' / ')}`);
+  } else { L.push('N/A'); }
+  L.push('');
+
+  L.push('## 6. 各阶段周期时间（Tier 1 · 需阶段埋点）', '');
+  if (m.stage) {
+    L.push(`数据源：\`${m.stage.file}\``, '');
+    L.push('| 阶段 | 样本 | p50(分) | p95(分) |', '|---|---|---|---|');
+    m.stage.rows.forEach(r => L.push(`| ${r.phase} | ${r.n} | ${r.p50min} | ${r.p95min} |`));
+  } else { L.push('N/A（无 stage-events.jsonl；启用见 `scripts/stage-event.js`，命令起止处埋点）'); }
+  L.push('');
+
+  L.push('## 7. 缺陷逃逸率（Tier 1 · 需 foundPhase 约定）', '');
+  if (m.escape && m.escape.total) {
+    const phaseStr = Object.entries(m.escape.byPhase).map(([k, v]) => `${k} ${v}`).join(' ｜ ');
+    L.push(`- 总缺陷 ${m.escape.total}，按发现阶段：${phaseStr}`);
+    L.push(`- 逃逸率（review 后才发现）：**${m.escape.escapeRate}%**`);
+  } else { L.push('N/A（无 defects.jsonl 或缺 foundPhase；约定见度量设计 §4 Tier 1）'); }
+  L.push('');
   return L.join('\n');
 }
 
@@ -211,12 +306,16 @@ function main() {
   // 确保在仓库根运行
   const root = sh('git rev-parse --show-toplevel').trim();
   if (root) process.chdir(root);
+  const git = gitMetrics(a.since);
   const m = {
     since: a.since,
     generatedAt: new Date().toISOString(),
-    git: gitMetrics(a.since),
+    git,
     quality: qualityMetrics(),
     jobs: jobsMetrics(a.jobs),
+    reverts: revertMetrics(a.since, git.tags),
+    stage: stageMetrics(a.stages),
+    escape: escapeMetrics(a.defects),
     pending: pendingMetrics(),
   };
   if (a.format === 'json') {

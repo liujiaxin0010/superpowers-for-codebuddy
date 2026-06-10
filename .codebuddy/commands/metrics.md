@@ -16,6 +16,7 @@
    - `node scripts/metrics.js [--since=YYYY-MM-DD] [--format=md|json] [--jobs=<jobs.jsonl 路径>]`
    - 默认窗口最近 30 天、md 格式、报告写入 `docs/quality/metrics-<date>.md`
    - 业务项目若接了 event-triggers，`--jobs` 指向接收器 `stateDir/jobs.jsonl` 以纳入自动化 ROI
+   - Tier 1：`--stages` 指向阶段计时台账、`--defects` 指向缺陷台账（默认探测 `.codebuddy-runtime/`）；自动修复接受率从 git revert 关系算，零埋点即真实
 
 2. **解读而非堆数字**：
    - 先讲 **Top 摩擦点**（阻断最多的门禁 / 超时最多的任务 / 最久挂起的决策 / 不合规提交），每条对应一个可行动建议

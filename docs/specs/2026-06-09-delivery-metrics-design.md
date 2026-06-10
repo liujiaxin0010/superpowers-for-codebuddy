@@ -41,11 +41,11 @@
 5. **缺陷闭环吞吐**（`bugfix:*` 标签）：进行中/待审/待验证数、`bugfix:failed` 重修率、平均停留时长
 6. **决策时效**（pending-decisions）：挂起数、最长挂起天数、超 N 天未答项
 
-### Tier 1 — 需轻量埋点（二期）
+### Tier 1 — 已实现（二期）
 
-7. **各阶段周期时间**：每命令起止时间戳（在命令产物里盖 `startedAt/endedAt`）→ spec→plan→execute→test→review 各段耗时
-8. **缺陷逃逸率**：review 通过后仍被 test/defect-loop 抓到的缺陷数 / 总缺陷数（需给缺陷打"发现阶段"标签）
-9. **自动修复接受率**：AI 提交（`[AI-100]`）被后续 revert / 人工重写的比例（需 revert 关联原提交）
+9. **自动修复接受率** ✅ 已实现，**零埋点**：解析 `Revert "..."` 提交体的 `This reverts commit <sha>`，回查被回滚提交的 AI 标签 → `AI-100` 接受率 = 1 − 被回滚/全部 AI-100 提交。git 关系即真实，立即可用。
+8. **缺陷逃逸率** ✅ 聚合已实现，**需约定**：缺陷台账 `.codebuddy-runtime/defects.jsonl` 每行 `{id, foundPhase}`，`foundPhase ∈ {review, test, system-test, prod}`；逃逸 = review 后才发现。`defect-tracking` 写缺陷时带 `foundPhase`，无则标 N/A。
+7. **各阶段周期时间** ✅ 聚合已实现，**需埋点**：`scripts/stage-event.js <phase> <start|end> [--task]` 在命令起止追加事件到 `.codebuddy-runtime/stage-events.jsonl`；`/metrics §6` 配对 start/end 算各阶段 p50/p95。接入择一：①命令 runbook 起止各调一次；②CodeBuddy hook 在命令前后触发。未埋点标 N/A。
 
 ### Tier 2 — 需集成（三期）
 
